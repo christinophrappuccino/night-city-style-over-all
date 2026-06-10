@@ -1,0 +1,260 @@
+{{#if error}}
+  <div class="ncsoa-wardrobe-error">
+    <i class="fas fa-triangle-exclamation"></i>
+    <p>Couldn't read <strong>{{actorName}}</strong>'s style. See the console for details.</p>
+  </div>
+{{else}}
+<div class="ncsoa-wardrobe-body">
+
+  <header class="ncsoa-wb-header">
+    <img class="ncsoa-wb-portrait" src="{{actorImg}}" alt="{{actorName}}" />
+    <div class="ncsoa-wb-id">
+      <h2>{{actorName}}</h2>
+      <div class="ncsoa-wb-sub">{{drip}} · €${{totalCost}}{{#if isDirty}} · <span class="ncsoa-wb-dirtytag"><i class="fas fa-pen"></i> previewing staged outfit</span>{{/if}}</div>
+    </div>
+    <button type="button" class="ncsoa-wb-refresh" data-action="refresh" title="Recompute">
+      <i class="fas fa-rotate-right"></i>
+    </button>
+  </header>
+
+  <div class="ncsoa-wb-columns">
+
+    {{!-- ───── LEFT: slot grid ───── --}}
+    <section class="ncsoa-wb-col ncsoa-wb-col-slots">
+      <div class="ncsoa-wb-section-title">OUTFIT</div>
+      <div class="ncsoa-wb-slotgrid">
+        {{#each slots}}
+          <div class="ncsoa-wb-slotcell {{#unless this.worn}}empty{{/unless}} {{#if this.isStaged}}staged{{/if}} {{#if this.focused}}focused{{/if}}"
+               data-action="focus-slot" data-slot="{{this.slot}}"
+               title="{{#if this.focused}}Show all closet items{{else}}Filter the closet to {{this.label}}{{/if}}">
+            {{#if this.img}}<img class="cell-img" src="{{this.img}}" alt="" />{{else}}<div class="cell-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
+            <div class="cell-info">
+              <span class="cell-label">{{this.label}}</span>
+              <span class="cell-name">{{this.name}}</span>
+              {{#if this.chip}}<span class="cell-chip">{{this.chip}}</span>{{/if}}
+            </div>
+            {{#if this.worn}}
+              <span class="cell-buttons">
+                {{#if this.itemId}}
+                  <button type="button" class="cell-clear" data-action="tailor" data-item="{{this.itemId}}" title="Tailor this garment (§15.1)">
+                    <i class="fas fa-scissors"></i>
+                  </button>
+                {{/if}}
+                <button type="button" class="cell-clear" data-action="clear-slot" data-slot="{{this.slot}}" title="Stage this slot empty">
+                  <i class="fas fa-xmark"></i>
+                </button>
+              </span>
+            {{/if}}
+          </div>
+        {{/each}}
+      </div>
+
+      <div class="ncsoa-wb-section-title ncsoa-wb-outfits-title">
+        OUTFITS
+        <button type="button" class="ncsoa-wb-outfit-save" data-action="save-outfit" title="Save the previewed look as an outfit">
+          <i class="fas fa-floppy-disk"></i> Save look
+        </button>
+      </div>
+      {{#if hasOutfits}}
+        <div class="ncsoa-wb-outfits">
+          {{#each outfits}}
+            <div class="ncsoa-wb-outfit {{#if this.isWorn}}worn{{/if}}" data-action="tryon-outfit" data-outfit="{{this.id}}"
+                 title="{{#if this.note}}{{this.note}} — {{/if}}Try on (stages the full look; Apply to wear)">
+              <div class="of-info">
+                <span class="of-name">{{this.name}}{{#if this.isWorn}} <i class="fas fa-check" title="Currently worn"></i>{{/if}}</span>
+                <span class="of-meta">{{this.count}} piece(s){{#if this.hasMissing}} · <span class="of-missing"><i class="fas fa-triangle-exclamation"></i> {{this.missing}} missing</span>{{/if}}</span>
+              </div>
+              <span class="of-actions">
+                <button type="button" data-action="rename-outfit" data-outfit="{{this.id}}" title="Rename"><i class="fas fa-pen"></i></button>
+                <button type="button" data-action="delete-outfit" data-outfit="{{this.id}}" title="Delete"><i class="fas fa-trash"></i></button>
+              </span>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="ncsoa-wb-empty">No saved outfits yet — dress up and hit Save look.</div>
+      {{/if}}
+
+      {{#if isGM}}
+        <div class="ncsoa-wb-section-title ncsoa-wb-outfits-title">
+          GM TEMPLATES
+          <button type="button" class="ncsoa-wb-outfit-save" data-action="save-template" title="Save the previewed look as a world quick-dress template (§14.5)">
+            <i class="fas fa-stamp"></i> Save as template
+          </button>
+        </div>
+        {{#if hasTemplates}}
+          <div class="ncsoa-wb-outfits">
+            {{#each templates}}
+              <div class="ncsoa-wb-outfit template" data-action="apply-template" data-template="{{this.id}}"
+                   title="{{#if this.note}}{{this.note}} — {{/if}}Quick-dress {{../actorName}} (imports pieces, writes immediately)">
+                <div class="of-info">
+                  <span class="of-name"><i class="fas fa-stamp"></i> {{this.name}}</span>
+                  <span class="of-meta">{{this.count}} piece(s) · world template</span>
+                </div>
+                <span class="of-actions">
+                  <button type="button" data-action="delete-template" data-template="{{this.id}}" title="Delete for the whole world"><i class="fas fa-trash"></i></button>
+                </span>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="ncsoa-wb-empty">No quick-dress templates yet — style an NPC and save the look.</div>
+        {{/if}}
+
+        <div class="ncsoa-wb-section-title ncsoa-wb-outfits-title">
+          UNIFORMS
+          <button type="button" class="ncsoa-wb-outfit-save" data-action="save-uniform" title="Save the previewed look as a crew/faction uniform (§21.2): hard kit + derived soft signature">
+            <i class="fas fa-user-tie"></i> Save as uniform
+          </button>
+        </div>
+        {{#if hasUniforms}}
+          <div class="ncsoa-wb-outfits">
+            {{#each uniforms}}
+              <div class="ncsoa-wb-outfit uniform-row" data-action="wear-uniform" data-uniform="{{this.id}}"
+                   title="Wear the uniform on {{../actorName}} (imports pieces, writes immediately)">
+                <div class="of-info">
+                  <span class="of-name"><i class="fas fa-user-tie"></i> {{this.name}}</span>
+                  <span class="of-meta">{{this.count}} piece(s){{#if this.groupLabel}} · reads as {{this.groupLabel}}{{/if}}</span>
+                </div>
+                <span class="of-actions">
+                  <button type="button" data-action="delete-uniform" data-uniform="{{this.id}}" title="Delete for the whole world"><i class="fas fa-trash"></i></button>
+                </span>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="ncsoa-wb-empty">No uniforms yet — dress a model and save the look.</div>
+        {{/if}}
+      {{/if}}
+    </section>
+
+    {{!-- ───── CENTER: live profile ───── --}}
+    <section class="ncsoa-wb-col ncsoa-wb-col-profile">
+      <section class="ncsoa-wb-cards">
+        <div class="ncsoa-wb-card style">
+          <div class="ncsoa-wb-card-label">STYLE</div>
+          <div class="ncsoa-wb-card-value">{{style.total}}{{#with style.delta}}<span class="ncsoa-wb-delta {{this.cls}}">{{this.text}}</span>{{/with}}</div>
+          <div class="ncsoa-wb-card-tag">{{{style.tierIcon}}} {{style.tierName}} <span class="grade">{{style.tierGrade}}</span></div>
+        </div>
+        <div class="ncsoa-wb-card cohesion">
+          <div class="ncsoa-wb-card-label">COHESION</div>
+          <div class="ncsoa-wb-card-value">{{cohesion.percent}}%{{#with cohesion.delta}}<span class="ncsoa-wb-delta {{this.cls}}">{{this.text}}</span>{{/with}}</div>
+          <div class="ncsoa-wb-card-tag">{{cohesion.label}} · {{cohesion.dominant}}</div>
+        </div>
+        <div class="ncsoa-wb-card heat {{heat.cls}}">
+          <div class="ncsoa-wb-card-label">HEAT</div>
+          <div class="ncsoa-wb-card-value">{{heat.value}}{{#with heat.delta}}<span class="ncsoa-wb-delta {{this.cls}}">{{this.text}}</span>{{/with}}</div>
+          <div class="ncsoa-wb-card-tag">{{heat.level}}</div>
+        </div>
+        <div class="ncsoa-wb-card danger" style="--danger:{{danger.color}}">
+          <div class="ncsoa-wb-card-label">DANGER</div>
+          <div class="ncsoa-wb-card-value">{{danger.value}}{{#with danger.delta}}<span class="ncsoa-wb-delta {{this.cls}}">{{this.text}}</span>{{/with}}</div>
+          <div class="ncsoa-wb-card-tag">{{danger.tier}}</div>
+        </div>
+      </section>
+
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">READS AS</div>
+        {{#if archetypes.length}}
+          <div class="ncsoa-wb-archetypes">
+            {{#each archetypes}}
+              <div class="ncsoa-wb-arch {{#if @first}}primary{{/if}}">
+                <span class="name">{{this.label}}</span>
+                <span class="conf">{{this.confidence}}</span>
+              </div>
+            {{/each}}
+            {{#with uniformRead}}
+              <div class="ncsoa-wb-arch uniform {{#if this.isFull}}full{{/if}}" title="Soft-uniform recognition (§21.2): this look matches the group's registered signature.">
+                <span class="name"><i class="fas fa-user-tie"></i> {{this.name}}</span>
+                <span class="conf">{{this.value}}%</span>
+              </div>
+            {{/with}}
+          </div>
+        {{else}}
+          <div class="ncsoa-wb-empty">No clear archetype read.</div>
+        {{/if}}
+      </section>
+
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">
+          CHROME
+          <span class="ncsoa-wb-section-meta">{{chrome.totalCount}} installed · {{chrome.chromePercent}}% visible · {{chrome.humanityPercent}}% HUM · profile: {{chromeProfile.label}}</span>
+        </div>
+        {{#if chrome.items.length}}
+          <div class="ncsoa-wb-chrome">
+            {{#each chrome.items}}
+              <div class="ncsoa-wb-chip"><span class="cname">{{this.name}}</span><span class="ccat">{{this.category}}</span></div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="ncsoa-wb-empty">All meat. No chrome installed.</div>
+        {{/if}}
+      </section>
+
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">STYLE BREAKDOWN</div>
+        <div class="ncsoa-wb-breakdown">
+          {{#each style.breakdown}}
+            <div class="ncsoa-wb-bd-row">
+              <span class="bd-label">{{this.label}}</span>
+              <span class="bd-raw">{{this.raw}}</span>
+              <span class="bd-weighted">+{{this.weighted}}</span>
+            </div>
+          {{/each}}
+          {{#each style.bonuses}}
+            <div class="ncsoa-wb-bd-row bonus">
+              <span class="bd-label">{{this.label}}</span>
+              <span class="bd-raw"></span>
+              <span class="bd-weighted">+{{this.value}}</span>
+            </div>
+          {{/each}}
+          {{#if style.roleAlign}}
+            <div class="ncsoa-wb-bd-row role">
+              <span class="bd-label">Role fit · {{style.roleAlign.role}}</span>
+              <span class="bd-raw">{{style.roleAlign.label}}</span>
+              <span class="bd-weighted">×{{style.roleAlign.mult}}</span>
+            </div>
+          {{/if}}
+        </div>
+      </section>
+    </section>
+
+    {{!-- ───── RIGHT: closet ───── --}}
+    <section class="ncsoa-wb-col ncsoa-wb-col-closet">
+      <div class="ncsoa-wb-section-title">
+        CLOSET{{#if focusLabel}} <span class="ncsoa-wb-focus-pill">{{focusLabel}} <i class="fas fa-filter"></i></span>{{/if}}
+      </div>
+      <input type="text" class="ncsoa-wb-search" data-control="closet-search" placeholder="Search the closet…" value="{{closetSearch}}" />
+      <div class="ncsoa-wb-closet">
+        {{#each closet}}
+          <div class="ncsoa-wb-closet-item" data-action="stage" data-item="{{this.id}}" data-closet-name="{{this.nameLower}}" title="Stage into {{this.slotLabel}}">
+            {{#if this.img}}<img class="ci-img" src="{{this.img}}" alt="" />{{else}}<div class="ci-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
+            <div class="ci-info">
+              <span class="ci-name">{{this.name}}</span>
+              <span class="ci-meta">{{this.slotLabel}}{{#if this.styleLabel}} · {{this.styleLabel}}{{/if}} · €${{this.cost}}</span>
+            </div>
+            <button type="button" class="ci-tailor" data-action="tailor" data-item="{{this.id}}" title="Tailor this garment (§15.1)">
+              <i class="fas fa-scissors"></i>
+            </button>
+            {{#if this.chip}}<span class="ci-chip">{{this.chip}}</span>{{/if}}
+          </div>
+        {{/each}}
+        {{#if closetEmpty}}
+          <div class="ncsoa-wb-empty">{{#if focusLabel}}Nothing in reserve for {{focusLabel}}.{{else}}The closet is bare — everything owned is on the body.{{/if}}</div>
+        {{/if}}
+      </div>
+    </section>
+
+  </div>
+
+  {{!-- ───── dirty bar ───── --}}
+  {{#if isDirty}}
+    <footer class="ncsoa-wb-dirtybar">
+      <span class="ncsoa-wb-dirtymsg"><i class="fas fa-pen"></i> {{stagedCount}} staged slot change(s) — nothing written yet.</span>
+      <button type="button" data-action="revert"><i class="fas fa-rotate-left"></i> Revert</button>
+      <button type="button" class="primary" data-action="apply"><i class="fas fa-check"></i> Apply outfit</button>
+    </footer>
+  {{/if}}
+
+</div>
+{{/if}}

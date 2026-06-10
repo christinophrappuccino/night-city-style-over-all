@@ -1,0 +1,89 @@
+/*
+ * shops.css — the Shop browser (M6.6, §21.1). Shared tokens from base.css,
+ * primitives from components.css.
+ */
+
+.ncsoa-shops .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+
+.ncsoa-shop-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 12px 14px;
+  font-family: "Roboto", "Segoe UI", sans-serif;
+}
+
+/* Header */
+.ncsoa-shop-header { display: flex; align-items: flex-end; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--ncsoa-edge); }
+.ncsoa-shop-pickers { display: flex; align-items: flex-end; gap: 10px; flex: 1 1 auto; min-width: 0; }
+.ncsoa-shop-picker { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ncsoa-shop-picker label { color: var(--ncsoa-muted); font-size: 0.72em; letter-spacing: 0.6px; text-transform: uppercase; }
+.ncsoa-shop-picker select {
+  background: var(--ncsoa-panel); color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge); border-radius: 5px; padding: 4px 8px; font-size: 0.9em;
+  max-width: 200px;
+}
+.ncsoa-shop-wealth { color: var(--ncsoa-cyan); font-weight: 700; font-size: 1.05em; padding-bottom: 4px; }
+.ncsoa-shop-tools { display: flex; gap: 4px; }
+.ncsoa-shop-tools button {
+  width: 30px; height: 30px;
+  background: var(--ncsoa-panel); color: var(--ncsoa-cyan);
+  border: 1px solid var(--ncsoa-edge); border-radius: 5px; cursor: pointer;
+}
+.ncsoa-shop-tools button:hover { background: rgba(0, 217, 255, 0.12); box-shadow: 0 0 6px var(--ncsoa-edge); }
+
+/* Shop meta strip */
+.ncsoa-shop-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.85em; }
+.ncsoa-shop-meta .shop-name { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
+.ncsoa-shop-meta .shop-mod { color: var(--ncsoa-yellow); border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 10px; padding: 0 8px; }
+.ncsoa-shop-meta .shop-query { color: var(--ncsoa-cyan); }
+.ncsoa-shop-meta .shop-missing { color: var(--ncsoa-yellow); }
+.ncsoa-shop-meta .shop-hint { color: var(--ncsoa-muted); font-style: italic; margin-left: auto; }
+
+/* Trends wire strip (§14.4) */
+.ncsoa-shop-trends { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 0.82em; }
+.ncsoa-shop-trends .trends-label { color: var(--ncsoa-muted); letter-spacing: 1px; font-size: 0.85em; }
+.ncsoa-shop-trend {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--ncsoa-panel); color: var(--ncsoa-muted);
+  border: 1px solid var(--ncsoa-edge); border-radius: 10px; padding: 1px 8px;
+}
+.ncsoa-shop-trend.active { color: var(--ncsoa-cyan); border-color: rgba(0, 217, 255, 0.4); }
+.ncsoa-shop-trend.muted { font-style: italic; }
+.ncsoa-shop-trend a, .ncsoa-shop-trend-new { color: var(--ncsoa-muted); cursor: pointer; }
+.ncsoa-shop-trend a:hover, .ncsoa-shop-trend-new:hover { color: var(--ncsoa-cyan); }
+.ncsoa-shop-trend.active a { color: var(--ncsoa-cyan); }
+.si-price .trend-hot { color: #ff6b00; font-size: 0.85em; }
+.si-price .trend-cold { color: #4fc3f7; font-size: 0.85em; }
+
+/* Stock list */
+.ncsoa-shop-stock { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; min-height: 0; flex: 1 1 auto; padding-right: 2px; }
+.ncsoa-shop-item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  background: var(--ncsoa-panel);
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: 5px;
+  padding: 6px 8px;
+}
+.ncsoa-shop-item.broke { opacity: 0.6; }
+.ncsoa-shop-item .si-img { width: 36px; height: 36px; border-radius: 4px; border: 1px solid var(--ncsoa-edge); object-fit: cover; }
+.ncsoa-shop-item .si-img.placeholder { display: flex; align-items: center; justify-content: center; color: var(--ncsoa-muted); background: rgba(255, 255, 255, 0.03); }
+.ncsoa-shop-item .si-info { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.ncsoa-shop-item .si-name { color: var(--ncsoa-text); font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ncsoa-shop-item .si-name i { color: #e040fb; font-size: 0.8em; }
+.ncsoa-shop-item .si-meta { color: var(--ncsoa-muted); font-size: 0.76em; }
+.ncsoa-shop-item .si-price { color: var(--ncsoa-cyan); font-weight: 700; white-space: nowrap; }
+.ncsoa-shop-item .si-actions { display: flex; gap: 4px; }
+.ncsoa-shop-item .si-actions button {
+  background: rgba(0, 217, 255, 0.1); color: var(--ncsoa-cyan);
+  border: 1px solid var(--ncsoa-edge); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer; font-size: 0.82em; white-space: nowrap;
+}
+.ncsoa-shop-item .si-actions button:disabled { opacity: 0.45; cursor: not-allowed; }
+.ncsoa-shop-item .si-actions button:not(:disabled):hover { box-shadow: 0 0 6px var(--ncsoa-edge); }
+.ncsoa-shop-item .si-actions .si-remove { background: transparent; color: var(--ncsoa-muted); width: 28px; padding: 4px 0; }
+.ncsoa-shop-item .si-actions .si-remove:hover { color: var(--ncsoa-yellow); border-color: var(--ncsoa-yellow); }

@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaBrass000003",
+  "_key": "!items!ncsoaBrass000003",
+  "name": "Brass Lotus \"Lacquer Sheath\"",
+  "type": "clothing",
+  "img": "icons/equipment/chest/shirt-collared-grey.webp",
+  "system": {
+    "description": {
+      "value": "<p>A liquid-black sheath top with a lacquered finish that reads as ceramic until it moves. Seamless — Brass Lotus grows each one on a mannequin scanned from the client. Returns not accepted; the garment wouldn't fit anyone else anyway.</p>"
+    },
+    "type": "top",
+    "style": "highFashion",
+    "price": { "market": 3500, "category": "luxury" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 220,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "brass_lotus",
+        "vibe": { "refined": 3, "sexy": 2 },
+        "colors": { "primary": "#0b090a", "accent": "#5e503f" },
+        "formality": 3
+      }
+    }
+  }
+}

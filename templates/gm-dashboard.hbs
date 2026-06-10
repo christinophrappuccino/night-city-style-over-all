@@ -1,0 +1,121 @@
+<div class="ncsoa-gm-body">
+
+  <header class="ncsoa-gm-header">
+    <div class="ncsoa-gm-title"><i class="fas fa-chess-king"></i> GM DASHBOARD</div>
+    <div class="ncsoa-gm-counts">{{counts.pcs}} PC · {{counts.npcs}} NPC on scene</div>
+  </header>
+
+  <nav class="ncsoa-sc-tabs">
+    {{#each tabs}}
+      <button type="button" class="ncsoa-sc-tab {{#if this.active}}active{{/if}}" data-tab="{{this.id}}">
+        <i class="fas {{this.icon}}"></i><span>{{this.label}}</span>
+      </button>
+    {{/each}}
+  </nav>
+
+  <div class="ncsoa-sc-content">
+
+  {{#if error}}<div class="ncsoa-sc-error"><i class="fas fa-triangle-exclamation"></i> Compute failed — see console.</div>{{/if}}
+  {{#if empty}}<div class="ncsoa-wb-empty">No tokens on the scene.</div>{{/if}}
+
+  {{!-- ───── READOUT / SCENE (shared table) ───── --}}
+  {{#if rows}}
+    <div class="ncsoa-gm-table">
+      <div class="ncsoa-gm-trow head"><span>Character</span><span>Style</span><span>Heat</span><span>Danger</span><span>Reads As</span></div>
+      {{#each rows}}
+        <div class="ncsoa-gm-trow">
+          <span class="tc-name"><img src="{{this.img}}" alt="" />{{this.name}}{{#unless this.isPC}} <span class="npc">NPC</span>{{/unless}}</span>
+          <span class="tc-style">{{this.style}} <span class="grade">{{this.grade}}</span></span>
+          <span class="tc-heat {{this.heat.cls}}">{{this.heat.value}}</span>
+          <span class="tc-danger" style="--danger:{{this.danger.color}}">{{this.danger.value}}</span>
+          <span class="tc-arch">{{this.arch}}</span>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- ───── SCENE GATE ───── --}}
+  {{#if isGate}}
+    <div class="ncsoa-gm-controls">
+      <label>Venue</label>
+      <select data-control="gate">
+        {{#each gate.options}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>{{/each}}
+      </select>
+      <button type="button" class="ncsoa-gm-rungate" data-action="run-gate" title="Deliver each player their verdict — whispered card + live ping">
+        <i class="fas fa-bullhorn"></i> Run gate check
+      </button>
+    </div>
+    <div class="ncsoa-gm-gatehead"><strong>{{gate.selectedName}}</strong> — {{gate.description}}</div>
+    {{#if gate.notes}}<div class="ncsoa-gm-notes">{{gate.notes}}</div>{{/if}}
+    <div class="ncsoa-gm-gatelist">
+      {{#each gate.results}}
+        <div class="ncsoa-gm-gaterow status-{{this.status}}">
+          <img src="{{this.img}}" alt="{{this.name}}" />
+          <div class="grname">{{this.name}} {{#unless this.isPC}}<span class="npc">NPC</span>{{/unless}}</div>
+          <div class="grstatus">{{this.status}}</div>
+          <ul class="grissues">
+            {{#each this.issues}}<li class="sev-{{this.severity}}">{{this.msg}}</li>{{/each}}
+          </ul>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- ───── DISGUISE DETECTOR ───── --}}
+  {{#if isDisguise}}
+    <div class="ncsoa-gm-controls">
+      <label>NPC faction</label>
+      <select data-control="faction">
+        {{#each disguise.options}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>{{/each}}
+      </select>
+      <label>Viewer perception</label>
+      <input type="number" data-control="perception" value="{{disguise.perception}}" min="0" max="30" />
+    </div>
+    <div class="ncsoa-gm-gatehead">Can a <strong>{{disguise.selectedName}}</strong> NPC (PER {{disguise.perception}}) see through the disguise?</div>
+    <div class="ncsoa-gm-dislist">
+      {{#each disguise.results}}
+        <div class="ncsoa-gm-disrow {{#if this.detected}}blown{{else}}holds{{/if}}">
+          <div class="dname">{{this.name}}</div>
+          <div class="dreads">reads as {{this.readsAs}}</div>
+          <div class="dconf">{{this.confidence}}% <span>{{this.label}}</span>{{#if this.gearDisguise}} <i class="fas fa-mask" title="Gear disguise active (sc.faction / sc.disguise.dc modifiers applied)"></i>{{/if}}{{#with this.uniform}} <i class="fas fa-user-tie" title="Wearing {{this.name}} — {{this.grade}} uniform match (+{{this.bonus}})"></i>{{/with}}</div>
+          <div class="ddc">DC {{this.dc}}</div>
+          <div class="dverdict">{{#if this.detected}}<i class="fas fa-eye"></i> BLOWN (+{{this.margin}}){{else}}<i class="fas fa-user-secret"></i> HOLDS ({{this.margin}}){{/if}}{{#if this.familiar}} <span class="fam">familiar</span>{{/if}}</div>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- ───── FACTION TENSIONS ───── --}}
+  {{#if isTension}}
+    <div class="ncsoa-gm-controls">
+      <label>District</label>
+      <select data-control="district">
+        {{#each tension.options}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>{{/each}}
+      </select>
+    </div>
+    {{#if tension.clear}}
+      <div class="ncsoa-gm-clear"><i class="fas fa-circle-check"></i> No rival factions or district hostility detected on the scene.</div>
+    {{/if}}
+    {{#if tension.tensions.length}}
+      <div class="ncsoa-wb-section-title">RIVAL PAIRS</div>
+      {{#each tension.tensions}}
+        <div class="ncsoa-gm-tension sev-{{this.severity}}">
+          <span class="tsev">{{this.severity}}</span>
+          <span class="tpair">{{this.tokenA.name}} ({{this.tokenA.arch}}) ⚔ {{this.tokenB.name}} ({{this.tokenB.arch}})</span>
+          <span class="trivals">{{#each this.rivalPairs}}<span class="rp">{{this.a}} vs {{this.b}}</span>{{/each}}</span>
+        </div>
+      {{/each}}
+    {{/if}}
+    {{#if tension.warnings.length}}
+      <div class="ncsoa-wb-section-title">DISTRICT HOSTILITY <span class="ncsoa-wb-section-meta">{{tension.districtName}}</span></div>
+      {{#each tension.warnings}}
+        <div class="ncsoa-gm-warn level-{{this.level}}">
+          <strong>{{this.name}}</strong> ({{this.arch}}) — {{this.level}} in {{this.controlling}}
+          {{#if this.roleTension}}<div class="rtension">Role: {{this.roleTension.level}}</div>{{/if}}
+        </div>
+      {{/each}}
+    {{/if}}
+  {{/if}}
+
+  </div>
+</div>

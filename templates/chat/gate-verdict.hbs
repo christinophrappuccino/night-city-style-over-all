@@ -1,0 +1,21 @@
+{{!-- gate-verdict.hbs — scene-gate result card (M7.5, §14.8). Whispered. --}}
+<div class="ncsoa-chat-card ncsoa-gate-card {{status}}">
+  <header class="ncsoa-cc-head">
+    <img class="ncsoa-cc-img" src="{{actorImg}}" alt="" />
+    <div class="ncsoa-cc-title">
+      <span class="ncsoa-cc-name">{{actorName}}</span>
+      <span class="ncsoa-cc-sub"><i class="fas fa-door-open"></i> {{gateName}}</span>
+    </div>
+    <span class="ncsoa-cc-verdict {{status}}">{{label}}</span>
+  </header>
+  {{#if hasIssues}}
+    <ul class="ncsoa-cc-issues">
+      {{#each issues}}
+        <li class="{{this.severity}}"><i class="fas {{#if (eq this.severity "red")}}fa-ban{{else}}fa-triangle-exclamation{{/if}}"></i> {{this.msg}}</li>
+      {{/each}}
+    </ul>
+  {{else}}
+    <div class="ncsoa-cc-clean">The look passes. Walk on in.</div>
+  {{/if}}
+  {{#if gateNotes}}<div class="ncsoa-cc-notes">{{gateNotes}}</div>{{/if}}
+</div>

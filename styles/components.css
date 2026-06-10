@@ -1,0 +1,75 @@
+/*
+ * components.css — shared UI primitives used by more than one app.
+ *
+ * Cards, section headers, chips, breakdown rows, empty states. Keep app-specific
+ * layout in the app's own file; promote a rule here once a second app needs it.
+ * (The .ncsoa-wb- prefix is historical — these are shared, not wardrobe-only.)
+ * Spec: SC-Module-Architecture-Guide.md §4.2, §19
+ */
+
+/* Headline cards */
+.ncsoa .ncsoa-wb-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.ncsoa-wb-card {
+  background: var(--ncsoa-panel);
+  border: 1px solid var(--ncsoa-edge);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.ncsoa-wb-card-label { font-size: 0.62em; letter-spacing: 1.5px; color: var(--ncsoa-muted); }
+.ncsoa-wb-card-value { font-size: 1.7em; font-weight: 800; line-height: 1.1; color: #fff; }
+.ncsoa-wb-card-tag { font-size: 0.68em; color: var(--ncsoa-dim); margin-top: 2px; }
+.ncsoa-wb-card-tag .grade { font-weight: 700; color: var(--ncsoa-cyan); }
+.ncsoa-wb-card.style .ncsoa-wb-card-value { color: var(--ncsoa-cyan); }
+.ncsoa-wb-card.heat.cold .ncsoa-wb-card-value { color: #5bc0de; }
+.ncsoa-wb-card.heat.warm .ncsoa-wb-card-value { color: var(--ncsoa-yellow); }
+.ncsoa-wb-card.heat.hot .ncsoa-wb-card-value { color: #fd7e14; }
+.ncsoa-wb-card.heat.blazing .ncsoa-wb-card-value { color: var(--ncsoa-red); }
+.ncsoa-wb-card.danger .ncsoa-wb-card-value { color: var(--danger, var(--ncsoa-green)); }
+.ncsoa-wb-card.danger { border-color: var(--danger, var(--ncsoa-edge)); }
+
+/* Section headers */
+.ncsoa-wb-section { display: flex; flex-direction: column; gap: 6px; }
+.ncsoa-wb-section-title {
+  font-size: 0.72em;
+  letter-spacing: 2px;
+  color: var(--ncsoa-dim);
+  border-bottom: 1px solid rgba(0, 217, 255, 0.12);
+  padding-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.ncsoa-wb-section-meta { letter-spacing: 0; color: var(--ncsoa-muted); font-size: 0.92em; }
+.ncsoa-wb-empty { color: var(--ncsoa-muted); font-size: 0.85em; font-style: italic; padding: 2px 0; }
+
+/* Chips */
+.ncsoa-wb-chrome { display: flex; flex-wrap: wrap; gap: 6px; }
+.ncsoa-wb-chip {
+  display: flex; flex-direction: column;
+  background: var(--ncsoa-panel);
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 0.82em;
+}
+.ncsoa-wb-chip .cname { color: var(--ncsoa-text); }
+.ncsoa-wb-chip .ccat { color: var(--ncsoa-muted); font-size: 0.82em; }
+
+/* Breakdown rows */
+.ncsoa-wb-breakdown { display: flex; flex-direction: column; gap: 2px; }
+.ncsoa-wb-bd-row {
+  display: grid;
+  grid-template-columns: 1fr auto 48px;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 6px;
+  font-size: 0.85em;
+  border-radius: 4px;
+}
+.ncsoa-wb-bd-row:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+.ncsoa-wb-bd-row .bd-label { color: var(--ncsoa-text); }
+.ncsoa-wb-bd-row .bd-raw { color: var(--ncsoa-muted); font-size: 0.9em; text-align: right; }
+.ncsoa-wb-bd-row .bd-weighted { color: var(--ncsoa-cyan); text-align: right; font-weight: 600; }
+.ncsoa-wb-bd-row.bonus .bd-weighted { color: var(--ncsoa-green); }
+.ncsoa-wb-bd-row.role .bd-weighted { color: var(--ncsoa-yellow); }

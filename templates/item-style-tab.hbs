@@ -1,0 +1,124 @@
+{{!--
+  item-style-tab.hbs — body of the Item Style Tab (M4, guide §8).
+  Rendered into the injected sheet tab by apps/item-style-tab.mjs. Generic over the
+  declarative schema (config/style-tab-schema.mjs); the controller binds by data-*.
+--}}
+<div class="ncsoa-ist">
+
+  {{#if isReadthrough}}
+    <div class="ncsoa-ist-readthrough">
+      <div class="ncsoa-ist-rt-head">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>This item uses the legacy <code>sc.*</code> Active-Effect workflow. Convert it to editable Style Data.</span>
+      </div>
+      <ul class="ncsoa-ist-rt-list">
+        {{#each scSources}}
+          <li><code>{{this.key}}</code> <span class="ncsoa-ist-rt-val">{{this.value}}</span>{{#if this.effectName}} <em>{{this.effectName}}</em>{{/if}}</li>
+        {{/each}}
+      </ul>
+      <button type="button" class="ncsoa-ist-convert" data-action="convert">
+        <i class="fas fa-wand-magic-sparkles"></i> Convert to Style Data
+      </button>
+    </div>
+  {{else}}
+
+    <div class="ncsoa-ist-toolbar">
+      <button type="button" class="ncsoa-ist-convert" data-action="open-tailor" title="Recolor · retailor · modify · distress · counterfeit (§15.1)">
+        <i class="fas fa-scissors"></i> Tailor…
+      </button>
+    </div>
+
+    {{#each sections}}
+      <section class="ncsoa-ist-section">
+        <header class="ncsoa-ist-section-head">
+          <span class="ncsoa-ist-section-title">{{this.label}}</span>
+          {{#if this.hint}}<span class="ncsoa-ist-section-hint">{{this.hint}}</span>{{/if}}
+        </header>
+
+        <div class="ncsoa-ist-fields">
+          {{#each this.fields}}
+            <div class="ncsoa-ist-field control-{{this.control}}">
+
+              {{#unless this.isCheckbox}}
+                <label class="ncsoa-ist-label" title="{{this.hint}}">{{this.label}}</label>
+              {{/unless}}
+
+              {{#if this.isWeightedMap}}
+                <div class="ncsoa-ist-map">
+                  {{#each this.rows}}
+                    <div class="ncsoa-ist-maprow">
+                      <span class="ncsoa-ist-mapkey">{{this.label}}</span>
+                      <input type="number" data-path="{{../path}}" data-mapkey="{{this.mapkey}}" value="{{this.value}}" step="{{../step}}" />
+                      <button type="button" class="ncsoa-ist-mapdel" data-action="remove-map" data-path="{{../path}}" data-mapkey="{{this.mapkey}}" title="Remove"><i class="fas fa-xmark"></i></button>
+                    </div>
+                  {{/each}}
+                  <div class="ncsoa-ist-mapadd">
+                    <select class="ncsoa-ist-addsel" data-path="{{this.path}}">
+                      <option value="">— add —</option>
+                      {{#each this.options}}<option value="{{this.value}}">{{this.label}}</option>{{/each}}
+                    </select>
+                    <input type="number" class="ncsoa-ist-addstr" data-path="{{this.path}}" value="{{this.defaultStrength}}" step="{{this.step}}" title="strength" />
+                    <button type="button" class="ncsoa-ist-mapadd-btn" data-action="add-map" data-path="{{this.path}}" title="Add"><i class="fas fa-plus"></i></button>
+                  </div>
+                </div>
+
+              {{else if this.isScalar}}
+                <input type="number" data-path="{{this.path}}" data-control="scalar" value="{{this.value}}" step="{{this.step}}"
+                  {{#if this.hasMin}}min="{{this.min}}"{{/if}} {{#if this.hasMax}}max="{{this.max}}"{{/if}} placeholder="{{this.placeholder}}" />
+
+              {{else if this.isSelect}}
+                <select data-path="{{this.path}}" data-control="select">
+                  {{#if this.allowBlank}}<option value="">—</option>{{/if}}
+                  {{#each this.options}}<option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>{{/each}}
+                </select>
+
+              {{else if this.isMultiSelect}}
+                <div class="ncsoa-ist-multi" data-multipath="{{this.path}}">
+                  {{#each this.options}}
+                    <label class="ncsoa-ist-chip"><input type="checkbox" value="{{this.value}}" {{#if this.selected}}checked{{/if}} /> {{this.label}}</label>
+                  {{/each}}
+                </div>
+
+              {{else if this.isColor}}
+                <input type="color" data-path="{{this.path}}" data-control="color" value="{{this.value}}" />
+
+              {{else if this.isCheckbox}}
+                <label class="ncsoa-ist-check"><input type="checkbox" data-path="{{this.path}}" data-control="checkbox" {{#if this.checked}}checked{{/if}} /> {{this.label}}</label>
+
+              {{else if this.isText}}
+                <input type="text" data-path="{{this.path}}" data-control="text" value="{{this.value}}" placeholder="{{this.placeholder}}" />
+              {{/if}}
+
+              {{#if this.hint}}{{#unless this.isWeightedMap}}<small class="ncsoa-ist-fieldhint">{{this.hint}}</small>{{/unless}}{{/if}}
+            </div>
+          {{/each}}
+        </div>
+      </section>
+    {{/each}}
+  {{/if}}
+
+  {{!-- ───── Live cascade preview (§8.3) — refreshed in place ───── --}}
+  <section class="ncsoa-ist-preview">
+    <header class="ncsoa-ist-section-head">
+      <span class="ncsoa-ist-section-title"><i class="fas fa-wave-square"></i> Live Read</span>
+      <span class="ncsoa-ist-preview-label">{{preview.label}}</span>
+    </header>
+    <p class="ncsoa-ist-preview-blurb">{{preview.blurb}}</p>
+
+    {{#if preview.hasSignal}}
+      <div class="ncsoa-ist-preview-grid">
+        {{#with preview.groups}}
+          {{#if this.archetypes.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">Archetype</span>{{#each this.archetypes}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+          {{#if this.styles.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">Style</span>{{#each this.styles}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+          {{#if this.chrome.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">Chrome</span>{{#each this.chrome}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+          {{#if this.districts.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">District</span>{{#each this.districts}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+          {{#if this.vibe.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">Vibe</span>{{#each this.vibe}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+          {{#if this.scalars.length}}<div class="ncsoa-ist-pgroup"><span class="ncsoa-ist-paxis">Mods</span>{{#each this.scalars}}<span class="ncsoa-ist-pchip">{{this.label}} {{this.value}}</span>{{/each}}</div>{{/if}}
+        {{/with}}
+      </div>
+    {{/if}}
+
+    {{#if source}}<div class="ncsoa-ist-source">source: {{source}}</div>{{/if}}
+  </section>
+
+</div>

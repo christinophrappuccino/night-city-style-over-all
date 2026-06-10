@@ -1,0 +1,33 @@
+{
+  "_id": "ncsoaBrass000001",
+  "_key": "!items!ncsoaBrass000001",
+  "name": "Brass Lotus \"Imperial Column\" Longcoat",
+  "type": "clothing",
+  "img": "icons/equipment/chest/coat-collared-red-gold.webp",
+  "system": {
+    "description": {
+      "value": "<p>Floor-length, architectural shoulders, a brass-thread lotus blooming down the spine. Brass Lotus fits exactly forty of these a year, by appointment, above a noodle bar that doesn't know it's a flagship. Walking in one says you were chosen.</p>"
+    },
+    "type": "jacket",
+    "style": "highFashion",
+    "price": { "market": 5000, "category": "luxury" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 200,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "brass_lotus",
+        "vibe": { "refined": 3, "menacing": 1 },
+        "colors": { "primary": "#0b090a", "accent": "#b08d57" },
+        "formality": 3,
+        "readPriority": 3
+      }
+    }
+  }
+}

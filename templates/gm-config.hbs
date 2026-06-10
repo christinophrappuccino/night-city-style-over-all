@@ -1,0 +1,138 @@
+<div class="ncsoa-cfg-body">
+
+  <nav class="ncsoa-sc-tabs">
+    {{#each tabs}}
+      <button type="button" class="ncsoa-sc-tab {{#if this.active}}active{{/if}}" data-tab="{{this.id}}">
+        <i class="fas {{this.icon}}"></i><span>{{this.label}}</span>
+      </button>
+    {{/each}}
+  </nav>
+
+  <div class="ncsoa-sc-content">
+
+  {{!-- ───── TUNING ───── --}}
+  {{#if isTuning}}
+    <div class="ncsoa-cfg-intro">
+      Adjust the formula dials. Changes are saved as overrides on top of the defaults — only what you change is stored, so untouched dials follow future updates.
+      {{#if hasOverrides}}<span class="ncsoa-cfg-badge">{{overrideCount}} override(s) active</span>{{/if}}
+    </div>
+
+    {{#each groups}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">{{this.group}}</div>
+        <div class="ncsoa-cfg-knobs">
+          {{#each this.knobs}}
+            <div class="ncsoa-cfg-knob {{#if this.modified}}modified{{/if}}">
+              <label title="{{this.path}} (default {{this.def}})">{{this.label}}</label>
+              <input type="number" step="{{this.step}}" data-knob="{{this.path}}" value="{{this.value}}" />
+            </div>
+          {{/each}}
+        </div>
+      </section>
+    {{/each}}
+
+    <footer class="ncsoa-cfg-footer">
+      <button type="button" data-action="reset-tuning"><i class="fas fa-rotate-left"></i> Reset all to defaults</button>
+      <button type="button" class="primary" data-action="save-tuning"><i class="fas fa-floppy-disk"></i> Save tuning</button>
+    </footer>
+  {{/if}}
+
+  {{!-- ───── CONFIG DATA ───── --}}
+  {{#if isData}}
+    <div class="ncsoa-cfg-intro">
+      The style configs live in world settings (journals are backups). Export a blob to share/edit it, or reset one to the bundled default. Full in-app form editors arrive in a later milestone.
+    </div>
+    <div class="ncsoa-cfg-configs">
+      {{#each configs}}
+        <div class="ncsoa-cfg-config">
+          <span class="cfg-name">{{this.name}}</span>
+          <span class="cfg-schema">schema v{{this.schema}}</span>
+          <span class="cfg-actions">
+            <button type="button" data-action="export-config" data-key="{{this.key}}" title="Download JSON"><i class="fas fa-download"></i></button>
+            <button type="button" data-action="reset-config" data-key="{{this.key}}" title="Reset to bundled default"><i class="fas fa-rotate-left"></i></button>
+          </span>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- ───── MIGRATION (M5) ───── --}}
+  {{#if isMigration}}
+    <div class="ncsoa-cfg-intro">
+      Convert legacy <code>sc.*</code> Active-Effect items to <strong>Style Data</strong> flags (Migration 002).
+      Non-destructive: the effects stay on the item but are ignored once the flag exists — and computed reads do not change.
+      Dry-run first to see what would happen.
+    </div>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">Scope</div>
+      <div class="ncsoa-cfg-knobs">
+        <div class="ncsoa-cfg-knob ncsoa-cfg-scope">
+          <label>Convert items in</label>
+          <select data-control="migration-scope">
+            {{#each migration.scopes}}
+              <option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <footer class="ncsoa-cfg-footer">
+        <button type="button" data-action="migrate-dry"><i class="fas fa-flask"></i> Dry run (report only)</button>
+        <button type="button" class="primary" data-action="migrate-run"><i class="fas fa-wand-magic-sparkles"></i> Convert to flags</button>
+      </footer>
+    </section>
+
+    {{#with migration.report}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">{{#if this.wasDryRun}}Dry-run report{{else}}Migration report{{/if}}</div>
+        <div class="ncsoa-cfg-intro">{{this.summary}}</div>
+
+        {{#if this.hasConverted}}
+          <div class="ncsoa-cfg-migrate-group">
+            <strong>{{#if this.wasDryRun}}Would convert{{else}}Converted{{/if}}</strong>
+            <ul>
+              {{#each this.converted}}
+                <li>{{this.name}} <em>({{this.type}}{{#if this.owner}} · {{this.owner}}{{/if}})</em></li>
+              {{/each}}
+            </ul>
+          </div>
+        {{/if}}
+
+        {{#if this.hasConflicts}}
+          <div class="ncsoa-cfg-migrate-group conflict">
+            <strong><i class="fas fa-triangle-exclamation"></i> Conflicts (left untouched — flag wins)</strong>
+            <ul>
+              {{#each this.conflicts}}
+                <li>{{this.name}} <em>({{this.type}}{{#if this.owner}} · {{this.owner}}{{/if}})</em> — {{this.detail}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        {{/if}}
+
+        {{#if this.hasEmpty}}
+          <div class="ncsoa-cfg-migrate-group">
+            <strong>Inert (sc.* keys present but contribute nothing)</strong>
+            <ul>
+              {{#each this.empty}}
+                <li>{{this.name}} <em>({{this.type}}{{#if this.owner}} · {{this.owner}}{{/if}})</em></li>
+              {{/each}}
+            </ul>
+          </div>
+        {{/if}}
+
+        {{#if this.hasErrors}}
+          <div class="ncsoa-cfg-migrate-group conflict">
+            <strong><i class="fas fa-bug"></i> Errors</strong>
+            <ul>
+              {{#each this.errors}}
+                <li>{{this.name}} — {{this.detail}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        {{/if}}
+      </section>
+    {{/with}}
+  {{/if}}
+
+  </div>
+</div>

@@ -1,0 +1,14 @@
+{
+  "name": "night-city-style-over-all",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Build tooling for the Night City: Style Over All Foundry VTT module.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/parity/run.mjs",
+    "build:packs": "node tools/build-packs.mjs"
+  },
+  "devDependencies": {
+    "@foundryvtt/foundryvtt-cli": "^3.0.0"
+  }
+}

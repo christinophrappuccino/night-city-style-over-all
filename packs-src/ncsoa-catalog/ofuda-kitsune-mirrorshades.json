@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaOfuda000002",
+  "_key": "!items!ncsoaOfuda000002",
+  "name": "Ofuda Kitsune Mirrorshades",
+  "type": "clothing",
+  "img": "icons/equipment/head/helm-goggles-leather.webp",
+  "system": {
+    "description": {
+      "value": "<p>Fox-cut frames with a faint ember gradient across the mirror. The temples are etched with a nine-character blessing Ofuda refuses to translate. Wearing them indoors is the point.</p>"
+    },
+    "type": "mirrorshades",
+    "style": "asiaPop",
+    "price": { "market": 500, "category": "premium" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 110,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "ofuda",
+        "vibe": { "mysterious": 3, "cool": 1 },
+        "colors": { "primary": "#1a1a2e", "accent": "#f4a261" },
+        "formality": 2
+      }
+    }
+  }
+}

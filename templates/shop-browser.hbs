@@ -1,0 +1,92 @@
+<div class="ncsoa-shop-body">
+
+  <header class="ncsoa-shop-header">
+    <div class="ncsoa-shop-pickers">
+      <div class="ncsoa-shop-picker">
+        <label>Shop</label>
+        <select data-control="shop" {{#unless hasShops}}disabled{{/unless}}>
+          {{#each shops}}<option value="{{this.id}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>{{/each}}
+          {{#unless hasShops}}<option>— no shops yet —</option>{{/unless}}
+        </select>
+      </div>
+      <div class="ncsoa-shop-picker">
+        <label>Buyer</label>
+        <select data-control="buyer">
+          {{#each buyers}}<option value="{{this.id}}" {{#if this.selected}}selected{{/if}}>{{this.name}}</option>{{/each}}
+        </select>
+      </div>
+      {{#with buyer}}<div class="ncsoa-shop-wealth" title="Eurobucks on hand">€${{this.wealth}}</div>{{/with}}
+    </div>
+    <div class="ncsoa-shop-tools">
+      {{#if isGM}}
+        <button type="button" data-action="new-shop" title="New shop"><i class="fas fa-plus"></i></button>
+        {{#if shop}}
+          <button type="button" data-action="edit-shop" title="Edit shop & query"><i class="fas fa-pen"></i></button>
+          <button type="button" data-action="delete-shop" title="Delete shop"><i class="fas fa-trash"></i></button>
+        {{/if}}
+      {{/if}}
+      <button type="button" data-action="refresh" title="Refresh stock"><i class="fas fa-rotate-right"></i></button>
+    </div>
+  </header>
+
+  {{#if hasTrends}}
+    <div class="ncsoa-shop-trends">
+      <span class="trends-label"><i class="fas fa-arrow-trend-up"></i> WIRE</span>
+      {{#each trends}}
+        <span class="ncsoa-shop-trend {{#if this.active}}active{{/if}}" title="{{this.desc}}">
+          {{this.name}}
+          {{#if ../isGM}}
+            <a data-action="toggle-trend" data-trend="{{this.id}}" title="{{#if this.active}}End the trend (announces){{else}}Make it trend (announces){{/if}}"><i class="fas {{#if this.active}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"></i></a>
+            <a data-action="delete-trend" data-trend="{{this.id}}" title="Delete"><i class="fas fa-xmark"></i></a>
+          {{/if}}
+        </span>
+      {{/each}}
+      {{#if isGM}}<a class="ncsoa-shop-trend-new" data-action="new-trend" title="New fashion trend"><i class="fas fa-plus"></i></a>{{/if}}
+    </div>
+  {{else}}{{#if isGM}}
+    <div class="ncsoa-shop-trends">
+      <span class="trends-label"><i class="fas fa-arrow-trend-up"></i> WIRE</span>
+      <span class="ncsoa-shop-trend muted">no trends yet</span>
+      <a class="ncsoa-shop-trend-new" data-action="new-trend" title="New fashion trend"><i class="fas fa-plus"></i></a>
+    </div>
+  {{/if}}{{/if}}
+
+  {{#if shop}}
+    <div class="ncsoa-shop-meta">
+      <span class="shop-name">{{shop.name}}</span>
+      {{#if shop.marked}}<span class="shop-mod" title="Shop price modifier">×{{shop.priceModifier}}</span>{{/if}}
+      {{#if shop.hasQuery}}<span class="shop-query" title="Stock includes everything matching the shop's query"><i class="fas fa-filter"></i> query stock</span>{{/if}}
+      {{#if missingRefs}}<span class="shop-missing" title="Hand-picked items that no longer resolve"><i class="fas fa-triangle-exclamation"></i> {{missingRefs}} stale ref(s)</span>{{/if}}
+      {{#if isGM}}<span class="shop-hint">Drag items here to stock the shelves.</span>{{/if}}
+    </div>
+
+    <div class="ncsoa-shop-stock">
+      {{#each stock}}
+        <div class="ncsoa-shop-item {{#unless this.affordable}}broke{{/unless}}">
+          {{#if this.img}}<img class="si-img" src="{{this.img}}" alt="" />{{else}}<div class="si-img placeholder"><i class="fas fa-box"></i></div>{{/if}}
+          <div class="si-info">
+            <span class="si-name">{{this.name}}{{#if this.isManual}} <i class="fas fa-thumbtack" title="Hand-picked stock"></i>{{/if}}</span>
+            <span class="si-meta">{{this.typeLabel}}{{#if this.styleLabel}} · {{this.styleLabel}}{{/if}}</span>
+          </div>
+          <div class="si-price" title="{{#if this.marked}}List €${{this.basePrice}}{{else}}List price{{/if}}">{{#if this.trended}}<i class="fas {{#if this.trendHot}}fa-fire trend-hot{{else}}fa-snowflake trend-cold{{/if}}" title="Fashion trend pricing"></i> {{/if}}€${{this.price}}</div>
+          <div class="si-actions">
+            <button type="button" data-action="buy" data-uuid="{{this.uuid}}" data-price="{{this.price}}" {{#unless this.affordable}}disabled title="Not enough eurobucks"{{/unless}}>
+              <i class="fas fa-cart-shopping"></i> Buy
+            </button>
+            {{#if this.isManual}}{{#if ../isGM}}
+              <button type="button" class="si-remove" data-action="remove-ref" data-uuid="{{this.uuid}}" title="Remove from shelves"><i class="fas fa-xmark"></i></button>
+            {{/if}}{{/if}}
+          </div>
+        </div>
+      {{/each}}
+      {{#if stockEmpty}}
+        <div class="ncsoa-wb-empty">Empty shelves.{{#if isGM}} Drag items onto the window, or give the shop a stock query (edit).{{/if}}</div>
+      {{/if}}
+    </div>
+  {{else}}
+    <div class="ncsoa-wb-empty">
+      No shops in Night City yet.{{#if isGM}} Hit <i class="fas fa-plus"></i> to open one.{{else}} Ask your GM to open one.{{/if}}
+    </div>
+  {{/if}}
+
+</div>

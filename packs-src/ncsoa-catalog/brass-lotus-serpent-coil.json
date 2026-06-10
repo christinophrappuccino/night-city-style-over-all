@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaBrass000004",
+  "_key": "!items!ncsoaBrass000004",
+  "name": "Brass Lotus Serpent Coil",
+  "type": "clothing",
+  "img": "icons/equipment/neck/amulet-carved-runed-othila-fehu-grey.webp",
+  "system": {
+    "description": {
+      "value": "<p>A brass serpent that winds three times around the throat and holds itself shut — no clasp, just tension and trust. Conversation insurance: people address the snake first.</p>"
+    },
+    "type": "jewelry",
+    "style": "highFashion",
+    "price": { "market": 1500, "category": "expensive" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 230,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "brass_lotus",
+        "vibe": { "mysterious": 2, "refined": 2 },
+        "colors": { "primary": "#b08d57", "accent": "#0b090a" },
+        "formality": 3
+      }
+    }
+  }
+}

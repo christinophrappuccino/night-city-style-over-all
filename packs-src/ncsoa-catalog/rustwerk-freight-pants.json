@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaRustw000003",
+  "_key": "!items!ncsoaRustw000003",
+  "name": "Rustwerk Freight Pants",
+  "type": "clothing",
+  "img": "icons/equipment/leg/pants-black-leather.webp",
+  "system": {
+    "description": {
+      "value": "<p>Eleven pockets, four of which even Rustwerk can't explain. Cargo webbing rated for actual cargo. The cuffs roll to show a hazard-stripe lining when you want to look busy.</p>"
+    },
+    "type": "bottoms",
+    "style": "urbanFlash",
+    "price": { "market": 80, "category": "costly" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 320,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "rustwerk",
+        "vibe": { "approachable": 1, "rebellious": 1 },
+        "colors": { "primary": "#2b2d42", "accent": "#ffd60a" },
+        "formality": 1
+      }
+    }
+  }
+}

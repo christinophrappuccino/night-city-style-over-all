@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaRustw000002",
+  "_key": "!items!ncsoaRustw000002",
+  "name": "Rustwerk Solder-Burn Tee",
+  "type": "clothing",
+  "img": "icons/equipment/chest/shirt-collared-brown.webp",
+  "system": {
+    "description": {
+      "value": "<p>Pre-distressed with a real soldering iron by someone who clearly enjoyed it. The burn pattern spells something in a netrunner shorthand nobody at Rustwerk will confirm. Probably rude.</p>"
+    },
+    "type": "top",
+    "style": "urbanFlash",
+    "price": { "market": 40, "category": "everyday" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 310,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "rustwerk",
+        "vibe": { "rebellious": 2 },
+        "colors": { "primary": "#3a3a3a", "accent": "#e76f51" },
+        "formality": 1
+      }
+    }
+  }
+}

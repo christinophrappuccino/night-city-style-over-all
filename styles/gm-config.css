@@ -1,0 +1,56 @@
+/*
+ * gm-config.css — GM Config & Tuning app. Reuses .ncsoa-sc-tabs + components.css.
+ * Spec: SC-Module-Architecture-Guide.md §14.1, §18.5
+ */
+
+.ncsoa-config .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+.ncsoa-cfg-body { display: flex; flex-direction: column; height: 100%; font-family: "Roboto", "Segoe UI", sans-serif; }
+
+.ncsoa-cfg-intro { font-size: 0.84em; color: var(--ncsoa-muted); line-height: 1.45; padding-bottom: 4px; }
+.ncsoa-cfg-badge { display: inline-block; margin-left: 6px; color: var(--ncsoa-yellow); border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 10px; padding: 0 8px; font-size: 0.9em; }
+
+/* Tuning knobs */
+.ncsoa-cfg-knobs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.ncsoa-cfg-knob { display: grid; grid-template-columns: 1fr 84px; align-items: center; gap: 8px; padding: 3px 6px; border-radius: 4px; }
+.ncsoa-cfg-knob.modified { background: rgba(255, 193, 7, 0.07); }
+.ncsoa-cfg-knob label { font-size: 0.84em; color: var(--ncsoa-text); }
+.ncsoa-cfg-knob.modified label { color: var(--ncsoa-yellow); }
+.ncsoa-cfg-knob input {
+  background: var(--ncsoa-panel); color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge); border-radius: 4px; padding: 3px 6px; text-align: right; font-size: 0.88em;
+}
+
+/* Footer */
+.ncsoa-cfg-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 0 4px; margin-top: auto; border-top: 1px solid var(--ncsoa-edge); }
+.ncsoa-cfg-footer button {
+  background: var(--ncsoa-panel); color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge); border-radius: 5px; padding: 6px 14px; cursor: pointer; font-size: 0.88em;
+}
+.ncsoa-cfg-footer button.primary { background: rgba(0, 217, 255, 0.14); color: var(--ncsoa-cyan); border-color: var(--ncsoa-cyan); }
+.ncsoa-cfg-footer button:hover { box-shadow: 0 0 6px var(--ncsoa-edge); }
+
+/* Config data list */
+.ncsoa-cfg-configs { display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-cfg-config { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 5px; padding: 6px 10px; }
+.ncsoa-cfg-config .cfg-name { color: var(--ncsoa-text); font-size: 0.9em; }
+.ncsoa-cfg-config .cfg-schema { color: var(--ncsoa-muted); font-size: 0.78em; }
+.ncsoa-cfg-config .cfg-actions { display: flex; gap: 4px; }
+.ncsoa-cfg-config .cfg-actions button {
+  width: 28px; height: 28px;
+  background: transparent; color: var(--ncsoa-dim);
+  border: 1px solid var(--ncsoa-edge); border-radius: 4px; cursor: pointer;
+}
+.ncsoa-cfg-config .cfg-actions button:hover { color: var(--ncsoa-cyan); background: rgba(0, 217, 255, 0.1); }
+
+/* Migration tab (M5) */
+.ncsoa-cfg-scope { grid-template-columns: auto 1fr; }
+.ncsoa-cfg-knob select {
+  background: var(--ncsoa-panel); color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge); border-radius: 4px; padding: 3px 6px; font-size: 0.88em;
+}
+.ncsoa-cfg-migrate-group { margin: 8px 0; font-size: 0.85em; }
+.ncsoa-cfg-migrate-group strong { color: var(--ncsoa-cyan); }
+.ncsoa-cfg-migrate-group.conflict strong { color: var(--ncsoa-yellow); }
+.ncsoa-cfg-migrate-group ul { margin: 4px 0 0 18px; padding: 0; color: var(--ncsoa-text); max-height: 180px; overflow-y: auto; }
+.ncsoa-cfg-migrate-group li { line-height: 1.45; }
+.ncsoa-cfg-migrate-group em { color: var(--ncsoa-muted); font-style: normal; font-size: 0.9em; }

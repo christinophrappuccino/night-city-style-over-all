@@ -1,0 +1,22 @@
+/*
+ * style-checker.css — the style MANIFEST.
+ *
+ * This is the single stylesheet module.json loads; it @imports every per-area file
+ * so the bundle stays manageable as the apps grow. Add one @import line per new app.
+ * Keep base.css first (design tokens) and components.css before any app file (shared
+ * primitives the apps consume).
+ *
+ * @import paths are relative to THIS file (the styles/ directory).
+ * Spec: SC-Module-Architecture-Guide.md §4.2, §6 (M3)
+ */
+
+@import "base.css";
+@import "components.css";
+@import "wardrobe.css";
+@import "style-checker-app.css";
+@import "gm-dashboard.css";
+@import "gm-config.css";
+@import "item-style-tab.css";
+@import "shops.css";
+@import "chat-cards.css";
+@import "garden.css";

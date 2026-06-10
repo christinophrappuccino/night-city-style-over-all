@@ -1,0 +1,28 @@
+{
+  "id": "night-city-style-over-all",
+  "title": "Night City: Style Over All",
+  "description": "Archetype detection, heat index, disguises, district fit, a living brand economy, wardrobe management, and a full GM dashboard. Reads your equipped gear and tells you who Night City thinks you are.",
+  "version": "0.1.0",
+  "compatibility": { "minimum": "12", "verified": "12" },
+  "relationships": {
+    "systems": [{ "id": "cyberpunk-red-core", "type": "system", "compatibility": {} }]
+  },
+  "esmodules": ["scripts/main.mjs"],
+  "styles": ["styles/style-checker.css"],
+  "languages": [{ "lang": "en", "name": "English", "path": "lang/en.json" }],
+  "packs": [
+    {
+      "name": "ncsoa-catalog",
+      "label": "Night City Catalog",
+      "path": "packs/ncsoa-catalog",
+      "type": "Item",
+      "system": "cyberpunk-red-core",
+      "ownership": { "PLAYER": "OBSERVER", "ASSISTANT": "OWNER" }
+    }
+  ],
+  "socket": true,
+  "authors": [{ "name": "Christian" }],
+  "url": "https://github.com/christinophrappuccino/night-city-style-over-all",
+  "manifest": "https://github.com/christinophrappuccino/night-city-style-over-all/releases/latest/download/module.json",
+  "download": "https://github.com/christinophrappuccino/night-city-style-over-all/releases/latest/download/module.zip"
+}

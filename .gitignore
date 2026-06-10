@@ -1,0 +1,10 @@
+# dependencies
+node_modules/
+
+# built compendium packs (compiled from packs-src/ by tools/build-packs.mjs;
+# CI builds them for releases, locally run `npm run build:packs`)
+packs/
+
+# OS noise
+.DS_Store
+Thumbs.db

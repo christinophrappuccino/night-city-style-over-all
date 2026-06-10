@@ -1,0 +1,92 @@
+/*
+ * style-checker-app.css — the player Style Checker (5-tab app). Tab chrome +
+ * tab-specific layout; shared primitives live in components.css.
+ * Spec: SC-Module-Architecture-Guide.md §6 (M3), §19
+ */
+
+.ncsoa-sc .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+.ncsoa-sc-body { display: flex; flex-direction: column; height: 100%; font-family: "Roboto", "Segoe UI", sans-serif; }
+
+/* Header */
+.ncsoa-sc-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--ncsoa-edge); }
+.ncsoa-sc-portrait { width: 40px; height: 40px; border-radius: 5px; border: 1px solid var(--ncsoa-edge); object-fit: cover; }
+.ncsoa-sc-header h2 { margin: 0; font-size: 1.2em; font-weight: 700; color: #fff; border: none; }
+
+/* Tabs */
+.ncsoa-sc-tabs { display: flex; background: rgba(0, 0, 0, 0.5); border-bottom: 2px solid var(--ncsoa-edge); }
+.ncsoa-sc-tab {
+  flex: 1;
+  padding: 9px 6px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--ncsoa-muted);
+  cursor: pointer;
+  font-size: 0.72em;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.ncsoa-sc-tab i { font-size: 1.3em; }
+.ncsoa-sc-tab:hover { color: var(--ncsoa-cyan); background: rgba(0, 217, 255, 0.06); }
+.ncsoa-sc-tab.active { color: var(--ncsoa-cyan); border-bottom-color: var(--ncsoa-cyan); text-shadow: 0 0 8px rgba(0, 217, 255, 0.5); }
+
+/* Content scroll area */
+.ncsoa-sc-content { flex: 1 1 auto; overflow-y: auto; padding: 12px 14px 18px; display: flex; flex-direction: column; gap: 12px; }
+.ncsoa-sc-error { color: var(--ncsoa-yellow); padding: 16px; text-align: center; }
+
+/* Archetype list with confidence bars */
+.ncsoa-sc-archlist { display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-sc-archrow { display: grid; grid-template-columns: 130px 1fr 32px; align-items: center; gap: 8px; font-size: 0.86em; }
+.ncsoa-sc-archrow .aname { color: var(--ncsoa-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ncsoa-sc-archrow.primary .aname { color: var(--ncsoa-cyan); font-weight: 600; }
+.ncsoa-sc-archrow .abar { background: var(--ncsoa-panel); border-radius: 3px; height: 8px; overflow: hidden; }
+.ncsoa-sc-archrow .afill { display: block; height: 100%; background: var(--ncsoa-dim); }
+.ncsoa-sc-archrow.primary .afill { background: var(--ncsoa-cyan); }
+.ncsoa-sc-archrow .aconf { text-align: right; color: var(--ncsoa-dim); font-weight: 600; }
+
+/* Banner (chrome social impact) */
+.ncsoa-sc-banner { background: var(--ncsoa-panel); border-left: 3px solid var(--accent, var(--ncsoa-cyan)); border-radius: 4px; padding: 8px 12px; font-size: 0.86em; }
+.ncsoa-sc-warn { color: var(--ncsoa-red); font-weight: 700; margin-left: 8px; }
+
+/* District fit */
+.ncsoa-sc-districts { display: flex; flex-direction: column; gap: 4px; }
+.ncsoa-sc-district { display: grid; grid-template-columns: 150px 44px 1fr; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 4px; font-size: 0.85em; }
+.ncsoa-sc-district:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+.ncsoa-sc-district.best { border: 1px solid var(--ncsoa-edge); }
+.ncsoa-sc-district .dname { color: var(--ncsoa-text); }
+.ncsoa-sc-district .dscore { font-weight: 700; text-align: right; color: var(--ncsoa-green); }
+.ncsoa-sc-district .dscore.zero { color: var(--ncsoa-muted); }
+.ncsoa-sc-district .dadd { display: flex; flex-wrap: wrap; gap: 4px; }
+.ncsoa-sc-district .addchip { font-size: 0.85em; color: var(--ncsoa-dim); background: var(--ncsoa-panel); border-radius: 3px; padding: 1px 5px; }
+
+/* Shopping plan */
+.ncsoa-sc-planmeta { font-size: 0.86em; color: var(--ncsoa-cyan); }
+.ncsoa-sc-plan { display: flex; flex-direction: column; gap: 8px; }
+.ncsoa-sc-alloc { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 5px; padding: 8px 10px; }
+.ncsoa-sc-alloc.primary { border-color: var(--ncsoa-cyan); }
+.ncsoa-sc-alloc .alloc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.ncsoa-sc-alloc .alabel { font-weight: 600; color: var(--ncsoa-cyan); }
+.ncsoa-sc-alloc .ameta { font-size: 0.8em; color: var(--ncsoa-muted); }
+.ncsoa-sc-alloc .acomment { font-size: 0.84em; color: var(--ncsoa-text); margin-top: 4px; line-height: 1.4; }
+
+/* Crew */
+.ncsoa-sc-roles { display: flex; flex-wrap: wrap; gap: 5px; }
+.ncsoa-sc-roles .rolechip { font-size: 0.82em; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 12px; padding: 2px 9px; }
+.ncsoa-sc-roles .rolechip b { color: var(--ncsoa-cyan); text-transform: capitalize; }
+.ncsoa-sc-members { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ncsoa-sc-member { display: flex; align-items: center; gap: 8px; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 5px; padding: 5px 8px; }
+.ncsoa-sc-member img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; }
+.ncsoa-sc-member .mid { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.ncsoa-sc-member .mname { color: var(--ncsoa-text); font-size: 0.86em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ncsoa-sc-member .march { color: var(--ncsoa-muted); font-size: 0.76em; }
+.ncsoa-sc-member .mscore { color: var(--ncsoa-cyan); font-weight: 700; text-align: right; }
+.ncsoa-sc-member .mtier { display: block; color: var(--ncsoa-muted); font-size: 0.68em; font-weight: 400; }
+.ncsoa-sc-clash { font-size: 0.85em; color: var(--ncsoa-text); padding: 3px 0; }
+
+/* Social stub */
+.ncsoa-sc-stub { text-align: center; padding: 40px 20px; color: var(--ncsoa-muted); }
+.ncsoa-sc-stub i { font-size: 2.4em; color: var(--ncsoa-dim); }
+.ncsoa-sc-stub h3 { color: var(--ncsoa-cyan); border: none; margin: 10px 0 6px; }
+.ncsoa-sc-stub p { font-size: 0.88em; max-width: 380px; margin: 0 auto; line-height: 1.5; }

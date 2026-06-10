@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaOfuda000004",
+  "_key": "!items!ncsoaOfuda000004",
+  "name": "Ofuda Paper-Crane Chain",
+  "type": "clothing",
+  "img": "icons/equipment/neck/amulet-carved-stone-eye.webp",
+  "system": {
+    "description": {
+      "value": "<p>A titanium crane folded by hand — actually folded, from sheet, by one of three artisans Ofuda keeps on retainer. Unfolds into a flat blessing card in an emergency. Nobody has ever needed it to. It's the thought.</p>"
+    },
+    "type": "jewelry",
+    "style": "asiaPop",
+    "price": { "market": 350, "category": "premium" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 130,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "ofuda",
+        "vibe": { "cute": 2, "refined": 1 },
+        "colors": { "primary": "#e9ecef", "accent": "#c1121f" },
+        "formality": 2
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{{!-- style-read.hbs — perception-gated tiered style read (M7.6, §16.1–16.2). Whispered. --}}
+<div class="ncsoa-chat-card ncsoa-read-card tier-{{tier}}">
+  <header class="ncsoa-cc-head">
+    <img class="ncsoa-cc-img" src="{{targetImg}}" alt="" />
+    <div class="ncsoa-cc-title">
+      <span class="ncsoa-cc-name">{{targetName}}</span>
+      <span class="ncsoa-cc-sub"><i class="fas fa-eye"></i> scanned by {{scannerName}} · {{roll.formula}} = {{roll.total}}</span>
+    </div>
+    <span class="ncsoa-cc-verdict {{#if isNone}}red{{else if isFull}}green{{else}}yellow{{/if}}">{{tierLabel}}</span>
+  </header>
+
+  {{#if isNone}}
+    <div class="ncsoa-cc-clean">Just another face in the crowd. Nothing reads.</div>
+  {{else}}
+    <div class="ncsoa-cc-grid">
+      {{#each read.rows}}
+        <div class="ncsoa-cc-row"><span class="k">{{this.label}}</span><span class="v">{{this.value}}</span></div>
+      {{/each}}
+    </div>
+    {{#if read.blurb}}<div class="ncsoa-cc-notes">{{read.blurb}}</div>{{/if}}
+  {{/if}}
+</div>

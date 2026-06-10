@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaRustw000004",
+  "_key": "!items!ncsoaRustw000004",
+  "name": "Rustwerk Static Cap",
+  "type": "clothing",
+  "img": "icons/equipment/head/cap-simple-leather.webp",
+  "system": {
+    "description": {
+      "value": "<p>A work cap woven with dead fiber-optic thread that catches light like static. The brim is reinforced with a strip of street sign. Rustwerk won't say which sign. The district knows.</p>"
+    },
+    "type": "hats",
+    "style": "urbanFlash",
+    "price": { "market": 60, "category": "costly" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 330,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "rustwerk",
+        "vibe": { "approachable": 2 },
+        "colors": { "primary": "#2b2d42", "accent": "#8ecae6" },
+        "formality": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+/*
+ * base.css — shared design tokens + primitives for all module UI.
+ *
+ * Everything namespaced under .ncsoa. New apps reuse these CSS variables so the
+ * palette/typography stay consistent; per-app styles live in their own file.
+ * Spec: SC-Module-Architecture-Guide.md §4.2
+ */
+
+.ncsoa {
+  --ncsoa-bg: #0a0e16;
+  --ncsoa-panel: #111726;
+  --ncsoa-edge: rgba(0, 217, 255, 0.22);
+  --ncsoa-cyan: #00d9ff;
+  --ncsoa-dim: rgba(0, 217, 255, 0.6);
+  --ncsoa-text: #d7e6f2;
+  --ncsoa-muted: rgba(215, 230, 242, 0.45);
+  --ncsoa-yellow: #ffc107;
+  --ncsoa-red: #dc3545;
+  --ncsoa-green: #28a745;
+  --ncsoa-magenta: #ff00ff;
+}

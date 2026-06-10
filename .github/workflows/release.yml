@@ -1,0 +1,61 @@
+# release.yml — tag vX.Y.Z → build packs, pin module.json, attach release assets (M8).
+#
+# The committed module.json keeps manifest/download pointing at releases/latest
+# (Foundry's updater path); the RELEASED copy gets its version + a version-pinned
+# download URL injected from the tag, so every release is also installable directly.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install build tooling
+        run: npm ci || npm install
+
+      - name: Run the parity gate
+        run: npm test
+
+      - name: Build compendium packs
+        run: npm run build:packs
+
+      - name: Pin version into module.json
+        run: |
+          export VERSION="${GITHUB_REF_NAME#v}"
+          export DOWNLOAD="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/module.zip"
+          node -e "
+            const fs = require('fs');
+            const m = JSON.parse(fs.readFileSync('module.json', 'utf8'));
+            m.version = process.env.VERSION;
+            m.download = process.env.DOWNLOAD;
+            fs.writeFileSync('module.json', JSON.stringify(m, null, 2) + '\n');
+          "
+
+      - name: Zip the module
+        run: |
+          zip -r module.zip \
+            module.json README.md CHANGELOG.md \
+            lang scripts styles templates packs \
+            -x "packs-src/*"
+
+      - name: Create the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            module.json
+            module.zip
+          generate_release_notes: true

@@ -1,0 +1,9 @@
+{
+  "NCSOA.ModuleTitle": "Night City: Style Over All",
+  "NCSOA.Settings.IconRecolor.Name": "Recolor item icons",
+  "NCSOA.Settings.IconRecolor.Hint": "Allow per-item SVG icon tinting based on garment colors.",
+  "NCSOA.Settings.LiveRefresh.Name": "Live style refresh",
+  "NCSOA.Settings.LiveRefresh.Hint": "Re-read a character's style automatically when their equipped gear changes.",
+  "NCSOA.Settings.ConditionDynamics.Name": "Combat dirties gear",
+  "NCSOA.Settings.ConditionDynamics.Hint": "Taking heavy damage degrades equipped clothing's condition (worn at half HP, bloodied at a quarter). Cleaning is the tailor's job."
+}

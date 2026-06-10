@@ -1,0 +1,234 @@
+<div class="ncsoa-sc-body">
+
+  <header class="ncsoa-sc-header">
+    <img class="ncsoa-sc-portrait" src="{{actorImg}}" alt="{{actorName}}" />
+    <h2>{{actorName}}</h2>
+  </header>
+
+  <nav class="ncsoa-sc-tabs">
+    {{#each tabs}}
+      <button type="button" class="ncsoa-sc-tab {{#if this.active}}active{{/if}}" data-tab="{{this.id}}">
+        <i class="fas {{this.icon}}"></i><span>{{this.label}}</span>
+      </button>
+    {{/each}}
+  </nav>
+
+  <div class="ncsoa-sc-content">
+
+  {{#if error}}
+    <div class="ncsoa-sc-error"><i class="fas fa-triangle-exclamation"></i> Couldn't read this character's style — see the console.</div>
+  {{/if}}
+
+  {{!-- ───────────── PROFILE ───────────── --}}
+  {{#if isProfile}}
+    <section class="ncsoa-wb-cards">
+      <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE</div><div class="ncsoa-wb-card-value">{{profile.style.total}}</div><div class="ncsoa-wb-card-tag">{{{profile.style.tierIcon}}} {{profile.style.tierName}} <span class="grade">{{profile.style.tierGrade}}</span></div></div>
+      <div class="ncsoa-wb-card cohesion"><div class="ncsoa-wb-card-label">COHESION</div><div class="ncsoa-wb-card-value">{{profile.cohesion.percent}}%</div><div class="ncsoa-wb-card-tag">{{profile.cohesion.label}} · {{profile.cohesion.dominant}}</div></div>
+      <div class="ncsoa-wb-card heat {{profile.heat.cls}}" title="{{profile.heat.tooltip}}"><div class="ncsoa-wb-card-label">HEAT</div><div class="ncsoa-wb-card-value">{{profile.heat.value}}</div><div class="ncsoa-wb-card-tag">{{profile.heat.level}}</div></div>
+      <div class="ncsoa-wb-card danger" style="--danger:{{profile.danger.color}}" title="{{profile.danger.tooltip}}"><div class="ncsoa-wb-card-label">DANGER</div><div class="ncsoa-wb-card-value">{{profile.danger.value}}</div><div class="ncsoa-wb-card-tag">{{profile.danger.tier}}</div></div>
+    </section>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">READS AS <span class="ncsoa-wb-section-meta">scene rank {{profile.scene.rank}}/{{profile.scene.total}} · {{profile.scene.status}}</span></div>
+      <div class="ncsoa-sc-archlist">
+        {{#each profile.archetypes}}
+          <div class="ncsoa-sc-archrow {{#if this.primary}}primary{{/if}}">
+            <span class="aname">{{this.label}}</span>
+            <span class="abar"><span class="afill" style="width:{{this.pct}}%"></span></span>
+            <span class="aconf">{{this.confidence}}</span>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">STYLE BREAKDOWN <span class="ncsoa-wb-section-meta">{{profile.drip}} · €${{profile.totalCost}}</span></div>
+      <div class="ncsoa-wb-breakdown">
+        {{#each profile.style.breakdown}}
+          <div class="ncsoa-wb-bd-row"><span class="bd-label">{{this.label}}</span><span class="bd-raw">{{this.raw}}</span><span class="bd-weighted">+{{this.weighted}}</span></div>
+        {{/each}}
+        {{#each profile.style.bonuses}}
+          <div class="ncsoa-wb-bd-row bonus"><span class="bd-label">{{this.label}}</span><span class="bd-raw"></span><span class="bd-weighted">+{{this.value}}</span></div>
+        {{/each}}
+        {{#if profile.style.roleAlign}}
+          <div class="ncsoa-wb-bd-row role"><span class="bd-label">Role fit · {{profile.style.roleAlign.role}}</span><span class="bd-raw">{{profile.style.roleAlign.label}}</span><span class="bd-weighted">×{{profile.style.roleAlign.mult}}</span></div>
+        {{/if}}
+      </div>
+    </section>
+  {{/if}}
+
+  {{!-- ───────────── CHROME ───────────── --}}
+  {{#if isChrome}}
+    <section class="ncsoa-wb-cards">
+      <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">INSTALLED</div><div class="ncsoa-wb-card-value">{{chrome.totalCount}}</div><div class="ncsoa-wb-card-tag">{{chrome.chromePercent}}% visible</div></div>
+      <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">HUMANITY</div><div class="ncsoa-wb-card-value">{{chrome.humanity.percent}}%</div><div class="ncsoa-wb-card-tag">{{chrome.humanity.current}}/{{chrome.humanity.base}}</div></div>
+      <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">EMP</div><div class="ncsoa-wb-card-value">{{chrome.emp.effective}}</div><div class="ncsoa-wb-card-tag">−{{chrome.emp.loss}} from {{chrome.emp.base}}</div></div>
+      <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">COOL MOD</div><div class="ncsoa-wb-card-value">{{chrome.mods.cool}}</div><div class="ncsoa-wb-card-tag">style {{chrome.mods.style}} · threat {{chrome.mods.threat}}</div></div>
+    </section>
+
+    {{#if chrome.social}}
+      <div class="ncsoa-sc-banner" style="--accent:{{chrome.social.color}}">
+        <strong>{{chrome.social.label}}</strong> — {{chrome.social.desc}}
+        {{#if chrome.risk}}<span class="ncsoa-sc-warn"><i class="fas fa-triangle-exclamation"></i> CYBERPSYCHOSIS RISK</span>{{/if}}
+        {{#if chrome.cyberpsychosis}}<span class="ncsoa-sc-warn"><i class="fas fa-skull"></i> CYBERPSYCHO</span>{{/if}}
+      </div>
+    {{/if}}
+
+    {{#each chrome.categories}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">{{this.label}} <span class="ncsoa-wb-section-meta">×{{this.count}}</span></div>
+        <div class="ncsoa-wb-chrome">
+          {{#each this.items}}<div class="ncsoa-wb-chip"><span class="cname">{{this.name}}</span></div>{{/each}}
+        </div>
+      </section>
+    {{/each}}
+
+    {{#if chrome.drugs.length}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">SUBSTANCES</div>
+        <div class="ncsoa-wb-chrome">
+          {{#each chrome.drugs}}<div class="ncsoa-wb-chip"><span class="cname">{{this.name}}</span><span class="ccat">{{this.severity}} · −{{this.hl}} HUM</span></div>{{/each}}
+        </div>
+      </section>
+    {{/if}}
+  {{/if}}
+
+  {{!-- ───────────── GEAR & OPTIMIZATION ───────────── --}}
+  {{#if isGear}}
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">DISTRICT FIT <span class="ncsoa-wb-section-meta">how your current outfit reads, best → worst</span></div>
+      <div class="ncsoa-sc-districts">
+        {{#each gear.fits}}
+          <div class="ncsoa-sc-district {{#if @first}}best{{/if}}">
+            <span class="dname">{{this.name}}</span>
+            <span class="dscore {{#if this.score}}{{else}}zero{{/if}}">{{this.score}}</span>
+            <span class="dadd">{{#each this.add}}<span class="addchip">+{{this.modifier}} {{this.style}}</span>{{/each}}</span>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+
+    {{#if gear.plan}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">SHOPPING PLAN <span class="ncsoa-wb-section-meta">for {{gear.plan.districtName}} · €${{gear.plan.budget}} budget</span></div>
+        <div class="ncsoa-sc-planmeta">Spend €${{gear.plan.totalSpent}} → +{{gear.plan.totalScore}} district points · €${{gear.plan.remaining}} left</div>
+        <div class="ncsoa-sc-plan">
+          {{#each gear.plan.allocations}}
+            <div class="ncsoa-sc-alloc {{this.priority}}">
+              <div class="alloc-head"><span class="alabel">{{this.label}}</span><span class="ameta">×{{this.count}} · {{this.slots}} · €${{this.spent}} · +{{this.scoreGain}}</span></div>
+              <div class="acomment">{{this.comment}}</div>
+            </div>
+          {{/each}}
+        </div>
+      </section>
+    {{/if}}
+  {{/if}}
+
+  {{!-- ───────────── CREW ───────────── --}}
+  {{#if isCrew}}
+    {{#if crew.empty}}
+      <div class="ncsoa-wb-empty">No crew on the scene.</div>
+    {{else}}
+      <section class="ncsoa-wb-cards">
+        <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">SYNERGY</div><div class="ncsoa-wb-card-value">{{crew.synergy.score}}</div><div class="ncsoa-wb-card-tag">{{crew.synergy.label}}</div></div>
+        <div class="ncsoa-wb-card heat {{crew.heat.levelLower}}"><div class="ncsoa-wb-card-label">CREW HEAT</div><div class="ncsoa-wb-card-value">{{crew.heat.value}}</div><div class="ncsoa-wb-card-tag">{{crew.heat.level}}</div></div>
+        <div class="ncsoa-wb-card danger" style="--danger:{{crew.danger.color}}"><div class="ncsoa-wb-card-label">CREW DANGER</div><div class="ncsoa-wb-card-value">{{crew.danger.value}}</div><div class="ncsoa-wb-card-tag">{{crew.danger.tier}}</div></div>
+        <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">REPUTATION</div><div class="ncsoa-wb-card-value">{{{crew.reputation.tier.icon}}}</div><div class="ncsoa-wb-card-tag">{{crew.reputation.tier.name}}</div></div>
+      </section>
+
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">COHERENCE <span class="ncsoa-wb-section-meta">{{crew.coherence.score}}% {{crew.coherence.label}} · {{crew.coherence.dominant}} · blow-risk {{crew.coherence.blow}}% ({{crew.coherence.blowLabel}})</span></div>
+        <div class="ncsoa-wb-section-title">ROLE COVERAGE <span class="ncsoa-wb-section-meta">{{crew.roleCoverage.percent}}%</span></div>
+        <div class="ncsoa-sc-roles">
+          {{#each crew.roleCoverage.assignments}}<span class="rolechip"><b>{{this.role}}</b>: {{this.name}}</span>{{/each}}
+        </div>
+      </section>
+
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">MEMBERS</div>
+        <div class="ncsoa-sc-members">
+          {{#each crew.members}}
+            <div class="ncsoa-sc-member">
+              <img src="{{this.img}}" alt="{{this.name}}" />
+              <div class="mid"><span class="mname">{{this.name}}</span><span class="march">{{this.archetype}}</span></div>
+              <div class="mscore">{{this.score}}<span class="mtier">{{this.tier}}</span></div>
+            </div>
+          {{/each}}
+        </div>
+      </section>
+
+      {{#if crew.clashes.length}}
+        <section class="ncsoa-wb-section">
+          <div class="ncsoa-wb-section-title">INTERNAL CLASHES</div>
+          {{#each crew.clashes}}<div class="ncsoa-sc-clash">{{this.memberA.name}} ({{this.memberA.archetype}}) ⚔ {{this.memberB.name}} ({{this.memberB.archetype}})</div>{{/each}}
+        </section>
+      {{/if}}
+    {{/if}}
+  {{/if}}
+
+  {{!-- ───────────── SOCIAL — The Garden (§21.4) ───────────── --}}
+  {{#if isSocial}}
+    <div class="ncsoa-garden">
+
+      {{!-- profile --}}
+      <header class="ncsoa-gdn-profile">
+        <img class="gdn-avatar" src="{{garden.profile.img}}" alt="" />
+        <div class="gdn-id">
+          <div class="gdn-name">{{garden.profile.name}} <span class="gdn-handle">{{garden.profile.handle}}</span></div>
+          <div class="gdn-bio">{{garden.profile.bio}}</div>
+          <div class="gdn-tags">
+            <span class="gdn-tag">reads as {{garden.profile.readsAs}}</span>
+            {{#if garden.profile.knownFor}}<span class="gdn-tag known">known for {{garden.profile.knownFor}}</span>{{/if}}
+            <span class="gdn-tag">{{garden.profile.tier}}</span>
+          </div>
+        </div>
+        <div class="gdn-followers" title="{{garden.profile.followersBlurb}} Engagement is heat + reputation + style.">
+          <span class="gdn-count">{{garden.profile.followersLabel}}</span>
+          <span class="gdn-count-label">followers</span>
+        </div>
+        <span class="gdn-actions">
+          {{#if isGM}}<button type="button" data-action="garden-post" title="Post to The Garden — the city reacts"><i class="fas fa-pen-nib"></i></button>{{/if}}
+          <button type="button" data-action="garden-refresh" title="Refresh the feed"><i class="fas fa-rotate-right"></i></button>
+        </span>
+      </header>
+
+      {{!-- trending --}}
+      {{#if garden.trending.length}}
+        <div class="ncsoa-gdn-trending">
+          <span class="gdn-tr-label"><i class="fas fa-arrow-trend-up"></i> TRENDING</span>
+          {{#each garden.trending}}<span class="gdn-tr-item" title="{{this.desc}}">#{{this.name}}</span>{{/each}}
+        </div>
+      {{/if}}
+
+      {{!-- feed --}}
+      <div class="ncsoa-gdn-feed">
+        {{#each garden.feed}}
+          {{#if (eq this.kind "ad")}}
+            <div class="ncsoa-gdn-ad">
+              <span class="gdn-ad-tag">SPONSORED</span>
+              <span class="gdn-ad-sponsor">{{this.sponsor}}</span>
+              <span class="gdn-ad-text">{{this.text}}</span>
+            </div>
+          {{else}}
+            <div class="ncsoa-gdn-post {{#if (eq this.kind "event")}}event{{/if}}">
+              <div class="gdn-post-head">
+                <span class="gdn-user">{{this.username}}</span>
+                <span class="gdn-platform" style="color:{{this.platform.color}}"><i class="fas {{this.platform.icon}}"></i> {{this.platform.name}}</span>
+                <span class="gdn-time">{{this.timeAgo}}</span>
+              </div>
+              <div class="gdn-post-body">{{this.text}}</div>
+              <div class="gdn-post-metrics">
+                <span><i class="fas fa-heart"></i> {{this.likes}}</span>
+                <span><i class="fas fa-retweet"></i> {{this.boosts}}</span>
+                <span><i class="fas fa-comment"></i> {{this.replies}}</span>
+              </div>
+            </div>
+          {{/if}}
+        {{/each}}
+      </div>
+
+    </div>
+  {{/if}}
+
+  </div>
+</div>

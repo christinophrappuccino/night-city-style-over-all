@@ -1,0 +1,32 @@
+{
+  "_id": "ncsoaOfuda000003",
+  "_key": "!items!ncsoaOfuda000003",
+  "name": "Ofuda \"Neon Koi\" Layer Tee",
+  "type": "clothing",
+  "img": "icons/equipment/chest/shirt-collared-pink.webp",
+  "system": {
+    "description": {
+      "value": "<p>Heavyweight cotton, asym hem, a koi that swims slowly around the torso on threaded micro-LED. Battery lasts one night out — Ofuda says that's intentional. \"A koi should rest.\"</p>"
+    },
+    "type": "top",
+    "style": "asiaPop",
+    "price": { "market": 800, "category": "premium" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 120,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "ofuda",
+        "vibe": { "cute": 2, "cool": 2 },
+        "colors": { "primary": "#ef476f", "accent": "#06d6a0" },
+        "formality": 1
+      }
+    }
+  }
+}

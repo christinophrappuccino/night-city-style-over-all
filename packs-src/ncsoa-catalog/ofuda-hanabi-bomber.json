@@ -1,0 +1,33 @@
+{
+  "_id": "ncsoaOfuda000001",
+  "_key": "!items!ncsoaOfuda000001",
+  "name": "Ofuda \"Hanabi\" Bomber",
+  "type": "clothing",
+  "img": "icons/equipment/chest/coat-collared-red.webp",
+  "system": {
+    "description": {
+      "value": "<p>Ofuda's signature piece: a lacquer-red bomber screen-printed with a fireworks burst that only resolves when you move. The paper-charm tag on the zipper is hand-inked — every jacket's blessing is different. Kabuki's night market sells fakes; the stitching gives them away.</p>"
+    },
+    "type": "jacket",
+    "style": "asiaPop",
+    "price": { "market": 1500, "category": "expensive" },
+    "equipped": "owned"
+  },
+  "effects": [],
+  "folder": null,
+  "sort": 100,
+  "ownership": { "default": 0 },
+  "flags": {
+    "night-city-style-over-all": {
+      "styleData": {
+        "schema": 2,
+        "_source": "catalog",
+        "brand": "ofuda",
+        "vibe": { "cool": 3, "rebellious": 2 },
+        "colors": { "primary": "#c1121f", "accent": "#ffd166" },
+        "formality": 2,
+        "readPriority": 3
+      }
+    }
+  }
+}

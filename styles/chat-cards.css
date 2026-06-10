@@ -1,0 +1,40 @@
+/*
+ * chat-cards.css — themed chat cards (M7.4): gate verdicts, style reads.
+ * Lives inside Foundry's chat log, so styles are self-contained (no app shell).
+ */
+
+.ncsoa-chat-card {
+  background: #101418;
+  color: #cfd8dc;
+  border: 1px solid rgba(0, 217, 255, 0.35);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: "Roboto", "Segoe UI", sans-serif;
+  font-size: 0.92em;
+}
+.ncsoa-chat-card.red, .ncsoa-gate-card.red { border-color: rgba(220, 53, 69, 0.6); }
+.ncsoa-chat-card.yellow, .ncsoa-gate-card.yellow { border-color: rgba(255, 193, 7, 0.6); }
+
+.ncsoa-cc-head { display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; align-items: center; }
+.ncsoa-cc-img { width: 36px; height: 36px; border-radius: 4px; border: 1px solid rgba(0, 217, 255, 0.25); object-fit: cover; }
+.ncsoa-cc-title { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.ncsoa-cc-name { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
+.ncsoa-cc-sub { color: #78909c; font-size: 0.82em; }
+.ncsoa-cc-verdict { font-weight: 700; font-size: 0.85em; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; border: 1px solid; }
+.ncsoa-cc-verdict.green { color: #28e07b; border-color: rgba(40, 224, 123, 0.5); }
+.ncsoa-cc-verdict.yellow { color: #ffc107; border-color: rgba(255, 193, 7, 0.5); }
+.ncsoa-cc-verdict.red { color: #ff5470; border-color: rgba(255, 84, 112, 0.5); }
+
+.ncsoa-cc-issues { list-style: none; margin: 8px 0 0; padding: 0; }
+.ncsoa-cc-issues li { padding: 2px 0; font-size: 0.88em; }
+.ncsoa-cc-issues li.red { color: #ff8a9d; }
+.ncsoa-cc-issues li.yellow { color: #ffd54f; }
+.ncsoa-cc-issues li i { width: 16px; text-align: center; }
+
+.ncsoa-cc-clean { margin-top: 8px; color: #28e07b; font-size: 0.88em; }
+.ncsoa-cc-notes { margin-top: 6px; color: #78909c; font-size: 0.82em; font-style: italic; border-top: 1px dashed rgba(0, 217, 255, 0.2); padding-top: 5px; }
+
+.ncsoa-cc-grid { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
+.ncsoa-cc-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.88em; }
+.ncsoa-cc-row .k { color: #78909c; }
+.ncsoa-cc-row .v { color: #e0f7fa; text-align: right; }

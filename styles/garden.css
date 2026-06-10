@@ -1,0 +1,74 @@
+/*
+ * garden.css — The Garden (§21.4): profile · trending · feed in social chrome.
+ * Lives inside the StyleChecker's Social tab. Tokens from base.css.
+ */
+
+.ncsoa-garden { display: flex; flex-direction: column; gap: 10px; }
+
+/* Profile header */
+.ncsoa-gdn-profile {
+  display: grid;
+  grid-template-columns: 56px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  background: var(--ncsoa-panel);
+  border: 1px solid rgba(0, 217, 255, 0.25);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.gdn-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--ncsoa-cyan); object-fit: cover; }
+.gdn-id { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.gdn-name { color: #fff; font-weight: 700; font-size: 1.05em; }
+.gdn-handle { color: var(--ncsoa-cyan); font-weight: 400; font-size: 0.82em; }
+.gdn-bio { color: var(--ncsoa-muted); font-size: 0.82em; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gdn-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.gdn-tag {
+  color: var(--ncsoa-dim); border: 1px solid var(--ncsoa-edge); border-radius: 10px;
+  padding: 0 8px; font-size: 0.74em;
+}
+.gdn-tag.known { color: var(--ncsoa-yellow); border-color: rgba(255, 193, 7, 0.4); }
+.gdn-followers { display: flex; flex-direction: column; align-items: flex-end; }
+.gdn-count { color: var(--ncsoa-cyan); font-weight: 700; font-size: 1.3em; }
+.gdn-count-label { color: var(--ncsoa-muted); font-size: 0.72em; letter-spacing: 1px; text-transform: uppercase; }
+.gdn-actions { display: flex; flex-direction: column; gap: 4px; }
+.gdn-actions button {
+  width: 28px; height: 28px;
+  background: transparent; color: var(--ncsoa-cyan);
+  border: 1px solid var(--ncsoa-edge); border-radius: 5px; cursor: pointer;
+}
+.gdn-actions button:hover { box-shadow: 0 0 6px var(--ncsoa-edge); }
+
+/* Trending strip */
+.ncsoa-gdn-trending { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.84em; }
+.gdn-tr-label { color: var(--ncsoa-muted); letter-spacing: 1px; font-size: 0.85em; }
+.gdn-tr-item { color: var(--ncsoa-cyan); }
+
+/* Feed */
+.ncsoa-gdn-feed { display: flex; flex-direction: column; gap: 7px; }
+.ncsoa-gdn-post {
+  background: var(--ncsoa-panel);
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: 7px;
+  padding: 8px 10px;
+}
+.ncsoa-gdn-post.event { border-color: rgba(255, 193, 7, 0.45); }
+.gdn-post-head { display: flex; align-items: baseline; gap: 8px; font-size: 0.8em; }
+.gdn-user { color: #fff; font-weight: 700; }
+.gdn-platform { font-size: 0.95em; }
+.gdn-time { color: var(--ncsoa-muted); margin-left: auto; }
+.gdn-post-body { color: var(--ncsoa-text); font-size: 0.92em; line-height: 1.45; padding: 4px 0; }
+.gdn-post-metrics { display: flex; gap: 16px; color: var(--ncsoa-muted); font-size: 0.78em; }
+.gdn-post-metrics i { margin-right: 3px; }
+
+/* Ads */
+.ncsoa-gdn-ad {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  background: rgba(224, 64, 251, 0.05);
+  border: 1px dashed rgba(224, 64, 251, 0.35);
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 0.84em;
+}
+.gdn-ad-tag { color: #e040fb; font-size: 0.72em; letter-spacing: 1px; }
+.gdn-ad-sponsor { color: #fff; font-weight: 700; }
+.gdn-ad-text { color: var(--ncsoa-muted); font-style: italic; }
