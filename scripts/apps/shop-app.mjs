@@ -295,6 +295,36 @@ export class ShopApp extends Application {
     this.render(false);
   }
 
+  /** §21.1: one click → a native RollTable whose results POINT AT the shop's real
+   *  items (compendium refs portable, world refs world-local). Roll it for stock,
+   *  restocks, or loot — every draw yields a real, draggable item. */
+  async _generateRollTable() {
+    if (!game.user?.isGM) return;
+    const shop = getShops().find((s) => s.id === this.shopId);
+    if (!shop) return;
+    const { entries } = await resolveShopStock(shop, { trends: getTrends() });
+    if (!entries.length) { ui.notifications?.warn("Empty shelves — nothing to roll."); return; }
+
+    const results = entries.map(({ item }, i) => ({
+      type: item.pack ? CONST.TABLE_RESULT_TYPES.COMPENDIUM : CONST.TABLE_RESULT_TYPES.DOCUMENT,
+      documentCollection: item.pack || "Item",
+      documentId: item.id,
+      text: item.name,
+      img: item.img,
+      range: [i + 1, i + 1],
+      weight: 1,
+      drawn: false,
+    }));
+    const table = await RollTable.create({
+      name: `${shop.name} — Stock`,
+      description: `Generated from the shop "${shop.name}" (re-generate after changing its stock).`,
+      formula: `1d${results.length}`,
+      replacement: true,
+      results,
+    });
+    ui.notifications?.info(`RollTable "${table.name}" created — ${results.length} result(s).`);
+  }
+
   // ── buying ───────────────────────────────────────────────────────────────────
 
   async _buy(uuid, price) {
@@ -331,6 +361,7 @@ export class ShopApp extends Application {
     html.find("[data-action='delete-shop']").on("click", () => this._deleteShop());
     html.find("[data-action='remove-ref']").on("click", (e) => this._removeStockRef(e.currentTarget.dataset.uuid));
     html.find("[data-action='buy']").on("click", (e) => this._buy(e.currentTarget.dataset.uuid, e.currentTarget.dataset.price));
+    html.find("[data-action='gen-table']").on("click", () => this._generateRollTable());
     html.find("[data-action='new-trend']").on("click", () => this._newTrend());
     html.find("[data-action='toggle-trend']").on("click", (e) => this._toggleTrend(e.currentTarget.dataset.trend));
     html.find("[data-action='delete-trend']").on("click", (e) => this._deleteTrend(e.currentTarget.dataset.trend));
