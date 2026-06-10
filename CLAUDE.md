@@ -18,7 +18,7 @@ The module reads a character's equipped gear and computes how they "read" in Nig
 
 ## Current status
 
-**M7 DONE — M8 CODE-COMPLETE (awaiting GitHub push + first release tag).** M0–M7 are complete and verified in-world:
+**M7 DONE — M8 CODE-COMPLETE and PUSHED (awaiting the v0.1.0 release tag).** M0–M7 are complete and verified in-world:
 - **M0** scaffold · **M1** data layer + Migration 001 + config seeds + backup.
 - **M2** engine extraction — all engine modules ported pure/explainable; parity gate green (`node tests/parity/run.mjs`) + M2.5 in-world 10/10.
 - **M3** apps — read-only Wardrobe, 5-tab StyleChecker, 5-tab GM Dashboard, GM Config & Tuning. The table can run without the macro.
@@ -114,7 +114,9 @@ Build in order; **each phase ends with a working module.** Do not jump ahead to 
 
 **M8 state (code-complete):** git repo initialized (local, branch main); `packs-src/ncsoa-catalog` (12 original items, 3 house brands: Ofuda · Brass Lotus · Rustwerk) builds via `npm run build:packs` and round-trips; release workflow on tag `v*` (gate → packs → version-pinned module.json → whitelist zip — the macro/guide/CLAUDE.md never ship); shop→RollTable gen landed. **Copyright audit verdict:** all shipped copy original, no sourcebook text; OPEN QUESTION (Christian's call): config seeds carry canon faction/district NAMES — fine for free distribution under the fan policy + README disclaimer, but a paid package should swap to original seeds or gate canon behind GM import.
 
-**To finish M8 (user actions):** create the GitHub repo + `git remote add origin && git push -u origin main`, tag `v0.1.0` + push tags (cuts the release), verify a fresh world installs by manifest and gets the catalog, screenshots for README.
+**Repo state:** `main` is pushed to `https://github.com/christinophrappuccino/night-city-style-over-all` (public). Auth is **gh CLI over HTTPS with the `workflow` scope** — origin must stay the HTTPS URL (SSH keys are NOT set up on this machine; an SSH origin fails host-key verification).
+
+**To finish M8:** `git tag v0.1.0 && git push --tags` (cuts the release via Actions — watch the run), then verify a fresh world installs by the manifest URL and gets the Night City Catalog (the done-when), and grab screenshots for README.
 
 **Then M9 — polish (guide §6 M9):** color math (§9.2) + SVG recolor service (§9.1), scoring presets + full tuning panel, public API + custom hooks (`api.mjs`, fire `styleCheckerScanComplete` etc.), AppV2 readiness (D2), and the standing UI/UX rework of every M3–M7 app (the "make it better later" agreement).
 
