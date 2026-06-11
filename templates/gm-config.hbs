@@ -56,6 +56,53 @@
     </div>
   {{/if}}
 
+  {{!-- ───── FACTIONS — the §14.7 who-hates-whom editor (M9.3e) ───── --}}
+  {{#if isFactions}}
+    <div class="ncsoa-cfg-intro">
+      Rivalries feed the <strong>Faction Tensions</strong> scanner: two characters reading as rival factions light it up.
+      Toggles write <em>both</em> sides of the pair; the engine treats either side naming the other as a live rivalry.
+    </div>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">ACTIVE RIVALRIES <span class="ncsoa-wb-section-meta">{{matrix.pairCount}} pair(s)</span></div>
+      {{#if matrix.pairs.length}}
+        <div class="ncsoa-cfg-pairs">
+          {{#each matrix.pairs}}
+            <span class="ncsoa-cfg-pair">{{this.aLabel}} <i class="fas fa-bolt"></i> {{this.bLabel}}
+              <button type="button" data-action="unpair" data-a="{{this.aKey}}" data-b="{{this.bKey}}" title="End this rivalry (clears both sides)"><i class="fas fa-xmark"></i></button>
+            </span>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="ncsoa-wb-empty">No rivalries configured — Night City is suspiciously calm.</div>
+      {{/if}}
+    </section>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">EDIT RIVALS OF</div>
+      <div class="ncsoa-cfg-matrix-controls">
+        <select data-control="matrix-faction">
+          {{#each matrix.options}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>{{/each}}
+        </select>
+        <input type="text" data-control="matrix-search" placeholder="Filter factions…" value="{{matrix.search}}" />
+      </div>
+      <div class="ncsoa-cfg-rivals">
+        {{#each matrix.rivals}}
+          <label class="ncsoa-cfg-rival {{#if this.rival}}on{{/if}}" data-rival-name="{{this.labelLower}}">
+            <input type="checkbox" data-faction="{{../matrix.selectedKey}}" data-rival="{{this.key}}" {{#if this.rival}}checked{{/if}} />
+            <span>{{this.label}}</span>
+          </label>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+
+  {{!-- ───── HELP (§19.2 glossary, M9.3e) ───── --}}
+  {{#if isHelp}}
+    <div class="ncsoa-wb-section-title">EVERY METRIC, IN PLAIN WORDS <span class="ncsoa-wb-section-meta">thresholds read live from your dials</span></div>
+    {{> ncsoa-glossary glossary}}
+  {{/if}}
+
   {{!-- ───── MIGRATION (M5) ───── --}}
   {{#if isMigration}}
     <div class="ncsoa-cfg-intro">

@@ -1,5 +1,39 @@
 <div class="ncsoa-shop-body">
 
+  {{#if isBrands}}
+  {{!-- ───── BRAND HOUSE PAGES (§13/§22.1, M9.3e) ───── --}}
+  <header class="ncsoa-shop-header">
+    <div class="ncsoa-shop-pickers"><span class="ncsoa-brands-title"><i class="fas fa-tags"></i> THE HOUSES</span></div>
+    <div class="ncsoa-shop-tools">
+      <button type="button" data-action="toggle-brands" title="Back to the shops"><i class="fas fa-bag-shopping"></i> Shops</button>
+    </div>
+  </header>
+  <div class="ncsoa-shop-brands">
+    {{#each brands}}
+      <section class="ncsoa-brand-page">
+        <header class="bp-head">
+          <span class="bp-name">{{this.label}}</span>
+          {{#if this.tier}}<span class="bp-pill tier">{{this.tier}}</span>{{/if}}
+          {{#if this.recognition}}<span class="bp-pill">{{this.recognition}}</span>{{/if}}
+          {{#if this.counterfeit}}<span class="bp-pill fake" title="Knockoffs of this label circulate (§13.4)"><i class="fas fa-mask"></i> faked</span>{{/if}}
+        </header>
+        {{#if this.motto}}<div class="bp-motto">“{{this.motto}}”</div>{{/if}}
+        {{#if this.lore}}<div class="bp-lore">{{this.lore}}</div>{{/if}}
+        <div class="bp-chips">
+          {{#each this.vibes}}<span class="bp-chip vibe">{{this}}</span>{{/each}}
+          {{#each this.styles}}<span class="bp-chip">{{this}}</span>{{/each}}
+          {{#each this.districts}}<span class="bp-chip district"><i class="fas fa-map-pin"></i> {{this}}</span>{{/each}}
+          {{#if this.heat}}<span class="bp-chip heat"><i class="fas fa-fire"></i> +{{this.heat}} heat</span>{{/if}}
+        </div>
+        {{#if this.pieces.length}}
+          <div class="bp-pieces"><i class="fas fa-star"></i> Signature: {{#each this.pieces}}{{this}}{{#unless @last}} · {{/unless}}{{/each}}</div>
+        {{/if}}
+      </section>
+    {{/each}}
+    {{#unless brands.length}}<div class="ncsoa-wb-empty">No brands in the registry — seed them in GM Config → Config Data.</div>{{/unless}}
+  </div>
+  {{else}}
+
   <header class="ncsoa-shop-header">
     <div class="ncsoa-shop-pickers">
       <div class="ncsoa-shop-picker">
@@ -26,6 +60,7 @@
           <button type="button" data-action="delete-shop" title="Delete shop"><i class="fas fa-trash"></i></button>
         {{/if}}
       {{/if}}
+      <button type="button" data-action="toggle-brands" title="The houses — every brand's identity page (§13)"><i class="fas fa-tags"></i></button>
       <button type="button" data-action="refresh" title="Refresh stock"><i class="fas fa-rotate-right"></i></button>
     </div>
   </header>
@@ -90,4 +125,5 @@
     </div>
   {{/if}}
 
+  {{/if}}
 </div>

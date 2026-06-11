@@ -40,6 +40,7 @@ import componentChecks from "./checks/components.mjs";
 import observerLensChecks from "./checks/observer-lens.mjs";
 import overrideChecks from "./checks/overrides.mjs";
 import quickReadChecks from "./checks/quick-read.mjs";
+import factionMatrixChecks from "./checks/faction-matrix.mjs";
 
 // Per-actor modules: invoked once per fixture.
 const CHECK_MODULES = [
@@ -79,6 +80,7 @@ const AGGREGATE_MODULES = [
   observerLensChecks,
   overrideChecks,
   quickReadChecks,
+  factionMatrixChecks,
 ];
 
 const data = loadFixtures();

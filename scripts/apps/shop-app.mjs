@@ -23,12 +23,18 @@ import { getTrends, setTrends, toggleTrend, describeTrend, trendDefaults } from 
 import { addEventPost, eventPostFromTemplate } from "../services/garden.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
 import { NCSOA_DIALOG } from "./components/register.mjs";
+import { getEngineConfig } from "../services/engine-config.mjs";
+
+/** Brand-tier display rank — haute couture leads the catwalk. */
+const TIER_RANK = { hauteCouture: 0, luxury: 1, premium: 2, massMarket: 3, street: 4 };
 
 export class ShopApp extends Application {
   constructor(options = {}) {
     super(options);
     this.shopId = null;
     this.buyerId = null;
+    /** "shops" | "brands" — the §13 house pages ride the same window. */
+    this.view = "shops";
   }
 
   static get defaultOptions() {
@@ -70,8 +76,34 @@ export class ShopApp extends Application {
     return actors;
   }
 
+  /** §13/§22.1 house pages — every registry brand as an identity card. */
+  _brandsData() {
+    const BRANDS = getEngineConfig().brands?.BRANDS ?? {};
+    return Object.entries(BRANDS)
+      .map(([key, b]) => ({
+        key,
+        label: b.label || humanize(key),
+        motto: b.motto || null,
+        lore: b.lore || null,
+        tier: b.tier ? humanize(b.tier) : null,
+        tierRank: TIER_RANK[b.tier] ?? 9,
+        recognition: b.recognition || null,
+        heat: b.heatProfile || 0,
+        vibes: Object.entries(b.vibe ?? {}).map(([t, v]) => `${humanize(t)} ${v > 0 ? "+" : ""}${v}`),
+        styles: Object.entries(b.styleAffinity ?? {}).map(([s, w]) => `${formatStyleName(s)} +${w}`),
+        districts: Object.entries(b.districtAffinity ?? {}).map(([d]) => humanize(d.toLowerCase())),
+        pieces: b.signaturePieces ?? [],
+        counterfeit: !!b.counterfeit?.exists,
+      }))
+      .sort((a, b) => a.tierRank - b.tierRank || a.label.localeCompare(b.label));
+  }
+
   async getData() {
     const isGM = !!game.user?.isGM;
+    if (this.view === "brands") {
+      // §13 house pages: a read-only showcase; editing rides GM Config → Data.
+      return { isGM, isBrands: true, brands: this._brandsData() };
+    }
     const shops = getShops();
     const shop = shops.find((s) => s.id === this.shopId) ?? shops[0] ?? null;
     this.shopId = shop?.id ?? null;
@@ -359,6 +391,10 @@ export class ShopApp extends Application {
 
   activateListeners(html) {
     super.activateListeners(html);
+    html.find("[data-action='toggle-brands']").on("click", () => {
+      this.view = this.view === "brands" ? "shops" : "brands";
+      this.render(false);
+    });
     html.find("[data-control='shop']").on("change", (e) => { this.shopId = e.currentTarget.value; this.render(false); });
     html.find("[data-control='buyer']").on("change", (e) => { this.buyerId = e.currentTarget.value; this.render(false); });
     html.find("[data-action='new-shop']").on("click", () => this._newShop());

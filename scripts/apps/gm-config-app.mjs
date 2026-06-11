@@ -25,6 +25,9 @@ import { CONFIGS } from "../config/index.mjs";
 import { TUNABLES_DEFAULTS, getTunables } from "../config/tunables.mjs";
 import { migrateScItems, resolveScopeItems, summarizeReport } from "../data/migrations/002-sc-effects-to-flags.mjs";
 import { NCSOA_DIALOG } from "./components/register.mjs";
+import { getEngineConfig } from "../services/engine-config.mjs";
+import { rivalryPairs, areRivals, setRivalry } from "../services/faction-matrix.mjs";
+import { glossary } from "../engine/metrics.mjs";
 
 // Curated dials. group → knobs[{path, label, step}]. path is a dot-path into tunables.
 const TUNING_SCHEMA = [
@@ -80,6 +83,8 @@ export class GMConfigApp extends FormApplication {
     this.migrationScope = "all";
     this.migrationReport = null;     // last dry-run/convert report
     this.migrationWasDryRun = true;
+    this.matrixFaction = null;       // §14.7 — the faction whose rivals are being edited
+    this.matrixSearch = "";
   }
 
   static get defaultOptions() {
@@ -112,18 +117,65 @@ export class GMConfigApp extends FormApplication {
       tabs: [
         { id: "tuning", label: "Tuning", icon: "fa-sliders", active: this.currentTab === "tuning" },
         { id: "data", label: "Config Data", icon: "fa-database", active: this.currentTab === "data" },
+        { id: "factions", label: "Factions", icon: "fa-handshake-slash", active: this.currentTab === "factions" },
         { id: "migration", label: "Migration", icon: "fa-wand-magic-sparkles", active: this.currentTab === "migration" },
+        { id: "help", label: "Help", icon: "fa-circle-question", active: this.currentTab === "help" },
       ],
       tab: this.currentTab,
       isTuning: this.currentTab === "tuning",
       isData: this.currentTab === "data",
+      isFactions: this.currentTab === "factions",
       isMigration: this.currentTab === "migration",
+      isHelp: this.currentTab === "help",
       groups,
       hasOverrides: Object.keys(overlay).length > 0,
       overrideCount: this._countLeaves(overlay),
       configs,
       migration: this._migrationContext(),
+      matrix: this.currentTab === "factions" ? this._matrixData() : null,
+      glossary: this.currentTab === "help" ? { entries: glossary(getTunables(), getEngineConfig()) } : null,
     };
+  }
+
+  // ── Faction matrix (§14.7, M9.3e) ───────────────────────────────────────────
+
+  /** The LIVE factions map (setting-backed, seed fallback). */
+  _factions() {
+    return getEngineConfig().factions?.FACTIONS ?? {};
+  }
+
+  _matrixData() {
+    const factions = this._factions();
+    const keys = Object.keys(factions).sort((a, b) =>
+      (factions[a].label || a).localeCompare(factions[b].label || b)
+    );
+    const selected = this.matrixFaction && factions[this.matrixFaction] ? this.matrixFaction : keys[0];
+    const pairs = rivalryPairs(factions);
+    return {
+      pairs,
+      pairCount: pairs.length,
+      options: keys.map((k) => ({ key: k, label: factions[k].label || k, selected: k === selected })),
+      selectedKey: selected,
+      selectedLabel: factions[selected]?.label || selected,
+      search: this.matrixSearch,
+      rivals: keys
+        .filter((k) => k !== selected)
+        .map((k) => ({
+          key: k,
+          label: factions[k].label || k,
+          labelLower: (factions[k].label || k).toLowerCase(),
+          rival: areRivals(factions, selected, k),
+        })),
+    };
+  }
+
+  /** Toggle one rivalry pair symmetrically and persist the factions blob. */
+  async _toggleRivalry(aKey, bKey, on) {
+    const entry = CONFIGS.find((c) => c.key === SETTINGS.CONFIG_FACTIONS);
+    const blob = foundry.utils.deepClone(getEngineConfig().factions);
+    blob.FACTIONS = setRivalry(blob.FACTIONS, aKey, bKey, on);
+    await DataStore.set(SETTINGS.CONFIG_FACTIONS, blob, entry?.schema);
+    this.render(false);
   }
 
   // ── Migration tab (M5) ──────────────────────────────────────────────────────
@@ -249,5 +301,27 @@ export class GMConfigApp extends FormApplication {
     html.find("[data-control='migration-scope']").on("change", (e) => { this.migrationScope = e.currentTarget.value; });
     html.find("[data-action='migrate-dry']").on("click", () => this._runMigration(true));
     html.find("[data-action='migrate-run']").on("click", () => this._runMigration(false));
+
+    // §14.7 faction matrix.
+    html.find("[data-control='matrix-faction']").on("change", (e) => {
+      this.matrixFaction = e.currentTarget.value;
+      this.render(false);
+    });
+    html.find("[data-rival]").on("change", (e) => {
+      this._toggleRivalry(e.currentTarget.dataset.faction, e.currentTarget.dataset.rival, e.currentTarget.checked);
+    });
+    html.find("[data-action='unpair']").on("click", (e) => {
+      this._toggleRivalry(e.currentTarget.dataset.a, e.currentTarget.dataset.b, false);
+    });
+    // Rival list search: DOM filter (no re-render → the input keeps focus).
+    const applyMatrixSearch = (term) => {
+      this.matrixSearch = term;
+      const q = term.trim().toLowerCase();
+      html.find("[data-rival-name]").each((_, el) => {
+        el.style.display = !q || el.dataset.rivalName.includes(q) ? "" : "none";
+      });
+    };
+    html.find("[data-control='matrix-search']").on("input", (e) => applyMatrixSearch(e.currentTarget.value));
+    if (this.matrixSearch) applyMatrixSearch(this.matrixSearch);
   }
 }

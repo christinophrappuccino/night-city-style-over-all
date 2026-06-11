@@ -42,7 +42,7 @@ import { bestUniformMatch } from "../engine/uniforms.mjs";
 import { getOutfits, setOutfits } from "../data/flags.mjs";
 import { openTailorDialog } from "./tailor-dialog.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
-import { NCSOA_DIALOG } from "./components/register.mjs";
+import { NCSOA_DIALOG, openGlossaryDialog } from "./components/register.mjs";
 
 const SLOT_LABELS = {
   top: "Top", bottoms: "Bottoms", jacket: "Jacket", footwear: "Footwear", hats: "Hat",
@@ -635,6 +635,8 @@ export class WardrobeApp extends Application {
     html.find("[data-action='refresh']").on("click", () => this.render(false));
     // §16.4 — post the fit pic (the COMMITTED outfit; Apply first to share a staged look).
     html.find("[data-action='share-lookbook']").on("click", () => postLookbook(this.actor));
+    // §19.2 — the glossary, in a dialog (the Wardrobe has no tab bar).
+    html.find("[data-action='help']").on("click", () => openGlossaryDialog());
     html.find("[data-action='focus-slot']").on("click", (e) => this._focus(e.currentTarget.dataset.slot));
     html.find("[data-action='clear-slot']").on("click", (e) => {
       e.stopPropagation(); // don't also toggle slot focus

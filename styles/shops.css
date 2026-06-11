@@ -87,3 +87,21 @@
 .ncsoa-shop-item .si-actions button:not(:disabled):hover { box-shadow: 0 0 6px var(--ncsoa-edge); }
 .ncsoa-shop-item .si-actions .si-remove { background: transparent; color: var(--ncsoa-muted); width: 28px; padding: 4px 0; }
 .ncsoa-shop-item .si-actions .si-remove:hover { color: var(--ncsoa-yellow); border-color: var(--ncsoa-yellow); }
+
+/* M9.3e — brand house pages (§13/§22.1) */
+.ncsoa-brands-title { font-weight: 800; letter-spacing: 2px; color: var(--ncsoa-cyan); }
+.ncsoa-shop-brands { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.ncsoa-brand-page { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.10); border-radius: 6px; padding: 9px 12px; display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-brand-page .bp-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ncsoa-brand-page .bp-name { font-size: 1.25em; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+.ncsoa-brand-page .bp-pill { font-size: 0.68em; letter-spacing: 1px; text-transform: uppercase; padding: 1px 8px; border-radius: 8px; border: 1px solid var(--ncsoa-edge); color: var(--ncsoa-dim); }
+.ncsoa-brand-page .bp-pill.tier { border-color: var(--ncsoa-yellow); color: var(--ncsoa-yellow); }
+.ncsoa-brand-page .bp-pill.fake { border-color: var(--ncsoa-red); color: var(--ncsoa-red); }
+.ncsoa-brand-page .bp-motto { font-style: italic; color: var(--ncsoa-cyan); font-size: 0.92em; }
+.ncsoa-brand-page .bp-lore { font-size: 0.85em; color: var(--ncsoa-text); line-height: 1.45; }
+.ncsoa-brand-page .bp-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ncsoa-brand-page .bp-chip { font-size: 0.72em; padding: 1px 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.04); color: var(--ncsoa-muted); }
+.ncsoa-brand-page .bp-chip.vibe { color: var(--ncsoa-magenta); }
+.ncsoa-brand-page .bp-chip.heat { color: #fd7e14; }
+.ncsoa-brand-page .bp-chip.district { color: var(--ncsoa-green); }
+.ncsoa-brand-page .bp-pieces { font-size: 0.78em; color: var(--ncsoa-yellow); }

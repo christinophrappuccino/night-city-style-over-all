@@ -12,7 +12,9 @@
 
 import { MODULE_ID } from "../../constants.mjs";
 import { breakdownView } from "./breakdown.mjs";
-import { metricMeta } from "../../engine/metrics.mjs";
+import { metricMeta, glossary } from "../../engine/metrics.mjs";
+import { getTunables } from "../../config/tunables.mjs";
+import { getEngineConfig } from "../../services/engine-config.mjs";
 
 const P = (name) => `modules/${MODULE_ID}/templates/partials/${name}.hbs`;
 
@@ -44,6 +46,26 @@ export const PARTIALS = {
  */
 export function registerChartPartials() {
   return loadTemplates(PARTIALS);
+}
+
+/**
+ * The §19.2 glossary in a Dialog — the Help surface for apps WITHOUT a tab bar
+ * (Wardrobe). Tabbed apps render the ncsoa-glossary partial in a Help tab
+ * instead; both read the same engine metric metadata.
+ */
+export async function openGlossaryDialog() {
+  const content = await renderTemplate(PARTIALS["ncsoa-glossary"], {
+    entries: glossary(getTunables(), getEngineConfig()),
+  });
+  new Dialog(
+    {
+      title: "Every metric, in plain words",
+      content: `<div class="ncsoa ncsoa-info-dialog">${content}</div>`,
+      buttons: { close: { icon: '<i class="fas fa-check"></i>', label: "Got it" } },
+      default: "close",
+    },
+    { ...NCSOA_DIALOG, width: 480, height: 600, resizable: true }
+  ).render(true);
 }
 
 /**
