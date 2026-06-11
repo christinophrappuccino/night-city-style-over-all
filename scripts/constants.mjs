@@ -15,6 +15,8 @@ export const FLAGS = {
   OUTFITS:     "outfits",     // actor: saved outfit presets (§7.4)
   ACTOR_PREFS: "prefs",       // actor: per-character SC settings
   SCENE_STYLE: "sceneStyle",  // scene: { district, gate } tags (§14.8, M7)
+  OVERRIDES:   "overrides",   // actor: GM read pins (§14.3, M9.3c) —
+                              // { archetype, heat: {mode,value}, disguise, brandTier }
 };
 
 // Settings keys.

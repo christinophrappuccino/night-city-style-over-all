@@ -73,6 +73,13 @@ export function woundInjuryHeat({ hp, criticalInjuryNames = [], terrifyingNames 
  * @param {object} [p.tunables]
  * @returns Phase 82 {value, level, repHeat, coolReduction, tooltip, components} + {label, blurb, tunablesApplied}
  */
+/** Heat value → band word, from the live dials (shared by heatIndex + the
+ *  §14.3 override re-band, so a pinned value can never wear the wrong label). */
+export function heatLevel(heat, tunables = getTunables()) {
+  const L = tunables.heat.levels;
+  return heat >= L.blazing ? "BLAZING" : heat >= L.hot ? "HOT" : heat >= L.warm ? "WARM" : "COLD";
+}
+
 export function heatIndex({
   styleScore, sceneAvg, weaponsEquipped, chromePercent, armorEquipped,
   socialStats = null, roleData = null, roleProfiles = null, scMods = null,
@@ -167,10 +174,7 @@ export function heatIndex({
 
   heat = Math.min(100, Math.max(0, Math.round(heat)));
 
-  let level = "COLD";
-  if (heat >= H.levels.blazing) level = "BLAZING";
-  else if (heat >= H.levels.hot) level = "HOT";
-  else if (heat >= H.levels.warm) level = "WARM";
+  const level = heatLevel(heat, tunables);
 
   const tooltip = [
     "HEAT INDEX — How much attention you draw",

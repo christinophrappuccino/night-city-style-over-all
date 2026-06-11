@@ -78,6 +78,18 @@ export const setOutfits = (actor, outfits) => setFlag(actor, FLAGS.OUTFITS, outf
 export const getActorPrefs = (actor) => getFlag(actor, FLAGS.ACTOR_PREFS) ?? {};
 export const setActorPrefs = (actor, prefs) => setFlag(actor, FLAGS.ACTOR_PREFS, prefs);
 
+/**
+ * GM read overrides (§14.3, M9.3c): pin a read on THIS actor regardless of gear.
+ * Shape: { archetype?: key, heat?: {mode:"offset"|"force", value:number},
+ *          disguise?: "holds"|"blown", brandTier?: tierKey }. Absent = computed.
+ * Setting an empty object clears the flag entirely.
+ */
+export const getOverrides = (actor) => getFlag(actor, FLAGS.OVERRIDES) ?? null;
+export const setOverrides = (actor, overrides) =>
+  overrides && Object.keys(overrides).length
+    ? setFlag(actor, FLAGS.OVERRIDES, overrides)
+    : unsetFlag(actor, FLAGS.OVERRIDES);
+
 // ---- scene style tags (§14.8, M7) -------------------------------------------
 
 /** A scene's style tags: { district?: key, gate?: key }. */

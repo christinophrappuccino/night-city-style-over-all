@@ -152,7 +152,16 @@ export function applyObserverLens({ reads, observer, config, tunables = getTunab
       gearDisguise: inj.applied,
       uniform: uni.applied ? { grade: uni.grade, bonus: uni.uniformBonus, name: targetUniform.name } : null,
     };
+    // §14.3 GM pin: the outcome is the GM's call regardless of the math —
+    // flagged `forced` so the UI badges the manual hand.
+    if (reads.overrides?.disguise) {
+      disguise = { ...disguise, detected: reads.overrides.disguise === "blown", margin: null, forced: true };
+    }
   }
+
+  // §14.3 brand-tier pin: "reads <tier> regardless of labels" — surfaces print
+  // it alongside (not instead of) whatever the literacy math clocked.
+  const forcedTier = reads.overrides?.brandTier ?? null;
 
   // The reveal map (§16.2 strictly-more): which blocks this tier surfaces.
   const reveal = {
@@ -169,5 +178,5 @@ export function applyObserverLens({ reads, observer, config, tunables = getTunab
     drip: tier === "full",
   };
 
-  return { tier, passiveTotal, thresholds, brands, disguise, reveal };
+  return { tier, passiveTotal, thresholds, brands, disguise, reveal, forcedTier };
 }

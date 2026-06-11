@@ -24,6 +24,8 @@ import { dangerScore } from "../engine/danger.mjs";
 import { detectAllArchetypes, detectChromeProfile } from "../engine/archetypes.mjs";
 import { deriveSceneToken, aggregateScene } from "../engine/scene.mjs";
 import { collectScMods } from "../engine/cascade.mjs";
+import { applyReadOverrides } from "../engine/overrides.mjs";
+import { getOverrides } from "../data/flags.mjs";
 import { vibeProfile } from "../engine/vibes.mjs";
 import { resolveVisibility } from "../engine/visibility.mjs";
 import { dressRegister } from "../engine/formality.mjs";
@@ -157,6 +159,13 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
   // set the observed register. Consumed by scene gates + the disguise hook.
   const formality = dressRegister({ items: itemList, factors }, tunables.formality ?? {});
 
+  // §14.3 GM overrides (M9.3c) — pinned reads ride the spine ONCE, here, so
+  // every surface (apps, scans, gates, the Garden) agrees on the manual hand.
+  // Disguise/brandTier pins have no number to rewrite; surfaces read
+  // `overrides` directly (observer lens, GM disguise detector).
+  const overrides = getOverrides(actor);
+  const pinned = applyReadOverrides({ archetypes, heat }, overrides, { archetypeDefs, tunables });
+
   return {
     actor,
     collected,
@@ -165,9 +174,10 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     cohesion: coh,
     dripRating: dripRating(collected.totalCost),
     scene,
-    heat,
+    heat: pinned.heat,
     danger,
-    archetypes,
+    archetypes: pinned.archetypes,
+    overrides,
     chromeProfile,
     scMods,
     vibes,
@@ -218,6 +228,7 @@ export function computeSceneTokens(actors, config = getEngineConfig()) {
       scMods: r.scMods,
       vibes: r.vibes,
       formality: r.formality,
+      overrides: r.overrides, // §14.3 — surfaces consume disguise/brandTier pins
     };
   });
 }

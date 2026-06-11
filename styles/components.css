@@ -56,6 +56,9 @@
 .ncsoa-wb-chip .cname { color: var(--ncsoa-text); }
 .ncsoa-wb-chip .ccat { color: var(--ncsoa-muted); font-size: 0.82em; }
 
+/* §14.3 — the MANUAL pin badge: a GM-overridden value, anywhere it surfaces */
+.ncsoa .manual { color: var(--ncsoa-yellow); }
+
 /* Breakdown rows */
 .ncsoa-wb-breakdown { display: flex; flex-direction: column; gap: 2px; }
 .ncsoa-wb-bd-row {

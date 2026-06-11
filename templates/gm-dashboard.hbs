@@ -32,9 +32,9 @@
         <div class="ncsoa-gm-trow">
           <span class="tc-name"><img src="{{this.img}}" alt="" />{{this.name}}{{#unless this.isPC}} <span class="npc">NPC</span>{{/unless}}</span>
           <span class="tc-style">{{this.style}} <span class="grade">{{this.grade}}</span></span>
-          <span class="tc-heat {{this.heat.cls}}">{{this.heat.value}}</span>
+          <span class="tc-heat {{this.heat.cls}}">{{this.heat.value}}{{#if this.heat.manual}} <i class="fas fa-thumbtack manual" title="GM override — pinned, not computed (§14.3)"></i>{{/if}}</span>
           <span class="tc-danger" style="--danger:{{this.danger.color}}">{{this.danger.value}}</span>
-          <span class="tc-arch">{{this.arch}}</span>
+          <span class="tc-arch">{{this.arch}}{{#if this.archManual}} <i class="fas fa-thumbtack manual" title="GM override — pinned, not computed (§14.3)"></i>{{/if}}</span>
         </div>
       {{/each}}
     </div>
@@ -86,10 +86,61 @@
           <div class="dreads">reads as {{this.readsAs}}</div>
           <div class="dconf">{{#if this.gearDisguise}}<i class="fas fa-mask" title="Gear disguise active (sc.faction / sc.disguise.dc modifiers applied)"></i>{{/if}}{{#with this.uniform}} <i class="fas fa-user-tie" title="Wearing {{this.name}} — {{this.grade}} uniform match (+{{this.bonus}})"></i>{{/with}}</div>
           <div class="ddc">DC {{this.dc}}</div>
-          <div class="dverdict">{{#if this.detected}}<i class="fas fa-eye"></i> BLOWN (+{{this.margin}}){{else}}<i class="fas fa-user-secret"></i> HOLDS ({{this.margin}}){{/if}}{{#if this.familiar}} <span class="fam">familiar</span>{{/if}}</div>
+          <div class="dverdict">{{#if this.detected}}<i class="fas fa-eye"></i> BLOWN{{#unless this.forced}} (+{{this.margin}}){{/unless}}{{else}}<i class="fas fa-user-secret"></i> HOLDS{{#unless this.forced}} ({{this.margin}}){{/unless}}{{/if}}{{#if this.forced}} <i class="fas fa-thumbtack manual" title="GM override — the verdict is pinned (§14.3)"></i>{{/if}}{{#if this.familiar}} <span class="fam">familiar</span>{{/if}}</div>
         </div>
       {{/each}}
     </div>
+  {{/if}}
+
+  {{!-- ───── GM OVERRIDES (§14.3, M9.3c) ───── --}}
+  {{#if isOverrides}}
+    <div class="ncsoa-gm-gatehead">Pin a read on an actor <strong>regardless of gear</strong> — narrative control. Pinned values wear a <i class="fas fa-thumbtack manual"></i> everywhere they surface; clear a control to hand the read back to the engine.</div>
+    <div class="ncsoa-gm-ovlist">
+      {{#each overrides.rows}}
+        <div class="ncsoa-gm-ovrow {{#if this.any}}pinned{{/if}}" data-override-actor="{{this.actorId}}">
+          <div class="ov-id">
+            <img src="{{this.img}}" alt="" />
+            <div class="ov-name">{{this.name}}{{#unless this.isPC}} <span class="npc">NPC</span>{{/unless}}
+              <div class="ov-computed">computes: {{this.computed.arch}} · heat {{this.computed.heat}}</div>
+            </div>
+            {{#if this.any}}<button type="button" class="ov-clear" data-action="clear-overrides" data-actor="{{this.actorId}}" title="Clear every pin — back to computed reads"><i class="fas fa-rotate-left"></i></button>{{/if}}
+          </div>
+          <label>Reads as
+            <select data-override="archetype">
+              <option value="">— computed —</option>
+              {{#each this.archOptions}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </label>
+          <label>Heat
+            <select data-override="heat-mode">
+              <option value="">— computed —</option>
+              <option value="offset" {{#if (eq this.heatMode "offset")}}selected{{/if}}>offset by</option>
+              <option value="force" {{#if (eq this.heatMode "force")}}selected{{/if}}>force to</option>
+            </select>
+            <input type="number" data-override="heat-value" value="{{this.heatValue}}" min="-100" max="100" />
+          </label>
+          <label>Disguise
+            <select data-override="disguise">
+              <option value="">— computed —</option>
+              <option value="holds" {{#if (eq this.disguise "holds")}}selected{{/if}}>always HOLDS</option>
+              <option value="blown" {{#if (eq this.disguise "blown")}}selected{{/if}}>always BLOWN</option>
+            </select>
+          </label>
+          <label>Brand tier
+            <select data-override="brand-tier">
+              <option value="">— computed —</option>
+              {{#each this.tierOptions}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}</option>{{/each}}
+            </select>
+          </label>
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{!-- ───── HELP (§19.2 glossary, M9.3c) ───── --}}
+  {{#if isHelp}}
+    <div class="ncsoa-wb-section-title">EVERY METRIC, IN PLAIN WORDS <span class="ncsoa-wb-section-meta">thresholds read live from your dials</span></div>
+    {{> ncsoa-glossary glossary}}
   {{/if}}
 
   {{!-- ───── FACTION TENSIONS ───── --}}

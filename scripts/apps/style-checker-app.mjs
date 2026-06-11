@@ -179,7 +179,7 @@ export class StyleCheckerApp extends Application {
     const maxConf = Math.max(1, ...archetypes.slice(0, 5).map((a) => a.confidence ?? a.score ?? 0));
     const arch = archetypes.slice(0, 5).map((a, i) => {
       const conf = Math.round(a.confidence ?? a.score ?? 0);
-      return { label: a.label || a.key, confidence: conf, pct: Math.round((conf / maxConf) * 100), primary: i === 0 };
+      return { label: a.label || a.key, confidence: conf, pct: Math.round((conf / maxConf) * 100), primary: i === 0, pinned: !!a.pinned };
     });
 
     return {

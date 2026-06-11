@@ -26,6 +26,9 @@ import { recordPublicRead } from "../services/known-for.mjs";
 import { addEventPost, eventPostFromTemplate } from "../services/garden.mjs";
 import { heatmapView, ringView } from "./components/charts.mjs";
 import { getTunables } from "../config/tunables.mjs";
+import { getOverrides, setOverrides } from "../data/flags.mjs";
+import { glossary } from "../engine/metrics.mjs";
+import { humanize } from "../config/style-tab-schema.mjs";
 
 const TABS = [
   { id: "readout", label: "Party", icon: "fa-th-list" },
@@ -33,6 +36,8 @@ const TABS = [
   { id: "gate", label: "Scene Gate", icon: "fa-door-open" },
   { id: "disguise", label: "Disguise", icon: "fa-mask" },
   { id: "tension", label: "Tensions", icon: "fa-bolt" },
+  { id: "overrides", label: "Overrides", icon: "fa-thumbtack" },
+  { id: "help", label: "Help", icon: "fa-circle-question" },
 ];
 
 const HEAT_CLASS = { COLD: "cold", WARM: "warm", HOT: "hot", BLAZING: "blazing" };
@@ -93,9 +98,14 @@ export class GMDashboardApp extends Application {
       const npcs = tokens.filter((t) => !t.isPC);
       base.counts = { pcs: pcs.length, npcs: npcs.length, total: tokens.length };
 
+      // Help works with an empty scene; everything else needs tokens.
+      if (this.currentTab === "help") {
+        return { ...base, isHelp: true, glossary: { entries: glossary(getTunables(), config) } };
+      }
       if (tokens.length === 0) return { ...base, empty: true };
 
       switch (this.currentTab) {
+        case "overrides": return { ...base, isOverrides: true, overrides: this._overridesData(tokens, config) };
         // §25.1 heatmap (M9.2): characters × metrics, color-coded with the
         // number always inside the cell — the crowded-scene view at one look.
         case "scene": return { ...base, isScene: true, heatmap: heatmapView(tokens), rows: tokens.map((t) => this._row(t)) };
@@ -116,11 +126,53 @@ export class GMDashboardApp extends Application {
     return {
       name: t.name, img: t.img, isPC: t.isPC,
       style: t.styleScore, tier: t.tier?.name, grade: t.tier?.grade,
-      heat: { value: t.heat.value, cls: HEAT_CLASS[t.heat.level] || "cold" },
+      // §14.3: a pinned value is clearly flagged wherever it surfaces.
+      heat: { value: t.heat.value, cls: HEAT_CLASS[t.heat.level] || "cold", manual: !!t.heat.overridden },
       danger: { value: t.danger.value, color: t.danger.color },
       arch: t.topArch?.label || "—",
+      archManual: !!t.topArch?.pinned,
       drip: t.drip?.rating,
     };
+  }
+
+  /** §14.3 — the per-actor read-pin editor (writes the actor's OVERRIDES flag). */
+  _overridesData(tokens, config) {
+    const archetypeDefs = config.factions.FACTION_ARCHETYPES ?? {};
+    const archOptions = Object.entries(archetypeDefs).map(([key, a]) => ({ key, label: a.label || humanize(key) }));
+    const tierOptions = Object.keys(getTunables().brand?.tierCost ?? {}).map((key) => ({ key, label: humanize(key) }));
+    const rows = tokens.map((t) => {
+      const actor = game.actors?.get(t.actorId);
+      const o = actor ? getOverrides(actor) ?? {} : {};
+      return {
+        actorId: t.actorId, name: t.name, img: t.img, isPC: t.isPC,
+        computed: { arch: t.topArch?.label || "—", heat: t.heat.value },
+        any: Object.keys(o).length > 0,
+        archetype: o.archetype ?? "",
+        archOptions: archOptions.map((a) => ({ ...a, selected: a.key === o.archetype })),
+        heatMode: o.heat?.mode ?? "",
+        heatValue: o.heat?.value ?? 0,
+        disguise: o.disguise ?? "",
+        brandTier: o.brandTier ?? "",
+        tierOptions: tierOptions.map((tr) => ({ ...tr, selected: tr.key === o.brandTier })),
+      };
+    });
+    return { rows };
+  }
+
+  /** Write one actor's override record from its editor row's controls. */
+  async _writeOverrides(actorId, rowEl) {
+    const actor = game.actors?.get(actorId);
+    if (!actor) return;
+    const $row = $(rowEl);
+    const val = (name) => $row.find(`[data-override='${name}']`).val();
+    const o = {};
+    if (val("archetype")) o.archetype = val("archetype");
+    const heatMode = val("heat-mode");
+    if (heatMode === "offset" || heatMode === "force") o.heat = { mode: heatMode, value: Number(val("heat-value")) || 0 };
+    if (val("disguise")) o.disguise = val("disguise");
+    if (val("brand-tier")) o.brandTier = val("brand-tier");
+    await setOverrides(actor, o);
+    this.render(false);
   }
 
   _gateData(tokens, config) {
@@ -173,6 +225,8 @@ export class GMDashboardApp extends Application {
       const uni = applyUniformToDisguise({ confidence: inj.confidence, label: inj.label, uniformMatch });
       const familiar = target?.archetype === t.topArch.key;
       const det = disguiseDetection({ dcTarget: inj.dcTarget, viewerPerception: perception, isFamiliarFaction: familiar });
+      // §14.3 GM pin: the verdict is the GM's call regardless of the math.
+      const forced = t.overrides?.disguise ?? null;
       // §25.1 ring (M9.2): confidence vs the PASSABLE mark from the live dials.
       const ring = ringView({
         value: Math.round(uni.confidence), threshold: getTunables().disguise.labels.passable,
@@ -180,8 +234,9 @@ export class GMDashboardApp extends Application {
       });
       return {
         name: t.name, img: t.img, readsAs: t.topArch?.label, ring,
-        confidence: uni.confidence, label: uni.label,
-        dc: inj.dcTarget, detected: det.detected, margin: det.margin, familiar,
+        confidence: uni.confidence, label: uni.label, forced: !!forced,
+        dc: inj.dcTarget, detected: forced ? forced === "blown" : det.detected,
+        margin: forced ? null : det.margin, familiar,
         gearDisguise: inj.applied,
         uniform: uni.applied ? { grade: uni.grade, bonus: uni.uniformBonus, name: targetUniform.name } : null,
       };
@@ -273,5 +328,14 @@ export class GMDashboardApp extends Application {
     html.find("[data-control='faction']").on("change", (e) => { this.disguiseFaction = e.currentTarget.value; this.render(false); });
     html.find("[data-control='district']").on("change", (e) => { this.districtKey = e.currentTarget.value || null; this.render(false); });
     html.find("[data-control='perception']").on("change", (e) => { this.perception = e.currentTarget.value; this.render(false); });
+    // §14.3 — every control in an override row writes that actor's full record.
+    html.find("[data-override]").on("change", (e) => {
+      const row = e.currentTarget.closest("[data-override-actor]");
+      if (row) this._writeOverrides(row.dataset.overrideActor, row);
+    });
+    html.find("[data-action='clear-overrides']").on("click", async (e) => {
+      const actor = game.actors?.get(e.currentTarget.dataset.actor);
+      if (actor) { await setOverrides(actor, {}); this.render(false); }
+    });
   }
 }
