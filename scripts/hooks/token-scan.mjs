@@ -19,6 +19,9 @@ import { effectiveStats } from "../engine/collect.mjs";
 import { scanThresholds, scanTier } from "../engine/perception.mjs";
 import { bestUniformMatch } from "../engine/uniforms.mjs";
 import { formatStyleName } from "../engine/recommendations.mjs";
+import { collectWornBrands, recognizeBrands } from "../engine/recognition.mjs";
+import { getTunables } from "../config/tunables.mjs";
+import * as cpr from "../data/cpr-adapter.mjs";
 import { computeActorReads } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { getUniforms } from "../services/uniforms.mjs";
@@ -66,7 +69,7 @@ async function scanTargetFrom(scannerToken) {
     const total = roll.total + sStats.int + sStats.perception;
     const tier = scanTier(total, thresholds);
 
-    const read = buildTieredRead(tier, reads, config, target);
+    const read = buildTieredRead(tier, reads, config, target, { scannerInt: sStats.int, scanTotal: total });
     const whisper = [...new Set([game.user.id, ...game.users.contents.filter((u) => u.isGM).map((u) => u.id)])];
     await postStyleRead({
       scanner, target,
@@ -89,7 +92,7 @@ async function scanTargetFrom(scannerToken) {
 }
 
 /** Tier-gated card content (§16.2): each tier reveals strictly more. */
-function buildTieredRead(tier, reads, config, target) {
+function buildTieredRead(tier, reads, config, target, { scannerInt = 0, scanTotal = 0 } = {}) {
   if (tier === "failed") return { rows: [], blurb: null };
 
   const rows = [];
@@ -107,6 +110,32 @@ function buildTieredRead(tier, reads, config, target) {
     const styles = Object.entries(reads.collected.styles).sort((a, b) => b[1] - a[1]);
     rows.push({ label: "Primary style", value: styles[0] ? formatStyleName(styles[0][0]) : "—" });
     rows.push({ label: "Heat", value: reads.heat.level });
+
+    // Brand recognition (§13.3/§23.2, M9.1) — only labels this scanner clocks.
+    // Hidden chrome's brand surfaces only at the deep tier; a counterfeit reads
+    // genuine unless the scan beats its reveal DC (§13.4).
+    const cw = reads.cyberwareData;
+    const hiddenItemIds = [...(cw.hidden_chrome ?? []), ...(cw.bioware ?? [])].map((e) => e.id).filter(Boolean);
+    const brands = recognizeBrands(
+      {
+        wornBrands: collectWornBrands({
+          items: cpr.getItems(reads.actor),
+          visibility: reads.visibility?.value,
+          hiddenItemIds,
+        }),
+        observerLiteracy: scannerInt, scanTier: tier, scanTotal,
+      },
+      getEngineConfig().brands ?? {},
+      getTunables().recognition ?? {}
+    );
+    if (brands.recognized.length) {
+      const tags = brands.recognized.map((r) =>
+        r.counterfeit?.revealed ? `${r.label} (FAKE)` : r.label
+      );
+      rows.push({ label: "Wearing", value: tags.join(", ") });
+    } else if (brands.value.some((r) => r.prestige === "expensive")) {
+      rows.push({ label: "Wearing", value: "Expensive-looking pieces (label unplaced)" });
+    }
   }
 
   if (tier === "full") {

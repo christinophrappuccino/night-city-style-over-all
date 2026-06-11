@@ -422,6 +422,25 @@ export function applyUniformToDisguise({ confidence: conf, label, uniformMatch, 
  * @param {object} [p.tunables]
  * @returns {{confidence, label, formalityPenalty, steps, applied}}
  */
+/**
+ * A revealed counterfeit bleeds cover confidence (§13.4, M9.1): the fake passed
+ * the bouncer, but this observer can tell. Per exposed brand, tunable, clamped,
+ * re-banded. No-op when nothing was exposed.
+ * @param {object} p
+ * @param {number} p.confidence
+ * @param {string} p.label
+ * @param {number} [p.revealedCount]  exposed brands (recognizeBrands().exposed.length)
+ * @param {object} [p.tunables]
+ * @returns {{confidence, label, counterfeitPenalty, applied}}
+ */
+export function applyCounterfeitToDisguise({ confidence: conf, label, revealedCount = 0, tunables = getTunables() }) {
+  const per = tunables.recognition.counterfeit.disguisePenaltyPerReveal;
+  if (!revealedCount || !per) return { confidence: conf, label, counterfeitPenalty: 0, applied: false };
+  const counterfeitPenalty = revealedCount * per;
+  const confidence = Math.max(0, Math.min(100, conf - counterfeitPenalty));
+  return { confidence, label: confidenceBand(confidence, tunables), counterfeitPenalty, applied: true };
+}
+
 export function applyFormalityToDisguise({ confidence: conf, label, register, expectedRegister = null, tunables = getTunables() }) {
   const F = tunables.formality.disguise;
   if (expectedRegister == null) return { confidence: conf, label, formalityPenalty: 0, steps: 0, applied: false };

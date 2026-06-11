@@ -412,6 +412,25 @@ export const TUNABLES_DEFAULTS = {
     districtFit: { minPieces: 2, weight: 8 },
   },
 
+  // ── Brand recognition & counterfeits (M9.1: recognition.mjs — §13.3/§13.4) ── NEW
+  recognition: {
+    // Observer literacy (INT + bonus) must clear the bar for the brand's band:
+    // iconic reads to everyone, known to most, niche to the fashion-literate.
+    bar: { iconic: 0, known: 4, niche: 8 },
+    // Actively studying a look helps clock labels (§16.2 tiers).
+    scanLiteracyBonus: { failed: 0, minimal: 0, partial: 2, full: 4 },
+    // §23.2: hidden/internal chrome's brand surfaces only at this scan tier.
+    hiddenChromeNeedsTier: "full",
+    // Clothing needs at least this much physical visibility (§27 stack) to be clocked.
+    visibilityFloor: 0.25,
+    // §13.4: active-scan DC to expose a fake; better replicas are harder.
+    counterfeit: {
+      baseDc: 12,
+      replicaDcBonus: { streetKnockoff: 0, premiumReplica: 4 },
+      disguisePenaltyPerReveal: 15, // a clocked fake bleeds cover confidence
+    },
+  },
+
   // ── Slots & layering (M9.1: visibility.mjs — NEW, §27.6/§29.1 Stage 2) ── NEW
   slots: {
     // Transmission per EFFECTIVE coverage: how much of an inner item's signal
