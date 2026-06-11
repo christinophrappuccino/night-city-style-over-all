@@ -15,7 +15,12 @@
  * Perception gating (Stage 6) is intentionally NOT here — collect builds the full,
  * objective set; the lens is applied later (§29.3).
  *
- * Spec: SC-Module-Architecture-Guide.md §29.1 (Stage 1–2), §4.1
+ * M9.3: the OBSERVED view passes `factors` (visibility.mjs read factors, id → 0..1)
+ * so covered clothing stops contributing its CPR-native genre count and perceived
+ * cost (§27.3 "covered items stop reading"). Strictly opt-in — the self path never
+ * passes it, so legacy output stays byte-identical (the M2 parity contract).
+ *
+ * Spec: SC-Module-Architecture-Guide.md §29.1 (Stage 1–2), §27.3, §4.1
  */
 
 import * as cpr from "../data/cpr-adapter.mjs";
@@ -259,10 +264,15 @@ export function extractRoles(items) {
 /**
  * Build the normalized input set for an actor (self/objective view).
  * @param {object} actor CPR actor document
- * @param {{items?: object[]}} [opts] hypothetical-set override
+ * @param {object} [opts]
+ * @param {object[]} [opts.items] hypothetical-set override
+ * @param {Record<string, number>} [opts.factors] OBSERVED-view read factors
+ *   (item id → 0..1, from visibility.mjs). Factor 0 = physically covered:
+ *   the piece keeps its slot (it IS worn) but stops feeding the genre count
+ *   and the perceived cost. Omit for the self/objective view.
  * @returns {object} { parts, totalCost, weapons, armor, threatAmmo, styles, socialStats, effectiveStats, roleData }
  */
-export function collect(actor, { items } = {}) {
+export function collect(actor, { items, factors } = {}) {
   const itemList = items ?? cpr.getItems(actor);
 
   const out = {
@@ -286,10 +296,12 @@ export function collect(actor, { items } = {}) {
       const slot = cpr.getClothingSlot(item);
       const style = cpr.getClothingStyle(item);
       const cost = cpr.getPrice(item);
-      out.parts[slot] = { worn: true, name: item.name, img: item.img || null, style, cost, id: item.id };
-      out.equippedClothing.push({ id: item.id, name: item.name, slot, style, cost });
-      if (style) out.styles[style] = (out.styles[style] || 0) + 1;
-      out.totalCost += cost;
+      // Observed view: factor 0 = covered — worn, but it doesn't READ (§27.3).
+      const covered = !!factors && (factors[item.id] ?? 1) === 0;
+      out.parts[slot] = { worn: true, name: item.name, img: item.img || null, style, cost, id: item.id, covered };
+      out.equippedClothing.push({ id: item.id, name: item.name, slot, style, cost, covered });
+      if (style && !covered) out.styles[style] = (out.styles[style] || 0) + 1;
+      if (!covered) out.totalCost += cost;
     }
 
     // WEAPONS

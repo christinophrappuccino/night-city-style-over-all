@@ -25,9 +25,12 @@ import { analyzeCrew } from "../engine/crew.mjs";
 import { computeActorReads, buildCrewMemberInput } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { buildGardenView, addEventPost } from "../services/garden.mjs";
-import { radarView, gaugeView, fingerprintView, sparklineView } from "./components/charts.mjs";
+import { radarView, gaugeView, fingerprintView, sparklineView, ringView } from "./components/charts.mjs";
 import { bindInfoAffordances, NCSOA_DIALOG } from "./components/register.mjs";
 import { glossary, metricScale } from "../engine/metrics.mjs";
+import { composeHeadline } from "../engine/headline.mjs";
+import { observerOptions, resolveObserver, applyObserverLens } from "../services/observers.mjs";
+import { getKnownFor } from "../services/known-for.mjs";
 
 const TABS = [
   { id: "profile", label: "Style Profile", icon: "fa-id-card" },
@@ -55,6 +58,9 @@ export class StyleCheckerApp extends Application {
     super(options);
     this.actor = actor;
     this.currentTab = options.tab || "profile";
+    // §24 lens state: which view leads ("self" | "observed") and who's looking.
+    this.lens = "self";
+    this.observerSel = "street";
     this.options.id = `ncsoa-sc-${actor?.id ?? "none"}`;
   }
 
@@ -123,11 +129,24 @@ export class StyleCheckerApp extends Application {
       const reads = computeActorReads(this.actor, { sceneActors: party, config });
       if (this.currentTab === "chrome") return { ...base, isChrome: true, chrome: this._chromeData(reads) };
       if (this.currentTab === "gear") return { ...base, isGear: true, gear: this._gearData(reads, config) };
-      // The observed run feeds the radar overlay (§24 — self vs street read).
-      const observed = computeActorReads(this.actor, { sceneActors: party, config, view: "observed" });
-      // Stash the explainable results the info affordances (§19.4) resolve from.
+
+      // Profile (M9.3 rework): both pipeline modes run every render — the radar
+      // overlays them (§24) — and the lens toggle picks which one leads.
+      const observedReads = computeActorReads(this.actor, { sceneActors: party, config, view: "observed" });
+      const lensBar = {
+        observed: this.lens === "observed",
+        options: observerOptions(config, { actors: party, selfId: this.actor.id })
+          .map((o) => ({ ...o, selected: o.value === this.observerSel })),
+      };
+      if (this.lens === "observed") {
+        const observer = resolveObserver(this.observerSel, config, { actors: party });
+        const lens = applyObserverLens({ reads: observedReads, observer, config });
+        // Info affordances (§19.4) resolve against what's ON SCREEN: the observed run.
+        this._results = { styleRating: observedReads.styleRating, cohesion: observedReads.cohesion, heat: observedReads.heat, danger: observedReads.danger, vibes: observedReads.vibes };
+        return { ...base, isProfile: true, lensBar, seenBy: this._observedData(observedReads, reads, lens, observer) };
+      }
       this._results = { styleRating: reads.styleRating, cohesion: reads.cohesion, heat: reads.heat, danger: reads.danger, vibes: reads.vibes };
-      return { ...base, isProfile: true, profile: this._profileData(reads, observed) };
+      return { ...base, isProfile: true, lensBar, profile: this._profileData(reads, observedReads, config) };
     } catch (e) {
       console.error("Night City: Style Over All | StyleChecker compute failed:", e);
       return { ...base, error: true };
@@ -136,7 +155,22 @@ export class StyleCheckerApp extends Application {
 
   // ── tab data shapers ───────────────────────────────────────────────────────
 
-  _profileData({ styleRating, cohesion, heat, danger, archetypes, scene, dripRating, collected, vibes }, observed = null) {
+  /** Outfit's best-fitting district name (headline's "at home in …"). */
+  _bestDistrictName(reads, config) {
+    const districts = config.districts || {};
+    const colorT = getTunables().color ?? {};
+    const items = cpr.getItems(reads.actor);
+    let best = null;
+    for (const [key, d] of Object.entries(districts)) {
+      const fit = districtStyleFit(reads.collected.styles, d);
+      const score = fit.currentScore + districtPaletteFit({ items }, d, colorT).value;
+      if (score > 0 && (!best || score > best.score)) best = { name: d.name || key, score };
+    }
+    return best?.name ?? null;
+  }
+
+  _profileData(reads, observed, config) {
+    const { styleRating, cohesion, heat, danger, archetypes, scene, dripRating, collected, vibes } = reads;
     const bd = styleRating.breakdown || {};
     const BD_LABELS = { clothing: "Clothing cost", cyberware: "Cyberware cool", fashionware: "Fashionware", accessories: "Accessories", synergy: "Style synergy" };
     const breakdown = Object.keys(BD_LABELS).filter((k) => bd[k]).map((k) => ({ label: BD_LABELS[k], raw: bd[k].raw, weighted: bd[k].weighted }));
@@ -158,6 +192,9 @@ export class StyleCheckerApp extends Application {
       totalCost: collected.totalCost,
       archetypes: arch,
       scene: { rank: scene.yourRank, total: scene.totalCharacters, status: scene.status, avg: scene.averageStyleScore },
+      // §25.2 headline read — the two-second on-ramp line.
+      headline: composeHeadline({ vibes, archetypes, heat, districtName: this._bestDistrictName(reads, config) }),
+      archCallout: { primary: arch[0] ?? null, runnersUp: arch.slice(1, 4) },
       // §25 hero visuals (M9.2) — view models for the shared partials.
       charts: {
         radar: radarView(vibes.spokes, {
@@ -167,6 +204,70 @@ export class StyleCheckerApp extends Application {
         vibeDescriptor: vibes.descriptor,
         heatGauge: gaugeView({ value: heat.value, max: 100, bands: metricScale("heat", getTunables()) }),
         fingerprint: fingerprintView(collected.styles, { formatLabel: formatStyleName }),
+      },
+    };
+  }
+
+  /**
+   * The As-Seen-By profile (§24, M9.3): the OBSERVED pipeline run framed
+   * through one observer's lens — tier-gated blocks, recognized brands only,
+   * and the disguise verdict when the observer is a faction.
+   */
+  _observedData(oReads, selfReads, lens, observer) {
+    const T = getTunables();
+    const reveal = lens.reveal;
+    const tierWord = { failed: "no read", minimal: "a passing glance", partial: "a good look", full: "the studied look" }[lens.tier];
+
+    const maxConf = Math.max(1, ...oReads.archetypes.slice(0, 4).map((a) => a.confidence ?? a.score ?? 0));
+    const arch = oReads.archetypes.slice(0, 4).map((a, i) => {
+      const conf = Math.round(a.confidence ?? a.score ?? 0);
+      return { label: a.label || a.key, confidence: conf, pct: Math.round((conf / maxConf) * 100), primary: i === 0 };
+    });
+
+    const recognized = lens.brands.recognized.map((r) => ({
+      label: r.counterfeit?.revealed ? `${r.label} (FAKE)` : r.label,
+      fake: !!r.counterfeit?.revealed,
+      pieces: r.pieces.join(", "),
+    }));
+    const expensiveOnly = !recognized.length && lens.brands.value.some((r) => r.prestige === "expensive");
+
+    return {
+      observer: { label: observer.label, kind: observer.kind, int: observer.int, perception: observer.perception },
+      tier: lens.tier,
+      tierWord,
+      passive: { total: lens.passiveTotal, full: lens.thresholds.full },
+      reveal,
+      headline: composeHeadline({
+        vibes: reveal.vibeDescriptor ? oReads.vibes : null,
+        archetypes: reveal.archetype ? oReads.archetypes : [],
+        heat: reveal.heat ? oReads.heat : null,
+      }),
+      knownFor: getKnownFor(this.actor)?.label ?? null, // §16.6 colors any first impression
+      archCallout: reveal.archetype
+        ? { primary: arch[0] ?? null, runnersUp: reveal.archetypeRunnersUp ? arch.slice(1, 4) : [] }
+        : null,
+      brands: { recognized, expensiveOnly, any: recognized.length > 0 || expensiveOnly },
+      full: reveal.styleTier
+        ? {
+            style: `${oReads.styleRating.total} · ${oReads.styleRating.tier?.name ?? ""}`.trim(),
+            danger: `${oReads.danger.value} · ${oReads.danger.tier}`,
+            drip: oReads.dripRating.rating,
+          }
+        : null,
+      disguise: lens.disguise,
+      charts: {
+        radar: reveal.vibeRadar
+          ? radarView(oReads.vibes.spokes, {
+              overlay: selfReads.vibes.spokes.map((s) => ({ tag: s.tag, value: s.value })),
+              seriesLabel: "Street read", overlayLabel: "Self (truth)", size: 230,
+            })
+          : null,
+        heatGauge: reveal.heat
+          ? gaugeView({ value: oReads.heat.value, max: 100, bands: metricScale("heat", T) })
+          : null,
+        disguiseRing: lens.disguise
+          ? ringView({ value: lens.disguise.confidence, threshold: T.disguise.labels.passable, label: lens.disguise.label, size: 96 })
+          : null,
       },
     };
   }
@@ -290,6 +391,16 @@ export class StyleCheckerApp extends Application {
     });
     html.find("[data-action='garden-post']").on("click", () => this._gardenPost());
     html.find("[data-action='garden-refresh']").on("click", () => this.render(false));
+    // §24 lens controls: flip the view; picking an observer implies observed.
+    html.find("[data-action='lens']").on("click", (e) => {
+      this.lens = e.currentTarget.dataset.lens === "observed" ? "observed" : "self";
+      this.render(false);
+    });
+    html.find("[data-control='observer']").on("change", (e) => {
+      this.observerSel = e.currentTarget.value;
+      this.lens = "observed";
+      this.render(false);
+    });
     // §19.4 — every ? opens the metric's definition + the LIVE breakdown
     // computed this render (one rendering path; no restated math).
     bindInfoAffordances(html, (key) => this._results?.[key] ?? null);

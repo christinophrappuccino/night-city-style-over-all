@@ -55,8 +55,10 @@ function actorScMods(actor, config, items, tunables = getTunables(), factors = u
  * @param {"self"|"observed"} [opts.view] §29.2 two-mode switch (M9.1). "self"
  *   (default) scales styleData/sc.* contributions by readPriority only (full
  *   set); "observed" also applies physical visibility — covered items stop
- *   reading (§27.3). NOTE: the CPR-native genre counts (collect) and the
- *   perception lens are not yet view-gated; they ride the observer work.
+ *   reading (§27.3), including the CPR-native genre counts + perceived cost
+ *   (M9.3: collect factors). The perception LENS (tier gating, recognition,
+ *   disguise-vs-observer) stays out of this pipeline — services/observers.mjs
+ *   applies it on top, per §29.1 Stage 6.
  * @returns {object} { actor, collected, cyberwareData, styleRating, cohesion, dripRating,
  *   scene, heat, danger, archetypes, chromeProfile, scMods, vibes, visibility,
  *   view, woundInjuryHeat }
@@ -74,7 +76,12 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     Object.entries(visibility.factors).map(([id, f]) => [id, f[factorView]])
   );
 
-  const collected = collect(actor, { items: itemList });
+  const collected = collect(actor, {
+    items: itemList,
+    // Observed: covered clothing stops feeding genre counts/perceived cost
+    // (§27.3, M9.3). Self passes nothing — legacy output stays byte-identical.
+    factors: view === "observed" ? factors : undefined,
+  });
   const cyberwareData = analyzeCyberware(actor, config.cyberware, { items: itemList });
   const roleData = collected.roleData;
 

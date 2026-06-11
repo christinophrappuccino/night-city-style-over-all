@@ -19,17 +19,22 @@
     <div class="ncsoa-sc-error"><i class="fas fa-triangle-exclamation"></i> Couldn't read this character's style — see the console.</div>
   {{/if}}
 
-  {{!-- ───────────── PROFILE ───────────── --}}
+  {{!-- ───────────── PROFILE (M9.3: headline read §25.2 + lens §24) ───────────── --}}
   {{#if isProfile}}
-    <section class="ncsoa-wb-cards">
-      <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE {{> ncsoa-info key="styleRating" label="Style Rating"}}</div><div class="ncsoa-wb-card-value">{{profile.style.total}}</div><div class="ncsoa-wb-card-tag">{{{profile.style.tierIcon}}} {{profile.style.tierName}} <span class="grade">{{profile.style.tierGrade}}</span></div></div>
-      <div class="ncsoa-wb-card cohesion"><div class="ncsoa-wb-card-label">COHESION {{> ncsoa-info key="cohesion" label="Cohesion"}}</div><div class="ncsoa-wb-card-value">{{profile.cohesion.percent}}%</div><div class="ncsoa-wb-card-tag">{{profile.cohesion.label}} · {{profile.cohesion.dominant}}</div></div>
-      <div class="ncsoa-wb-card heat {{profile.heat.cls}}"><div class="ncsoa-wb-card-label">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div><div class="ncsoa-wb-card-value">{{profile.heat.value}}</div><div class="ncsoa-wb-card-tag">{{profile.heat.level}}</div></div>
-      <div class="ncsoa-wb-card danger" style="--danger:{{profile.danger.color}}"><div class="ncsoa-wb-card-label">DANGER {{> ncsoa-info key="danger" label="Danger"}}</div><div class="ncsoa-wb-card-value">{{profile.danger.value}}</div><div class="ncsoa-wb-card-tag">{{profile.danger.tier}}</div></div>
-    </section>
+    {{!-- the lens bar: Self ↔ Seen-by + observer picker --}}
+    <div class="ncsoa-sc-lensbar">
+      <button type="button" class="ncsoa-sc-lens {{#unless lensBar.observed}}active{{/unless}}" data-action="lens" data-lens="self"><i class="fas fa-user"></i> Self</button>
+      <button type="button" class="ncsoa-sc-lens {{#if lensBar.observed}}active{{/if}}" data-action="lens" data-lens="observed"><i class="fas fa-eye"></i> Seen by</button>
+      <select data-control="observer" title="Who's looking? Their senses set how much of you reads.">
+        {{#each lensBar.options}}<option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{#if this.group}}{{this.group}} · {{/if}}{{this.label}}</option>{{/each}}
+      </select>
+    </div>
 
-    {{!-- §25 hero visuals (M9.2) — vibe radar (self vs street read) + heat dial --}}
-    <section class="ncsoa-sc-heroes">
+    {{#if profile}}
+    {{!-- ── SELF: the truth ── --}}
+    <div class="ncsoa-sc-headline">{{profile.headline.text}}</div>
+
+    <section class="ncsoa-sc-heroes three">
       <div class="ncsoa-sc-hero">
         <div class="ncsoa-wb-section-title">VIBE {{> ncsoa-info key="vibes" label="Vibe Profile"}} {{#if profile.charts.vibeDescriptor}}<span class="ncsoa-wb-section-meta">{{profile.charts.vibeDescriptor}}</span>{{/if}}</div>
         {{> ncsoa-radar profile.charts.radar}}
@@ -38,15 +43,54 @@
         <div class="ncsoa-wb-section-title">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div>
         {{> ncsoa-gauge profile.charts.heatGauge}}
       </div>
+      <div class="ncsoa-sc-hero">
+        <div class="ncsoa-wb-section-title">READS AS {{> ncsoa-info key="archetype" label="Reads As"}}</div>
+        {{#if profile.archCallout.primary}}
+          <div class="ncsoa-sc-archcallout">
+            <div class="ac-primary">{{profile.archCallout.primary.label}}</div>
+            <div class="ac-conf">confidence {{profile.archCallout.primary.confidence}}</div>
+            {{#each profile.archCallout.runnersUp}}
+              <div class="ac-runner"><span class="aname">{{this.label}}</span><span class="abar"><span class="afill" style="width:{{this.pct}}%"></span></span></div>
+            {{/each}}
+          </div>
+        {{else}}
+          <div class="ncsoa-chart-empty">No clear read.</div>
+        {{/if}}
+      </div>
     </section>
 
-    <section class="ncsoa-wb-section">
-      <div class="ncsoa-wb-section-title">STYLE MIX {{> ncsoa-info key="styleMix" label="Style Mix"}}</div>
+    {{!-- everything else folds (§25.2 progressive disclosure) --}}
+    <details class="ncsoa-sc-fold">
+      <summary>The numbers — style {{profile.style.total}} · cohesion {{profile.cohesion.percent}}% · heat {{profile.heat.value}} · danger {{profile.danger.value}}</summary>
+      <section class="ncsoa-wb-cards">
+        <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE {{> ncsoa-info key="styleRating" label="Style Rating"}}</div><div class="ncsoa-wb-card-value">{{profile.style.total}}</div><div class="ncsoa-wb-card-tag">{{{profile.style.tierIcon}}} {{profile.style.tierName}} <span class="grade">{{profile.style.tierGrade}}</span></div></div>
+        <div class="ncsoa-wb-card cohesion"><div class="ncsoa-wb-card-label">COHESION {{> ncsoa-info key="cohesion" label="Cohesion"}}</div><div class="ncsoa-wb-card-value">{{profile.cohesion.percent}}%</div><div class="ncsoa-wb-card-tag">{{profile.cohesion.label}} · {{profile.cohesion.dominant}}</div></div>
+        <div class="ncsoa-wb-card heat {{profile.heat.cls}}"><div class="ncsoa-wb-card-label">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div><div class="ncsoa-wb-card-value">{{profile.heat.value}}</div><div class="ncsoa-wb-card-tag">{{profile.heat.level}}</div></div>
+        <div class="ncsoa-wb-card danger" style="--danger:{{profile.danger.color}}"><div class="ncsoa-wb-card-label">DANGER {{> ncsoa-info key="danger" label="Danger"}}</div><div class="ncsoa-wb-card-value">{{profile.danger.value}}</div><div class="ncsoa-wb-card-tag">{{profile.danger.tier}}</div></div>
+      </section>
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">STYLE BREAKDOWN <span class="ncsoa-wb-section-meta">{{profile.drip}} · €${{profile.totalCost}}</span></div>
+        <div class="ncsoa-wb-breakdown">
+          {{#each profile.style.breakdown}}
+            <div class="ncsoa-wb-bd-row"><span class="bd-label">{{this.label}}</span><span class="bd-raw">{{this.raw}}</span><span class="bd-weighted">+{{this.weighted}}</span></div>
+          {{/each}}
+          {{#each profile.style.bonuses}}
+            <div class="ncsoa-wb-bd-row bonus"><span class="bd-label">{{this.label}}</span><span class="bd-raw"></span><span class="bd-weighted">+{{this.value}}</span></div>
+          {{/each}}
+          {{#if profile.style.roleAlign}}
+            <div class="ncsoa-wb-bd-row role"><span class="bd-label">Role fit · {{profile.style.roleAlign.role}}</span><span class="bd-raw">{{profile.style.roleAlign.label}}</span><span class="bd-weighted">×{{profile.style.roleAlign.mult}}</span></div>
+          {{/if}}
+        </div>
+      </section>
+    </details>
+
+    <details class="ncsoa-sc-fold">
+      <summary>Style mix {{> ncsoa-info key="styleMix" label="Style Mix"}}</summary>
       {{> ncsoa-fingerprint profile.charts.fingerprint}}
-    </section>
+    </details>
 
-    <section class="ncsoa-wb-section">
-      <div class="ncsoa-wb-section-title">READS AS <span class="ncsoa-wb-section-meta">scene rank {{profile.scene.rank}}/{{profile.scene.total}} · {{profile.scene.status}}</span></div>
+    <details class="ncsoa-sc-fold">
+      <summary>Reads as — the full list · scene rank {{profile.scene.rank}}/{{profile.scene.total}}</summary>
       <div class="ncsoa-sc-archlist">
         {{#each profile.archetypes}}
           <div class="ncsoa-sc-archrow {{#if this.primary}}primary{{/if}}">
@@ -56,22 +100,93 @@
           </div>
         {{/each}}
       </div>
-    </section>
+    </details>
+    {{/if}}
 
-    <section class="ncsoa-wb-section">
-      <div class="ncsoa-wb-section-title">STYLE BREAKDOWN <span class="ncsoa-wb-section-meta">{{profile.drip}} · €${{profile.totalCost}}</span></div>
-      <div class="ncsoa-wb-breakdown">
-        {{#each profile.style.breakdown}}
-          <div class="ncsoa-wb-bd-row"><span class="bd-label">{{this.label}}</span><span class="bd-raw">{{this.raw}}</span><span class="bd-weighted">+{{this.weighted}}</span></div>
-        {{/each}}
-        {{#each profile.style.bonuses}}
-          <div class="ncsoa-wb-bd-row bonus"><span class="bd-label">{{this.label}}</span><span class="bd-raw"></span><span class="bd-weighted">+{{this.value}}</span></div>
-        {{/each}}
-        {{#if profile.style.roleAlign}}
-          <div class="ncsoa-wb-bd-row role"><span class="bd-label">Role fit · {{profile.style.roleAlign.role}}</span><span class="bd-raw">{{profile.style.roleAlign.label}}</span><span class="bd-weighted">×{{profile.style.roleAlign.mult}}</span></div>
-        {{/if}}
-      </div>
-    </section>
+    {{#if seenBy}}
+    {{!-- ── AS-SEEN-BY: one observer's read (§24) ── --}}
+    <div class="ncsoa-sc-observerline">
+      As <strong>{{seenBy.observer.label}}</strong> sees it — {{seenBy.tierWord}}
+      <span class="ncsoa-wb-section-meta">passive read {{seenBy.passive.total}} · the studied look needs {{seenBy.passive.full}} (a live scan rolls)</span>
+    </div>
+
+    {{#if seenBy.reveal.anything}}
+      <div class="ncsoa-sc-headline">{{seenBy.headline.text}}</div>
+      {{#if seenBy.knownFor}}<div class="ncsoa-sc-knownfor"><i class="fas fa-star"></i> Known for reading <strong>{{seenBy.knownFor}}</strong> — it colors every first impression.</div>{{/if}}
+
+      <section class="ncsoa-sc-heroes three">
+        <div class="ncsoa-sc-hero">
+          <div class="ncsoa-wb-section-title">VIBE {{> ncsoa-info key="vibes" label="Vibe Profile"}}</div>
+          {{#if seenBy.charts.radar}}
+            {{> ncsoa-radar seenBy.charts.radar}}
+          {{else}}
+            <div class="ncsoa-chart-empty">A glance catches the tone{{#if seenBy.headline.parts.tone}} — "{{seenBy.headline.parts.tone}}"{{/if}} — but not the shape.</div>
+          {{/if}}
+        </div>
+        <div class="ncsoa-sc-hero">
+          <div class="ncsoa-wb-section-title">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div>
+          {{#if seenBy.charts.heatGauge}}
+            {{> ncsoa-gauge seenBy.charts.heatGauge}}
+          {{else}}
+            <div class="ncsoa-chart-empty">They haven't sized up the attention you draw.</div>
+          {{/if}}
+        </div>
+        <div class="ncsoa-sc-hero">
+          <div class="ncsoa-wb-section-title">READS AS {{> ncsoa-info key="archetype" label="Reads As"}}</div>
+          {{#if seenBy.archCallout.primary}}
+            <div class="ncsoa-sc-archcallout">
+              <div class="ac-primary">{{seenBy.archCallout.primary.label}}</div>
+              <div class="ac-conf">confidence {{seenBy.archCallout.primary.confidence}}</div>
+              {{#each seenBy.archCallout.runnersUp}}
+                <div class="ac-runner"><span class="aname">{{this.label}}</span><span class="abar"><span class="afill" style="width:{{this.pct}}%"></span></span></div>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="ncsoa-chart-empty">No clear read.</div>
+          {{/if}}
+        </div>
+      </section>
+
+      {{#if seenBy.reveal.brands}}
+        <section class="ncsoa-wb-section">
+          <div class="ncsoa-wb-section-title">LABELS THEY CLOCK <span class="ncsoa-wb-section-meta">fashion literacy gates the name (§13.3)</span></div>
+          {{#if seenBy.brands.any}}
+            <div class="ncsoa-wb-chrome">
+              {{#each seenBy.brands.recognized}}<div class="ncsoa-wb-chip {{#if this.fake}}fake{{/if}}"><span class="cname">{{this.label}}</span><span class="ccat">{{this.pieces}}</span></div>{{/each}}
+              {{#if seenBy.brands.expensiveOnly}}<div class="ncsoa-wb-chip"><span class="cname">Expensive-looking pieces</span><span class="ccat">label unplaced</span></div>{{/if}}
+            </div>
+          {{else}}
+            <div class="ncsoa-wb-empty">No labels read from here.</div>
+          {{/if}}
+        </section>
+      {{/if}}
+
+      {{#if seenBy.full}}
+        <section class="ncsoa-wb-cards three">
+          <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE</div><div class="ncsoa-wb-card-value">{{seenBy.full.style}}</div></div>
+          <div class="ncsoa-wb-card danger"><div class="ncsoa-wb-card-label">DANGER</div><div class="ncsoa-wb-card-value">{{seenBy.full.danger}}</div></div>
+          <div class="ncsoa-wb-card"><div class="ncsoa-wb-card-label">DRIP</div><div class="ncsoa-wb-card-value">{{seenBy.full.drip}}</div></div>
+        </section>
+      {{/if}}
+    {{else}}
+      <div class="ncsoa-sc-noread"><i class="fas fa-eye-slash"></i> {{seenBy.observer.label}} can't get a read on you — your composure beats their passive attention.</div>
+    {{/if}}
+
+    {{#if seenBy.disguise}}
+      <section class="ncsoa-wb-section">
+        <div class="ncsoa-wb-section-title">PASSING AS {{seenBy.observer.label}} {{> ncsoa-info key="disguise" label="Disguise Confidence"}}</div>
+        <div class="ncsoa-sc-disguise">
+          {{> ncsoa-ring seenBy.charts.disguiseRing}}
+          <div class="ncsoa-sc-disguise-verdict">
+            <div class="dv-line">{{#if seenBy.disguise.detected}}<i class="fas fa-eye"></i> <strong>BLOWN</strong> — they see through it (margin +{{seenBy.disguise.margin}}){{else}}<i class="fas fa-user-secret"></i> <strong>HOLDS</strong> against their passive eye (margin {{seenBy.disguise.margin}}){{/if}}</div>
+            <div class="dv-meta">DC {{seenBy.disguise.dc}} vs their Perception {{seenBy.observer.perception}}{{#if seenBy.disguise.familiar}} · <span class="fam">familiar faces are harder to fool</span>{{/if}}</div>
+            {{#if seenBy.disguise.gearDisguise}}<div class="dv-meta"><i class="fas fa-mask"></i> gear disguise active</div>{{/if}}
+            {{#with seenBy.disguise.uniform}}<div class="dv-meta"><i class="fas fa-user-tie"></i> wearing {{this.name}} — {{this.grade}} match (+{{this.bonus}})</div>{{/with}}
+          </div>
+        </div>
+      </section>
+    {{/if}}
+    {{/if}}
   {{/if}}
 
   {{!-- ───────────── CHROME ───────────── --}}

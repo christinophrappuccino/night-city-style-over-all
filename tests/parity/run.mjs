@@ -37,6 +37,7 @@ import formalityChecks from "./checks/formality.mjs";
 import colorChecks from "./checks/colors.mjs";
 import recognitionChecks from "./checks/recognition.mjs";
 import componentChecks from "./checks/components.mjs";
+import observerLensChecks from "./checks/observer-lens.mjs";
 
 // Per-actor modules: invoked once per fixture.
 const CHECK_MODULES = [
@@ -73,6 +74,7 @@ const AGGREGATE_MODULES = [
   colorChecks,
   recognitionChecks,
   componentChecks,
+  observerLensChecks,
 ];
 
 const data = loadFixtures();

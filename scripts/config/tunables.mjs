@@ -219,6 +219,17 @@ export const TUNABLES_DEFAULTS = {
     coolShiftDivisor: 3, // counter-scan: +1 threshold per 3 target COOL
   },
 
+  // ── Observer lens (M9.3: §24 As-Seen-By in the player apps) ─────────── NEW
+  observer: {
+    // The generic street/faction observer's senses when no specific token is
+    // picked — a faction's rank-and-file watcher, the crowd on the block.
+    generic: { int: 5, perception: 6 },
+    // App previews are PASSIVE reads — deterministic, no die. This stands in
+    // for the 1d10 a live token scan rolls (a take-five: passers-by glance,
+    // they don't study).
+    passiveRollEquivalent: 5,
+  },
+
   // ── Budget planner (M2.5: recommendations.mjs) ────────────────────── EXTRACTED
   // optimizeBudget's numeric dials. English copy (slot/fixer comments) is content,
   // not a formula constant, so it stays inline in the engine — only the numbers and
