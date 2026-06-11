@@ -11,6 +11,7 @@
 
 import { getTunables } from "../config/tunables.mjs";
 import { formatStyleName } from "./recommendations.mjs";
+import { FORMALITY_LABELS } from "../constants.mjs";
 
 // tier number → grade label (display map, mirrors config TIERS grades).
 const TIER_TO_GRADE = { 1: "F", 2: "D", 3: "C", 4: "B", 5: "A", 6: "S", 7: "S+", 8: "SS", 9: "SSS" };
@@ -85,6 +86,23 @@ export function evaluateGate({ tokenData, criteria, factions = null, tunables = 
       if (!matchesTarget) flagYellow("faction", `Doesn't read as ${targetFaction.label}`);
     }
   }
+
+  // Dress code (§28, M9.1). criteria.formality = target register (two-sided: a
+  // gala flags rags AND a dive flags a gown); criteria.minFormality = floor only.
+  const F = tunables.formality;
+  const register = tokenData.formality?.register ?? F.defaultRegister;
+  const regLabel = FORMALITY_LABELS[register] ?? `${register}`;
+  if (criteria.formality != null) {
+    const distance = Math.abs(register - criteria.formality);
+    const targetLabel = FORMALITY_LABELS[criteria.formality] ?? `${criteria.formality}`;
+    const direction = register < criteria.formality ? "underdressed" : "overdressed";
+    if (distance >= F.gate.redAt)
+      flagRed("formality", `Reads ${regLabel} — dress code is ${targetLabel}, badly ${direction}`);
+    else if (distance >= F.gate.yellowAt)
+      flagYellow("formality", `Reads ${regLabel} — dress code is ${targetLabel}, slightly ${direction}`);
+  }
+  if (criteria.minFormality != null && register < criteria.minFormality)
+    flagRed("formality", `Reads ${regLabel} — requires at least ${FORMALITY_LABELS[criteria.minFormality] ?? criteria.minFormality}`);
 
   // Social-stat gates.
   const ss = tokenData.socialStats || { cool: 0, personalGrooming: 0, wardrobeAndStyle: 0, reputation: 0 };

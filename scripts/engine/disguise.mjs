@@ -410,6 +410,29 @@ export function applyUniformToDisguise({ confidence: conf, label, uniformMatch, 
 }
 
 /**
+ * Fold the dress register into a disguise confidence (§28, M9.1): passing wants
+ * the right REGISTER, not just the right style — a corpo cover in streetwear
+ * loses confidence per register step off the expectation. Mirrors
+ * applyUniformToDisguise; no-op when the cover has no register expectation.
+ * @param {object} p
+ * @param {number} p.confidence        confidence() output value
+ * @param {string} p.label             its band label
+ * @param {number} p.register          the outfit's dress register (engine/formality.mjs)
+ * @param {number|null} [p.expectedRegister] the cover's expected register
+ * @param {object} [p.tunables]
+ * @returns {{confidence, label, formalityPenalty, steps, applied}}
+ */
+export function applyFormalityToDisguise({ confidence: conf, label, register, expectedRegister = null, tunables = getTunables() }) {
+  const F = tunables.formality.disguise;
+  if (expectedRegister == null) return { confidence: conf, label, formalityPenalty: 0, steps: 0, applied: false };
+  const steps = Math.max(0, Math.abs(register - expectedRegister) - F.tolerance);
+  if (!steps) return { confidence: conf, label, formalityPenalty: 0, steps, applied: false };
+  const formalityPenalty = steps * F.penaltyPerStep;
+  const confidence = Math.max(0, Math.min(100, conf - formalityPenalty));
+  return { confidence, label: confidenceBand(confidence, tunables), formalityPenalty, steps, applied: true };
+}
+
+/**
  * Resolve whether a viewer sees through a disguise: (perception + familiarity) vs DC.
  * Port of GMDashboardApp.evaluateDisguise's detection step (the confidence/DC math
  * lives in confidence()/dc(); this is just the final check).

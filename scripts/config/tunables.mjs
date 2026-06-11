@@ -419,9 +419,14 @@ export const TUNABLES_DEFAULTS = {
     readPriorityMult: [0.5, 1, 1.5, 2.5],
   },
 
-  // ── Formality (NEW, §28) ──────────────────────────────────────────── PENDING
+  // ── Formality (M9.1: formality.mjs — NEW, §28) ────────────────────────── NEW
   formality: {
-    // dress-register gate thresholds, register-mismatch penalty
+    defaultRegister: 2,            // absent = street (§28)
+    // Scene-gate dress code: |outfit − target| in register steps → severity.
+    gate: { yellowAt: 1, redAt: 2 },
+    // Disguise: confidence − penaltyPerStep per register step beyond tolerance
+    // (passing as corpo needs the right REGISTER, not just elegance — §28).
+    disguise: { tolerance: 0, penaltyPerStep: 12 },
   },
 
   // ── The Garden (M7.10: engine/garden.mjs) ─────────────────────────── NEW (§21.4)

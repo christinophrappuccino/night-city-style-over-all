@@ -26,6 +26,7 @@ import { deriveSceneToken, aggregateScene } from "../engine/scene.mjs";
 import { collectScMods } from "../engine/cascade.mjs";
 import { vibeProfile } from "../engine/vibes.mjs";
 import { resolveVisibility } from "../engine/visibility.mjs";
+import { dressRegister } from "../engine/formality.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
 
@@ -132,6 +133,10 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
   // vibe map (items + brand identities). Never feeds archetype detection.
   const vibes = vibeProfile(scMods, tunables.vibe ?? {});
 
+  // Dress register (§28, M9.1) — same read factors, so a covered gown doesn't
+  // set the observed register. Consumed by scene gates + the disguise hook.
+  const formality = dressRegister({ items: itemList, factors }, tunables.formality ?? {});
+
   return {
     actor,
     collected,
@@ -146,6 +151,7 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     chromeProfile,
     scMods,
     vibes,
+    formality,
     visibility,
     view,
     woundInjuryHeat: wiHeat,
@@ -188,6 +194,8 @@ export function computeSceneTokens(actors, config = getEngineConfig()) {
       cohesion: r.cohesion,
       drip: r.dripRating,
       scMods: r.scMods,
+      vibes: r.vibes,
+      formality: r.formality,
     };
   });
 }
