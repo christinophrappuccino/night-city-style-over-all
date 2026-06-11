@@ -97,9 +97,19 @@ Build in order; **each phase ends with a working module.** Do not jump ahead to 
 
 ---
 
-## Immediate next step — M9.3 (app-by-app UI/UX rework + missing surfaces)
+## Immediate next step — the M9.3 in-world sweep, then the fork
 
-**Key invariants standing from M5–M9.2 (keep them):**
+**M9.3 is CODE-COMPLETE (gate 294/294) but NOT yet verified in-world. ⚠ 8 commits sit UNPUSHED on local `main` (M9.2 through M9.3e — push when Christian says go; origin must stay the HTTPS URL).** Next session, in order:
+
+1. **In-world verification sweep** (the done-when for M9.2+M9.3), one pass per surface:
+   - *Style Checker:* headline line + 3 heroes render; lens toggle Self↔Seen-by; faction observer → disguise ring/verdict panel; token observer uses their real INT+PER; high-COOL target → "can't get a read"; `?` affordances open definition+breakdown dialogs; Help tab glossary shows live thresholds.
+   - *Wardrobe:* coat open/closed toggle flips the covered badge + the observed read; as-target-sees-it panel updates live while staging; `?` header glossary.
+   - *GM Dashboard:* scene heatmap; disguise rings; Overrides tab — pin an archetype → thumbtack shows in readout/StyleChecker/scan card; force a disguise verdict → no margin printed; Help tab.
+   - *Lookbook:* share from both apps (public card, brand tags); another player clicks "What do I make of them?" → whispered read on THEIR client; counterfeit shows (FAKE) only when an active scan beats the reveal DC.
+   - *GM Config:* Factions tab — toggle a rivalry, watch the Tensions tab light up; unpair chip works; search filters. *Shops:* The Houses view renders all registry brands.
+2. **Then the fork (Christian's call):** the **look-and-feel polish pass** (M9.3 shipped functionality deliberately plain — visual hierarchy, spacing rhythm, transitions, §25.2 layout refinement across all apps) **or M9.4 platform** (full tuning panel + scoring presets D6=A+B, public API + custom hooks in `api.mjs`, SVG recolor service §9.1 + sentinel-fill icon set (Q4 art deliverable), AppV2 migration of all five V1 apps).
+
+**Key invariants standing from M5–M9.3 (keep them):**
 - `data/flags.mjs updateStyleData` is THE styleData write — it injects `-=key` deletion markers (Document#update merges; bare writes resurrect deleted keys). Never write the flag directly.
 - `services/wardrobe-staging.mjs` invariant: **preview ≡ commit** — gate-enforced.
 - Config domains ride `config/index.mjs` (auto-register, GM Config → Data, backups). `socket: true` is already in module.json; the channel is `module.night-city-style-over-all`.
