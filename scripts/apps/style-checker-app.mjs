@@ -31,6 +31,7 @@ import { glossary, metricScale } from "../engine/metrics.mjs";
 import { composeHeadline } from "../engine/headline.mjs";
 import { observerOptions, resolveObserver, applyObserverLens } from "../services/observers.mjs";
 import { getKnownFor } from "../services/known-for.mjs";
+import { postLookbook } from "../services/chat-cards.mjs";
 
 const TABS = [
   { id: "profile", label: "Style Profile", icon: "fa-id-card" },
@@ -401,6 +402,8 @@ export class StyleCheckerApp extends Application {
       this.lens = "observed";
       this.render(false);
     });
+    // §16.4 — post the fit pic to the table.
+    html.find("[data-action='share-lookbook']").on("click", () => postLookbook(this.actor));
     // §19.4 — every ? opens the metric's definition + the LIVE breakdown
     // computed this render (one rendering path; no restated math).
     bindInfoAffordances(html, (key) => this._results?.[key] ?? null);

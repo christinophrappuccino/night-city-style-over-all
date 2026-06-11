@@ -28,6 +28,7 @@ import { updateStyleData } from "../data/flags.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { composeHeadline } from "../engine/headline.mjs";
 import { observerOptions, resolveObserver, applyObserverLens } from "../services/observers.mjs";
+import { postLookbook } from "../services/chat-cards.mjs";
 import { ringView } from "./components/charts.mjs";
 import { CLOTHING_SLOTS } from "../engine/collect.mjs";
 import { formatStyleName } from "../engine/recommendations.mjs";
@@ -632,6 +633,8 @@ export class WardrobeApp extends Application {
   activateListeners(html) {
     super.activateListeners(html);
     html.find("[data-action='refresh']").on("click", () => this.render(false));
+    // §16.4 — post the fit pic (the COMMITTED outfit; Apply first to share a staged look).
+    html.find("[data-action='share-lookbook']").on("click", () => postLookbook(this.actor));
     html.find("[data-action='focus-slot']").on("click", (e) => this._focus(e.currentTarget.dataset.slot));
     html.find("[data-action='clear-slot']").on("click", (e) => {
       e.stopPropagation(); // don't also toggle slot focus

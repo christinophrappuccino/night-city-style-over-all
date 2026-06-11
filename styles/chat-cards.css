@@ -38,3 +38,37 @@
 .ncsoa-cc-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.88em; }
 .ncsoa-cc-row .k { color: #78909c; }
 .ncsoa-cc-row .v { color: #e0f7fa; text-align: right; }
+
+/* M9.3d — the lookbook card (§16.4) */
+.ncsoa-lookbook .ncsoa-lb-headline {
+  font-size: 0.95em; color: #fff; padding: 6px 8px; margin: 6px 0;
+  border-left: 3px solid var(--ncsoa-cyan, #00d9ff);
+  background: rgba(0, 217, 255, 0.06); border-radius: 0 5px 5px 0;
+}
+.ncsoa-lookbook .ncsoa-lb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.ncsoa-lookbook .ncsoa-lb-cell {
+  display: flex; gap: 6px; align-items: center; padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.03); border-radius: 4px;
+}
+.ncsoa-lookbook .ncsoa-lb-cell img, .ncsoa-lookbook .lb-ph {
+  width: 30px; height: 30px; border-radius: 4px; border: none; object-fit: cover; flex: 0 0 30px;
+  display: flex; align-items: center; justify-content: center; color: rgba(215, 230, 242, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+}
+.ncsoa-lookbook .lb-info { display: flex; flex-direction: column; min-width: 0; }
+.ncsoa-lookbook .lb-slot { font-size: 0.62em; letter-spacing: 1px; text-transform: uppercase; color: rgba(215, 230, 242, 0.45); }
+.ncsoa-lookbook .lb-name { font-size: 0.82em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ncsoa-lookbook .lb-tags { font-size: 0.72em; color: rgba(215, 230, 242, 0.55); }
+.ncsoa-lookbook .lb-brand { color: var(--ncsoa-yellow, #ffc107); }
+.ncsoa-lookbook .ncsoa-lb-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.ncsoa-lookbook .lb-chip {
+  font-size: 0.72em; padding: 1px 8px; border-radius: 8px;
+  border: 1px solid rgba(0, 217, 255, 0.25); color: rgba(0, 217, 255, 0.85);
+}
+.ncsoa-lookbook .ncsoa-lb-foot { margin-top: 8px; display: flex; justify-content: flex-end; }
+.ncsoa-lookbook .ncsoa-lb-foot button {
+  background: rgba(0, 217, 255, 0.1); color: #00d9ff;
+  border: 1px solid rgba(0, 217, 255, 0.4); border-radius: 5px;
+  padding: 4px 10px; font-size: 0.82em; cursor: pointer; width: auto; line-height: 1.2;
+}
+.ncsoa-lookbook .ncsoa-lb-foot button:hover { box-shadow: 0 0 6px rgba(0, 217, 255, 0.4); }

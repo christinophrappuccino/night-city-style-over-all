@@ -27,6 +27,7 @@ import { registerLiveRefresh } from "./hooks/live-refresh.mjs";
 import { registerSceneStyle } from "./hooks/scene-style.mjs";
 import { registerTokenScan } from "./hooks/token-scan.mjs";
 import { registerConditionDynamics } from "./hooks/condition-dynamics.mjs";
+import { registerLookbookChat } from "./hooks/lookbook.mjs";
 import { registerSocket, onSocket, MESSAGE, isPrimaryGM } from "./services/sockets.mjs";
 import { recordPublicRead } from "./services/known-for.mjs";
 import { registerChartPartials } from "./apps/components/register.mjs";
@@ -136,6 +137,7 @@ registerLiveRefresh();
 registerSceneStyle();
 registerTokenScan();
 registerConditionDynamics();
+registerLookbookChat();
 
 Hooks.once("ready", async () => {
   // Socket layer (M7): typed GM→player pushes ride module.<id>.

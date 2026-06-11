@@ -28,6 +28,9 @@
       <select data-control="observer" title="Who's looking? Their senses set how much of you reads.">
         {{#each lensBar.options}}<option value="{{this.value}}" {{#if this.selected}}selected{{/if}}>{{#if this.group}}{{this.group}} · {{/if}}{{this.label}}</option>{{/each}}
       </select>
+      <button type="button" class="ncsoa-sc-lens" data-action="share-lookbook" title="Post your lookbook to the table — the fit pic, brand tags, and the read (§16.4)">
+        <i class="fas fa-camera"></i> Share
+      </button>
     </div>
 
     {{#if profile}}

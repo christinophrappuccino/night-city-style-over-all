@@ -1,0 +1,46 @@
+{{!-- lookbook.hbs — the §16.4 fit pic (M9.3d). PUBLIC chat card: slot layout +
+     brand tags + the headline read; the footer button is the §16.3 quick-read
+     ("what do I make of them?") — whispered to whoever clicks it. --}}
+<div class="ncsoa-chat-card ncsoa-lookbook">
+  <header class="ncsoa-cc-head">
+    <img class="ncsoa-cc-img" src="{{actorImg}}" alt="" />
+    <div class="ncsoa-cc-title">
+      <span class="ncsoa-cc-name">{{actorName}}</span>
+      <span class="ncsoa-cc-sub"><i class="fas fa-camera"></i> lookbook — today's fit</span>
+    </div>
+    <span class="ncsoa-cc-verdict green">LOOKBOOK</span>
+  </header>
+
+  <div class="ncsoa-lb-headline">{{headline}}</div>
+
+  {{#if hasSlots}}
+    <div class="ncsoa-lb-grid">
+      {{#each slots}}
+        <div class="ncsoa-lb-cell">
+          {{#if this.img}}<img src="{{this.img}}" alt="" />{{else}}<div class="lb-ph"><i class="fas fa-shirt"></i></div>{{/if}}
+          <div class="lb-info">
+            <span class="lb-slot">{{this.label}}</span>
+            <span class="lb-name">{{this.name}}</span>
+            <span class="lb-tags">{{#if this.brand}}<b class="lb-brand">{{this.brand}}</b>{{/if}}{{#if this.style}} {{this.style}}{{/if}}</span>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="ncsoa-cc-clean">Nothing on. Bold choice.</div>
+  {{/if}}
+
+  <div class="ncsoa-lb-chips">
+    {{#if vibe}}<span class="lb-chip">{{vibe}}</span>{{/if}}
+    {{#if tier}}<span class="lb-chip">{{tier}}</span>{{/if}}
+    <span class="lb-chip">{{drip}}</span>
+    <span class="lb-chip">{{cohesion}}</span>
+  </div>
+
+  <footer class="ncsoa-lb-foot">
+    <button type="button" data-action="ncsoa-quick-read" data-actor="{{actorId}}"
+            title="Read this look with YOUR character's eyes — INT + Perception vs their composure; the result is whispered to you (§16.3).">
+      <i class="fas fa-eye"></i> What do I make of them?
+    </button>
+  </footer>
+</div>
