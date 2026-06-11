@@ -18,7 +18,7 @@ The module reads a character's equipped gear and computes how they "read" in Nig
 
 ## Current status
 
-**M7 DONE — M8 RELEASED (v0.1.0 live on GitHub; CLI-verified). Remaining: in-Foundry fresh-world install check + README screenshots, then M9.** M0–M7 are complete and verified in-world:
+**M8 RELEASED (v0.1.0 live on GitHub; CLI-verified; in-Foundry fresh-world check + README screenshots still pending) — M9 IN PROGRESS, sub-milestone M9.1 (see the M9 plan below).** M0–M7 are complete and verified in-world:
 - **M0** scaffold · **M1** data layer + Migration 001 + config seeds + backup.
 - **M2** engine extraction — all engine modules ported pure/explainable; parity gate green (`node tests/parity/run.mjs`) + M2.5 in-world 10/10.
 - **M3** apps — read-only Wardrobe, 5-tab StyleChecker, 5-tab GM Dashboard, GM Config & Tuning. The table can run without the macro.
@@ -120,7 +120,14 @@ Build in order; **each phase ends with a working module.** Do not jump ahead to 
 
 **To close M8 (manual, in-Foundry):** install into a fresh world via the manifest URL `https://github.com/christinophrappuccino/night-city-style-over-all/releases/latest/download/module.json` and confirm the Night City Catalog compendium appears (the done-when), then grab screenshots for README.
 
-**Then M9 — polish (guide §6 M9):** color math (§9.2) + SVG recolor service (§9.1), scoring presets + full tuning panel, public API + custom hooks (`api.mjs`, fire `styleCheckerScanComplete` etc.), AppV2 readiness (D2), and the standing UI/UX rework of every M3–M7 app (the "make it better later" agreement).
+**M9 — the big one (gap analysis 2026-06-11, full guide audit; details in memory `project-m9-scope.md`).** The audit found that several guide-scheduled M3–M7 systems were never built and fold into M9: the **Brand Registry + cascade (§13/§22.1) does not exist** (no `config/brands.mjs`, no engine resolution — `brand` is a cosmetic label today), vibe never aggregates into a profile (§22.3), formality (§28) and `wearMode` (§27.6) are schema-only fields the engine ignores, GM Overrides (§14.3) and the lookbook card (§16.4) are absent, the lens toggle (§24) has no faction/token-specific observers, and **zero §25 charts exist in any template**. M9 runs as four sub-milestones, each ending with a working module:
+
+- **M9.1 — Engine completions** (pure, parity-gated; CURRENT): brand registry + cascade, vibe profile aggregation, color math (§9.2), formality aggregation + gate/disguise consumption, wearMode/regions/anchoredTo visibility completion, recognition gating, counterfeit detection. Engine-first — the charts can't render data the engine doesn't compute.
+- **M9.2 — Visual component library (§25) + transparency standard (§19):** radar · gauge · ring · fingerprint bar · sparkline + breakdown partial + info affordance + help/glossary. Built once, reused by every app.
+- **M9.3 — App-by-app UI/UX rework** (the standing M3–M7 polish agreement) + missing surfaces: lookbook card, GM overrides UI, observer picker, wearMode live toggles, brand house pages, faction matrix editor.
+- **M9.4 — Platform:** full tuning panel + scoring presets (D6 = A+B), public API + custom hooks (`api.mjs`, fire `styleCheckerScanComplete` etc.), SVG recolor service (§9.1) + the sentinel-fill icon set (Q4, art deliverable), AppV2 migration (all five apps are V1 `Application`/`FormApplication`).
+
+**NOT M9 (post-M9/backlog — don't scope-creep):** D6-C expression editor, NPC style generator (§14.6), bulk-tag assist (§26.5), adaptation assist (§31), Garden feedback loop (D7), and the §21.6 backlog (vibe→social-roll modifiers, reputation decay/seasons, paper-doll, economy depth, onboarding, community library).
 
 **The repeatable port pattern (still applies):** read the macro fn → consume decomposed inputs (never the raw actor; that's `collect`'s job) → lift every literal into `config/tunables.mjs` → return a Phase 82-compatible SUPERSET + the explainability envelope → add a `checks/*.mjs` diffing against captured output → `node tests/parity/run.mjs` must stay green.
 
