@@ -5,6 +5,11 @@
  * StyleDataManager.getDefaultFactionsData(). Do not hand-edit — regenerate via
  * tools/extract-config.mjs if the reference macro changes.
  *
+ * M9.1 EXCEPTION: `palette` fields (§9.2 faction colorways — signature colors
+ * read as soft affiliation) are a post-macro schema extension authored by hand
+ * on select factions. If this file is ever regenerated, re-apply them (git
+ * diff shows where). DataStore deep-merges them into existing worlds.
+ *
  * Top-level keys: 3.
  */
 
@@ -1719,6 +1724,7 @@ export const FACTIONS = {
         costOverride: { floor: 3000, sweet: 8000 },
         armorMod: -5,
         disguiseDifficulty: 3,
+        palette: ["#0a0a0a", "#c8102e"], // corporate black, seal red (§9.2)
         description: "The NUSA ban means nothing to a corporation that's been playing the long game for decades. Arasaka's official presence in Night City is zero. Their actual presence is everywhere — funneled through NCCS fronts, Tyger Claw muscle, and operatives who never existed on paper."
       },
       biotechnica: {
@@ -1934,6 +1940,7 @@ export const FACTIONS = {
         costOverride: { floor: 600, sweet: 2500 },
         armorMod: +5,
         disguiseDifficulty: 2,
+        palette: ["#ff0033", "#ff2a6d", "#111111"], // neon red over black (§9.2)
         description: "A former Arasaka proxy gang, now a dominant force in Kabuki and Old Japantown. Neon luminous tattoos, chromed katanas, Japanese street style. They control both the security and the criminal element in their territory."
       },
       arzin_tynon: {
@@ -1954,6 +1961,7 @@ export const FACTIONS = {
         costOverride: { floor: 50, sweet: 600 },
         armorMod: +10,
         disguiseDifficulty: 2,
+        palette: ["#cc0000", "#1a1a1a", "#8c8c8c"], // blood red, black, raw chrome (§9.2)
         description: "Maximum chrome, minimum humanity. Their leader Warlock transformed them from mindless borgs into a surprisingly effective criminal operation. The Totentanz in the Hot Zone is their chrome-metal cathedral."
       },
       sixth_street: {
@@ -1967,6 +1975,7 @@ export const FACTIONS = {
         costOverride: { floor: 300, sweet: 800 },
         armorMod: +15,
         disguiseDifficulty: 2,
+        palette: ["#1f3fae", "#b22222", "#f2f2f2"], // flag blue, red, white (§9.2)
         description: "4th Corporate War veterans who took up arms to protect their Arroyo neighborhood when NCPD couldn't. Patriotic, militaristic, and suspicious of anyone who isn't from the block. Military surplus mixed with gang colors, American flags on everything, and enough firepower to make Militech nervous — or proud."
       },
       rat_kings: {
@@ -2383,6 +2392,7 @@ export const FACTIONS = {
         costOverride: { floor: 100, sweet: 600 },
         armorMod: +5,
         disguiseDifficulty: 2,
+        palette: ["#2d1b4e", "#e8e4d8", "#5c4033"], // midnight purple, bone, leather (§9.2)
         description: "Posers draped in Hollywood-style voodoo trappings — skull paint, bone jewelry, mystical affectations. Violent and focused on the drug trade in Pacifica and Rancho Coronado. Don't confuse the aesthetic with depth."
       },
 

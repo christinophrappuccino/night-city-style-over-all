@@ -387,8 +387,29 @@ export const TUNABLES_DEFAULTS = {
   },
 
   // ── Color (NEW, M9) ───────────────────────────────────────────────── PENDING
+  // ── Color math (M9.1: colors.mjs — NEW, §9.2) ─────────────────────────── NEW
   color: {
-    // coordination bonus, palette-clash penalty, colorway-affiliation weight (§9.2)
+    // Neutrals (grays/near-black/near-white) coordinate with everything.
+    neutral: { satMax: 0.18, blackMax: 0.12, whiteMin: 0.92 },
+    // Hue harmony bands (degrees) + the saturation floor below which a
+    // mismatch is merely "muted", never a clash.
+    harmony: { analogousMax: 35, complementaryTol: 25, triadTol: 15, clashSatMin: 0.4 },
+    accentWeight: 0.5, // an accent color weighs half a primary
+    // Coordination → Wardrobe & Style (clash lands here in v1; folding it into
+    // the per-archetype anti-style tables rides the scoring presets, M9.4).
+    coordination: {
+      minColored: 2,            // colored pieces needed before the palette is judged
+      wsBonusMax: 2,            // fully coordinated palette → +2 W&S
+      clashPenaltyPerPair: 1,   // each clashing pair −1
+      wsDeltaClamp: 3,          // |W&S adjustment| ceiling
+      fashionwareSynergyBonus: 1, fashionwareSynergyCap: 2, // §9.2 chrome colorway match
+    },
+    // Palette membership: hue + lightness proximity (neutrals by lightness).
+    paletteMatch: { hueTol: 25, lightTol: 0.35, neutralLightTol: 0.18 },
+    // Faction colorway → soft affiliation (merged into scMods.factions).
+    colorway: { coverageMin: 0.5, minPieces: 2, weight: 10, cap: 10 },
+    // District palette fit nudge (positive only).
+    districtFit: { minPieces: 2, weight: 8 },
   },
 
   // ── Slots & layering (M9.1: visibility.mjs — NEW, §27.6/§29.1 Stage 2) ── NEW

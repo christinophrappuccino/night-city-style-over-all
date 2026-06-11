@@ -34,6 +34,7 @@ import brandChecks from "./checks/brands.mjs";
 import vibeChecks from "./checks/vibes.mjs";
 import visibilityChecks from "./checks/visibility.mjs";
 import formalityChecks from "./checks/formality.mjs";
+import colorChecks from "./checks/colors.mjs";
 
 // Per-actor modules: invoked once per fixture.
 const CHECK_MODULES = [
@@ -67,6 +68,7 @@ const AGGREGATE_MODULES = [
   vibeChecks,
   visibilityChecks,
   formalityChecks,
+  colorChecks,
 ];
 
 const data = loadFixtures();

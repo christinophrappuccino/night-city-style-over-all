@@ -5,6 +5,11 @@
  * StyleDataManager.getDefaultDistrictsData(). Do not hand-edit — regenerate via
  * tools/extract-config.mjs if the reference macro changes.
  *
+ * M9.1 EXCEPTION: `palette` fields (§9.2 district palette hints — on-palette
+ * outfits nudge district fit) are a post-macro schema extension authored by
+ * hand on select districts. If this file is ever regenerated, re-apply them
+ * (git diff shows where). DataStore deep-merges them into existing worlds.
+ *
  * Top-level keys: 25.
  */
 
@@ -306,6 +311,7 @@ export const DISTRICTS = {
         "good": "The worst combat zone Night City ever produced — and you look like you're here to help reclaim it. Brick Coleman's crew gives you the edgerunner nod.",
         "bad": "Iron Sights, Scavvers, and whatever crawled out of The Underground. You look like a lost tourist in a warzone. The Faded are already deciding your fate."
       },
+      "palette": ["#7f4f24", "#582f0e", "#333333", "#8c8c8c"],
       "statModifiers": { "repWeight": 2.0, "coolWeight": 1.5, "groomingWeight": 0.2 }
     },
 
@@ -385,6 +391,7 @@ export const DISTRICTS = {
         "good": "The Nakagawa Theater glows behind you — Kabuki is the brain and heart of the NCCS, and your look speaks the right language. Even G3's anime-obsessed psychos leave you alone.",
         "bad": "Kabuki is Tyger Claw territory, pure and simple. The Kimen-Gumi provide security and they remember every face that doesn't fit."
       },
+      "palette": ["#ff2a6d", "#05d9e8", "#ff0033"],
       "statModifiers": { "repWeight": 1.0, "coolWeight": 1.2, "groomingWeight": 1.2 }
     },
 
@@ -466,6 +473,7 @@ export const DISTRICTS = {
         "good": "Lazarus security — the best eddies can buy — scans you and finds nothing objectionable. Inside these walls, only the truly elite breathe easy. You fit.",
         "bad": "The most secure district in Night City, and you look like the threat it was built to keep out. Lazarus operatives are already converging."
       },
+      "palette": ["#1c2541", "#3a506b", "#c0c0c0", "#0a0a0a"],
       "statModifiers": { "repWeight": 0.3, "coolWeight": 1.5, "groomingWeight": 2.5 }
     },
 

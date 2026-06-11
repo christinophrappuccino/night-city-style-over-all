@@ -18,6 +18,9 @@ import { CLOTHING_SLOTS } from "../engine/collect.mjs";
 import { formatStyleName } from "../engine/recommendations.mjs";
 import { optimizeBudget } from "../engine/recommendations.mjs";
 import { districtStyleFit } from "../engine/districts.mjs";
+import { districtPaletteFit } from "../engine/colors.mjs";
+import { getTunables } from "../config/tunables.mjs";
+import * as cpr from "../data/cpr-adapter.mjs";
 import { analyzeCrew } from "../engine/crew.mjs";
 import { computeActorReads, buildCrewMemberInput } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
@@ -168,11 +171,16 @@ export class StyleCheckerApp extends Application {
     const roleData = collected.roleData;
 
     // District fit — rank every district by how the current outfit reads there.
+    // §9.2 (M9.1): on-palette outfits add a positive nudge to the fit score.
     const districts = config.districts || {};
+    const items = cpr.getItems(reads.actor);
+    const colorT = getTunables().color ?? {};
     const fits = Object.entries(districts).map(([key, d]) => {
       const fit = districtStyleFit(collected.styles, d);
+      const palette = districtPaletteFit({ items }, d, colorT);
       return {
-        key, name: d.name || key, score: fit.currentScore, potential: fit.potentialScore,
+        key, name: d.name || key, score: fit.currentScore + palette.value, potential: fit.potentialScore + palette.value,
+        paletteFit: palette.value,
         keep: fit.keep.map((b) => ({ style: formatStyleName(b.style), impact: b.impact })),
         remove: fit.remove.map((b) => ({ style: formatStyleName(b.style), impact: b.impact })),
         add: fit.add.map((a) => ({ style: formatStyleName(a.style), modifier: a.modifier })),

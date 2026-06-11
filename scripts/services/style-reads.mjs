@@ -27,6 +27,7 @@ import { collectScMods } from "../engine/cascade.mjs";
 import { vibeProfile } from "../engine/vibes.mjs";
 import { resolveVisibility } from "../engine/visibility.mjs";
 import { dressRegister } from "../engine/formality.mjs";
+import { colorCoordination, factionColorwayReads, applyColorwayToScMods } from "../engine/colors.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
 
@@ -75,9 +76,21 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
 
   const collected = collect(actor, { items: itemList });
   const cyberwareData = analyzeCyberware(actor, config.cyberware, { items: itemList });
-  const socialStats = collected.socialStats;
   const roleData = collected.roleData;
-  const scMods = actorScMods(actor, config, itemList, tunables, factors);
+
+  // Color math (§9.2, M9.1) — coordination adjusts Wardrobe & Style (so every
+  // downstream consumer sees it); faction colorways merge into scMods.factions
+  // as soft affiliation. No authored colors → both are no-ops.
+  const colors = colorCoordination({ items: itemList, factors }, tunables.color ?? {});
+  const colorway = factionColorwayReads({ items: itemList, factors }, config.factions ?? {}, tunables.color ?? {});
+  const socialStats = colors.wsDelta
+    ? { ...collected.socialStats, wardrobeAndStyle: Math.max(0, collected.socialStats.wardrobeAndStyle + colors.wsDelta) }
+    : collected.socialStats;
+
+  const scMods = applyColorwayToScMods(
+    actorScMods(actor, config, itemList, tunables, factors),
+    colorway
+  );
   const criticalInjuries = itemList.filter((i) => i.type === cpr.ITEM_TYPE.CRITICAL_INJURY);
 
   // Stage 3–4 — characterization.
@@ -152,6 +165,8 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     scMods,
     vibes,
     formality,
+    colors,
+    colorway,
     visibility,
     view,
     woundInjuryHeat: wiHeat,
