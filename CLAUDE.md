@@ -97,15 +97,16 @@ Build in order; **each phase ends with a working module.** Do not jump ahead to 
 
 ---
 
-## Immediate next step — M7 (Live layer: hooks · sockets · chat · token HUD · The Garden)
+## Immediate next step — M9.2 (visual component library §25 + transparency standard §19)
 
-**Key invariants standing from M5/M6 (keep them):**
+**Key invariants standing from M5–M9.1 (keep them):**
 - `data/flags.mjs updateStyleData` is THE styleData write — it injects `-=key` deletion markers (Document#update merges; bare writes resurrect deleted keys). Never write the flag directly.
 - `services/wardrobe-staging.mjs` invariant: **preview ≡ commit** — gate-enforced.
 - Config domains ride `config/index.mjs` (auto-register, GM Config → Data, backups). `socket: true` is already in module.json; the channel is `module.night-city-style-over-all`.
 - The shop `trendModifier` hook (services/shops.mjs computedPrice) is where Trends (§14.4) plug in.
+- **M9.1:** read factors flow ONE way — `engine/visibility.mjs` resolveVisibility → factors (self = readPriorityMult; observed = × visibility) → `collectScMods` opts.factors / `dressRegister` / `colorCoordination`; `computeActorReads(actor,{view:"self"|"observed"})` picks the view. The engine-config bundle now carries `brands`; `applyColorwayToScMods` merges colorway reads non-destructively. The `palette` fields in factions/districts seeds are HAND-AUTHORED post-macro extensions (headers say so — re-apply if those files are ever regenerated). Slot-model/brand reads dual-read via the same D4 pattern as the cascade.
 
-**M7 is CODE-COMPLETE — all 10 items (gate 200/200). M7.1–7.9 verified in-world; M7.10 (The Garden) awaits its verify pass:** Style Checker → Social tab (profile · trending · feed with engagement-scaled metrics + ads), run a gate / flip a trend → event posts lead the feed, GM pen button hand-posts. The milestone's "done when" (live gate verdicts) was verified earlier.
+**M9.2 kickoff (the §25 chart-per-metric map + §19.4 reusable pieces):** build once in `templates/partials/` + a `styles/` sheet + a small `apps/components/` helper layer — vibe **radar** (data is ready: `computeActorReads().vibes.spokes`, supports self/observed overlay §24), heat **gauge** (heat.level bands), disguise **ring** (confidence vs threshold), style **fingerprint bar** (collected.styles proportions), **sparkline** (needs history — Known For / Garden stores), GM **heatmap/small-multiples** (computeSceneTokens), plus the §19 **breakdown partial** (renders any explainable result's `components` + `tunablesApplied`), **info affordance**, and **Help tab + glossary** (generated from engine metric metadata — never hand-written formula text). Headline-read layout (§25.2) lands with M9.3's Style Checker rework; M9.2 just ships the components. Colorblind-safety: pair color with shape/label (§25.3).
 
 **M7 landmarks (for future sessions):**
 - `engine/garden.mjs` — engagement = f(heat, rep, style) (§21.4); the feed pool is a faithful port of macro `_generateSocialFeed`; RNG is INJECTED (pure; seeded in tests). D7 resolved per the guide's recommendation: read-only with metrics, feedback loop = future toggle.
@@ -139,5 +140,5 @@ Build in order; **each phase ends with a working module.** Do not jump ahead to 
 - Don't break dual-read, or let flags and `sc.*` both fire for one item.
 - Don't patch or fork the CPR system.
 - Don't bundle copyrighted sourcebook content in the public package.
-- Don't jump ahead to M7+ features (hooks, sockets, chat cards, The Garden) before M6 lands.
+- Don't write app-specific chart/breakdown markup — visuals come from the M9.2 shared component library, fed by explainable results.
 - Don't narrate these rules or the architecture to end users in UI copy.
