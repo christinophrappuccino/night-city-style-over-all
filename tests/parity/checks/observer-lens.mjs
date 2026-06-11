@@ -18,9 +18,13 @@
 
 import { collect } from "../../../scripts/engine/collect.mjs";
 import { composeHeadline } from "../../../scripts/engine/headline.mjs";
+import { resolveVisibility } from "../../../scripts/engine/visibility.mjs";
 import { observerOptions, resolveObserver, applyObserverLens } from "../../../scripts/services/observers.mjs";
 import { TUNABLES_DEFAULTS } from "../../../scripts/config/tunables.mjs";
+import { WEAR_MODE_TOGGLE } from "../../../scripts/constants.mjs";
 import FACTIONS_CONFIG from "../../../scripts/config/factions.mjs";
+
+const MODULE_ID = "night-city-style-over-all";
 
 let nextId = 0;
 const mockClothing = (slot, style, cost, name = "Piece") => ({
@@ -164,6 +168,33 @@ export default function observerLensChecks() {
     name: "observer.lens — enough composure beats a passive eye entirely (failed → reveal nothing)",
     actual: { tier: blank.tier, anything: blank.reveal.anything, archetype: blank.reveal.archetype },
     expected: { tier: "failed", anything: false, archetype: false },
+  });
+
+  // ── 5. wearMode live toggle (§27.6, M9.3b) ─────────────────────────────────
+  checks.push({
+    name: "wearMode.toggle — every pair is symmetric (toggle twice = back where you were)",
+    actual: Object.fromEntries(Object.keys(WEAR_MODE_TOGGLE).map((k) => [k, WEAR_MODE_TOGGLE[WEAR_MODE_TOGGLE[k]]])),
+    expected: Object.fromEntries(Object.keys(WEAR_MODE_TOGGLE).map((k) => [k, k])),
+  });
+
+  const slotItem = (name, styleData) => ({
+    id: `wear-mock-${nextId++}`, name, type: "clothing", img: null,
+    system: { equipped: "equipped" }, effects: [],
+    flags: { [MODULE_ID]: { styleData } },
+  });
+  const shirt = slotItem("Inner Shirt", { scSlot: "shirt", region: "torso", layer: 1, coverage: "partial" });
+  const coatOver = (wearMode) =>
+    slotItem("Long Coat", { scSlot: "coat", regions: ["torso", "arms"], layer: 3, coverage: "major", wearMode });
+
+  const closed = resolveVisibility({ items: [shirt, coatOver("closed")] }, T.slots);
+  const open = resolveVisibility({ items: [shirt, coatOver("open")] }, T.slots);
+  checks.push({
+    name: "wearMode.toggle — zip the coat and the shirt stops reading; open it and it's back (§27.6)",
+    actual: { closedShirt: closed.value[shirt.id], openShirt: open.value[shirt.id] },
+    expected: {
+      closedShirt: T.slots.transmission.major,   // major coverage over the torso
+      openShirt: T.slots.transmission.partial,   // open shifts coverage down a step
+    },
   });
 
   return checks;

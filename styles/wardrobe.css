@@ -273,3 +273,27 @@
 }
 .ncsoa-wb-arch.primary { border-color: var(--ncsoa-cyan); box-shadow: 0 0 6px rgba(0, 217, 255, 0.25); }
 .ncsoa-wb-arch .conf { color: var(--ncsoa-cyan); font-weight: 700; font-size: 0.85em; }
+
+/* M9.3b — wearMode live toggle + covered badge (§27.6/§27.3) */
+.ncsoa-wb-slotcell .cell-state { display: flex; gap: 4px; margin-top: 2px; flex-wrap: wrap; }
+.ncsoa-wb-slotcell .cell-wear {
+  background: rgba(0, 217, 255, 0.08); color: var(--ncsoa-dim);
+  border: 1px solid var(--ncsoa-edge); border-radius: 4px;
+  padding: 1px 6px; font-size: 0.68em; letter-spacing: 0.5px; text-transform: uppercase;
+}
+.ncsoa-wb-slotcell .cell-wear:hover { color: var(--ncsoa-cyan); border-color: var(--ncsoa-cyan); }
+.ncsoa-wb-slotcell .cell-covered {
+  font-size: 0.68em; color: var(--ncsoa-muted); padding: 1px 6px;
+  border: 1px dashed rgba(215, 230, 242, 0.25); border-radius: 4px;
+}
+
+/* §24 as-target-sees-it panel */
+.ncsoa-sc-headline.wb { font-size: 1.02em; }
+.ncsoa-wb-seenby {
+  display: flex; flex-direction: column; gap: 6px;
+  border: 1px solid rgba(255, 0, 255, 0.25); border-radius: 6px;
+  background: rgba(255, 0, 255, 0.04); padding: 8px 10px;
+}
+.ncsoa-wb-seenby .sb-read { font-size: 0.95em; color: #fff; }
+.ncsoa-wb-seenby .sb-facts { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.8em; color: var(--ncsoa-text); }
+.ncsoa-wb-seenby .sb-fact b { color: var(--ncsoa-muted); font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }

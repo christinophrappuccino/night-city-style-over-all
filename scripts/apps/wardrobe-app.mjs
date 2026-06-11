@@ -21,9 +21,14 @@
  * Spec: SC-Module-Architecture-Guide.md §7.2–7.3, §6 M6, §19, §4.1 (Layer Rule)
  */
 
-import { MODULE_ID } from "../constants.mjs";
+import { MODULE_ID, WEAR_MODE_TOGGLE } from "../constants.mjs";
 import * as cpr from "../data/cpr-adapter.mjs";
 import { dualReadStyleData } from "../data/sc-keys.mjs";
+import { updateStyleData } from "../data/flags.mjs";
+import { getTunables } from "../config/tunables.mjs";
+import { composeHeadline } from "../engine/headline.mjs";
+import { observerOptions, resolveObserver, applyObserverLens } from "../services/observers.mjs";
+import { ringView } from "./components/charts.mjs";
 import { CLOTHING_SLOTS } from "../engine/collect.mjs";
 import { formatStyleName } from "../engine/recommendations.mjs";
 import { computeActorReads } from "../services/style-reads.mjs";
@@ -103,6 +108,9 @@ export class WardrobeApp extends Application {
     /** Closet filter: the focused slot key, or null for all. */
     this.focusSlot = null;
     this.closetSearch = "";
+    /** §24 lens: preview the staged look as a chosen observer sees it. */
+    this.lens = "self";
+    this.observerSel = "street";
     // One window per actor (unique element id; re-open focuses the existing one).
     this.options.id = `ncsoa-wardrobe-${actor?.id ?? "none"}`;
   }
@@ -157,10 +165,15 @@ export class WardrobeApp extends Application {
     const { collected, cyberwareData, styleRating, cohesion, dripRating, heat, danger, archetypes, chromeProfile } = reads;
 
     // ── Left: slot grid (the staged view) ─────────────────────────────────────
+    // Per-item slot-model detail from the staged run: wearMode (live toggle
+    // §27.6) + physical visibility (covered badge §27.3).
+    const visById = new Map((reads.visibility?.items ?? []).map((v) => [v.id, v]));
     const itemById = new Map(realItems.map((i) => [i.id, i]));
     const slots = CLOTHING_SLOTS.map((slot) => {
       const p = collected.parts[slot] || { worn: false };
       const occupant = p.id ? itemById.get(p.id) : null;
+      const vis = p.id ? visById.get(p.id) : null;
+      const toggleTo = vis ? WEAR_MODE_TOGGLE[vis.wearMode] ?? null : null;
       return {
         slot,
         label: SLOT_LABELS[slot] || slot,
@@ -172,6 +185,12 @@ export class WardrobeApp extends Application {
         cost: p.worn ? p.cost || 0 : null,
         isStaged: slot in this.staged,
         focused: this.focusSlot === slot,
+        // §27.6 live toggle — only modes in a symmetric pair flip.
+        wear: toggleTo ? { mode: vis.wearMode, next: toggleTo, label: humanize(vis.wearMode) } : null,
+        // §27.3 — under another layer; the street doesn't get this piece.
+        covered: vis && vis.visibility < 1
+          ? { pct: Math.round(vis.visibility * 100), by: vis.coveredBy.join(", ") }
+          : null,
       };
     });
 
@@ -253,10 +272,63 @@ export class WardrobeApp extends Application {
         }))
       : [];
 
+    // ── §24 as-target-sees-it: the disguise-planning payoff — watch ONE
+    // observer's read of the STAGED look update live as you swap pieces. ──────
+    const lensBar = {
+      observed: this.lens === "observed",
+      options: observerOptions(config, { actors: this.sceneActors ?? [], selfId: this.actor.id })
+        .map((o) => ({ ...o, selected: o.value === this.observerSel })),
+    };
+    let seenBy = null;
+    if (this.lens === "observed") {
+      try {
+        const stagedItems = buildStagedItems(realItems, this.staged);
+        const oReads = computeActorReads(this.actor, {
+          ...(this.sceneActors ? { sceneActors: this.sceneActors } : {}),
+          config, items: stagedItems, view: "observed",
+        });
+        const observer = resolveObserver(this.observerSel, config, { actors: this.sceneActors ?? [] });
+        const lens = applyObserverLens({ reads: oReads, observer, config });
+        const topArch = oReads.archetypes?.[0];
+        seenBy = {
+          observer: { label: observer.label, kind: observer.kind, perception: observer.perception },
+          tier: lens.tier,
+          tierWord: { failed: "no read", minimal: "a passing glance", partial: "a good look", full: "the studied look" }[lens.tier],
+          anything: lens.reveal.anything,
+          headline: composeHeadline({
+            vibes: lens.reveal.vibeDescriptor ? oReads.vibes : null,
+            archetypes: lens.reveal.archetype ? oReads.archetypes : [],
+            heat: lens.reveal.heat ? oReads.heat : null,
+          }),
+          readsAs: lens.reveal.archetype && topArch ? (topArch.label || topArch.key) : null,
+          heat: lens.reveal.heat ? { value: oReads.heat.value, level: oReads.heat.level } : null,
+          brands: lens.reveal.brands
+            ? lens.brands.recognized.map((r) => (r.counterfeit?.revealed ? `${r.label} (FAKE)` : r.label)).join(" · ") || null
+            : null,
+          disguise: lens.disguise
+            ? {
+                ...lens.disguise,
+                ring: ringView({
+                  value: lens.disguise.confidence,
+                  threshold: getTunables().disguise.labels.passable,
+                  label: lens.disguise.label, size: 84,
+                }),
+              }
+            : null,
+        };
+      } catch (e) {
+        console.error("Night City: Style Over All | Wardrobe observer preview failed:", e);
+      }
+    }
+
     return {
       actorName: this.actor.name,
       actorImg: this.actor.img,
       isDirty: this.isDirty,
+      // §25.2 headline strip + the §24 lens.
+      headline: composeHeadline({ vibes: reads.vibes, archetypes, heat }),
+      lensBar,
+      seenBy,
       outfits,
       hasOutfits: outfits.length > 0,
       isGM,
@@ -332,6 +404,18 @@ export class WardrobeApp extends Application {
 
   _revert() {
     this.staged = {};
+    this.render(false);
+  }
+
+  /**
+   * §27.6 live toggle — zip the coat, raise the hood. This is item STATE, not
+   * an outfit change, so it writes immediately (no staging): the read shifts
+   * for everyone, mid-scene. Goes through updateStyleData (THE styleData write).
+   */
+  async _toggleWear(itemId, next) {
+    const item = this.actor.items?.get?.(itemId);
+    if (!item || !next) return;
+    await updateStyleData(item, { wearMode: next });
     this.render(false);
   }
 
@@ -554,6 +638,19 @@ export class WardrobeApp extends Application {
       this._clearSlot(e.currentTarget.dataset.slot);
     });
     html.find("[data-action='stage']").on("click", (e) => this._stage(e.currentTarget.dataset.item));
+    html.find("[data-action='toggle-wear']").on("click", (e) => {
+      e.stopPropagation(); // inside a slot cell — don't also toggle focus
+      this._toggleWear(e.currentTarget.dataset.item, e.currentTarget.dataset.next);
+    });
+    html.find("[data-action='lens']").on("click", (e) => {
+      this.lens = e.currentTarget.dataset.lens === "observed" ? "observed" : "self";
+      this.render(false);
+    });
+    html.find("[data-control='observer']").on("change", (e) => {
+      this.observerSel = e.currentTarget.value;
+      this.lens = "observed";
+      this.render(false);
+    });
     html.find("[data-action='apply']").on("click", () => this._apply());
     html.find("[data-action='revert']").on("click", () => this._revert());
     html.find("[data-action='save-outfit']").on("click", () => this._saveOutfit());

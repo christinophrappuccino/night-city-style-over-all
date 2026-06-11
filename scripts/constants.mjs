@@ -110,6 +110,19 @@ export const COVERAGE = ["none", "partial", "major", "full"];
 /** Garment wear state — partly a live toggle (§27.6). Open vocab. */
 export const WEAR_MODES = ["open", "closed", "raised", "lowered", "on", "off", "slung", "tucked"];
 
+/**
+ * §27.6 live-toggle pairs — "pull your hood up mid-scene and your read shifts".
+ * SYMMETRIC by design (toggling twice returns to the prior state); modes
+ * outside these pairs (worn/loose/none/custom) get no toggle — author one of
+ * the pair modes on the item to make it flippable.
+ */
+export const WEAR_MODE_TOGGLE = {
+  open: "closed", closed: "open",
+  raised: "lowered", lowered: "raised",
+  on: "off", off: "on",
+  slung: "tucked", tucked: "slung",
+};
+
 /** Optional laterality (§27.4). */
 export const SIDES = ["left", "right", "pair"];
 
