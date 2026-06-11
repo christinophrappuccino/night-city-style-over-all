@@ -30,6 +30,7 @@ import UNIFORMS from "./uniforms.mjs";
 import SHOPS from "./shops.mjs";
 import TRENDS from "./trends.mjs";
 import GARDEN from "./garden.mjs";
+import BRANDS from "./brands.mjs";
 
 /**
  * @typedef {Object} ConfigEntry
@@ -54,6 +55,7 @@ export const CONFIGS = [
   { key: SETTINGS.CONFIG_SHOPS,           journal: "Style Checker - Shops",           schema: 1, seed: SHOPS },
   { key: SETTINGS.CONFIG_TRENDS,          journal: "Style Checker - Trends",          schema: 1, seed: TRENDS },
   { key: SETTINGS.CONFIG_GARDEN,          journal: "Style Checker - Garden",          schema: 1, seed: GARDEN },
+  { key: SETTINGS.CONFIG_BRANDS,          journal: "Style Checker - Brands",          schema: 1, seed: BRANDS },
 ];
 
 /** Lookup a config entry by its settings key. */

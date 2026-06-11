@@ -30,6 +30,7 @@ import tailorChecks from "./checks/tailor.mjs";
 import trendChecks from "./checks/trends.mjs";
 import liveLayerChecks from "./checks/live-layer.mjs";
 import gardenChecks from "./checks/garden.mjs";
+import brandChecks from "./checks/brands.mjs";
 
 // Per-actor modules: invoked once per fixture.
 const CHECK_MODULES = [
@@ -59,6 +60,7 @@ const AGGREGATE_MODULES = [
   trendChecks,
   liveLayerChecks,
   gardenChecks,
+  brandChecks,
 ];
 
 const data = loadFixtures();

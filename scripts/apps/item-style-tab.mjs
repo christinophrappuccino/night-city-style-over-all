@@ -85,6 +85,11 @@ function fieldContext(field, sd) {
       return { ...base, isScalar: true, value: current ?? "", hasMin: field.min != null, hasMax: field.max != null };
     case "select": {
       const options = (field.options ?? []).map((o) => ({ ...o, selected: String(o.value) === String(current) }));
+      // Open-vocab fields (brand, scSlot): keep an authored value that isn't in
+      // the option list selectable instead of silently dropping it on save.
+      if (current != null && current !== "" && !options.some((o) => o.selected)) {
+        options.push({ value: current, label: `${humanize(String(current))} (custom)`, selected: true });
+      }
       return { ...base, isSelect: true, value: current ?? "", options, allowBlank: field.allowBlank };
     }
     case "multiSelect": {

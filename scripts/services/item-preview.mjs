@@ -40,6 +40,7 @@ function groupMods(mods) {
     districts: mapRows(mods.districts),
     vibe: mapRows(mods.vibe),
     factions: mapRows(mods.factions),
+    brands: mapRows(mods.brands ?? {}),
     scalars,
   };
 }
@@ -54,8 +55,11 @@ function groupMods(mods) {
  * @returns {import('../engine/explain.mjs').ExplainResult & {groups:object, hasSignal:boolean}}
  */
 export function previewItemCascade(styleData = {}, engineConfig = getEngineConfig()) {
-  const cascadeT = getTunables().cascade ?? {};
-  const { mods, components, tunablesApplied } = cascadeStyleData(styleData, engineConfig.factions, cascadeT);
+  const tunables = getTunables();
+  const { mods, components, tunablesApplied } = cascadeStyleData(
+    styleData, engineConfig.factions, tunables.cascade ?? {},
+    engineConfig.brands ?? {}, tunables.brand ?? {}
+  );
   const groups = groupMods(mods);
   const signalCount = components.length;
 

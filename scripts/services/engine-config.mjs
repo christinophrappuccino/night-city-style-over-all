@@ -22,6 +22,7 @@ import FACTIONS_SEED from "../config/factions.mjs";
 import CYBERWARE_SEED from "../config/cyberware.mjs";
 import DISTRICTS_SEED from "../config/districts.mjs";
 import SCENE_GATES_SEED from "../config/scene-gates.mjs";
+import BRANDS_SEED from "../config/brands.mjs";
 
 /** DataStore.get(key) with a hard seed fallback (settings unregistered / absent). */
 function live(key, seed) {
@@ -35,12 +36,13 @@ function live(key, seed) {
 
 /**
  * Assemble the engine-ready config bundle from settings (seed fallback).
- * @returns {{ratings, factions, cyberware, districts, sceneGates}}
+ * @returns {{ratings, factions, cyberware, districts, sceneGates, brands}}
  *   ratings    = { RATING_FORMULA, TIERS }
  *   factions   = { FACTIONS, FACTION_ARCHETYPES, ROLE_PROFILES }
  *   cyberware  = { CYBERWARE_CATEGORIES, CYBERWARE_VISIBILITY, HUMANITY_CONFIG }
  *   districts  = { <KEY>: { name, modifiers, … } }
  *   sceneGates = { gates: { <KEY>: { name, icon, criteria, … } } }
+ *   brands     = { BRANDS: { <key>: { label, tier, styleAffinity, … } } } (§13.1, M9.1)
  */
 export function getEngineConfig() {
   return {
@@ -49,5 +51,6 @@ export function getEngineConfig() {
     cyberware: live(SETTINGS.CONFIG_CYBERWARE, CYBERWARE_SEED),
     districts: live(SETTINGS.CONFIG_DISTRICTS, DISTRICTS_SEED),
     sceneGates: live(SETTINGS.CONFIG_SCENE_GATES, SCENE_GATES_SEED),
+    brands: live(SETTINGS.CONFIG_BRANDS, BRANDS_SEED),
   };
 }

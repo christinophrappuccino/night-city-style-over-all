@@ -17,7 +17,7 @@
  *   multiSelect — `string[]` (regions covered)
  *   color       — hex string
  *   checkbox    — boolean
- *   text        — free string (brand, until the §13 registry lands)
+ *   text        — free string
  *
  * Spec: SC-Module-Architecture-Guide.md §8.2, §5.2, §27, §28, §9.
  */
@@ -97,7 +97,7 @@ const SECTIONS = [
     hint: "Social tone (§22) and provenance (§13) — orthogonal to style and identity.",
     fields: [
       { key: "vibe",      path: "vibe",      control: "weightedMap", options: opts(VIBE_TAGS), defaultStrength: 3, step: 1, hint: "Tradeoffs, not 'more is better' — menacing aids intimidation, hurts approachability." },
-      { key: "brand",     path: "brand",     control: "text", placeholder: "brand key (e.g. ofuda)", hint: "Registry key; broad cascade (style/cost/heat/recognition). Free text until the brand registry ships." },
+      { key: "brand",     path: "brand",     control: "select", optionsFrom: "brands", allowBlank: true, hint: "Broad cascade — style + tier→cost + heat + vibe + soft signals. Add houses in GM Config → Data → Brands." },
       { key: "formality", path: "formality", control: "select", options: ordinal(FORMALITY_LABELS), allowBlank: true, label: "Formality" },
       { key: "condition", path: "condition", control: "select", options: opts(CONDITIONS), allowBlank: true },
       { key: "fit",       path: "fit",       control: "select", options: opts(FITS), allowBlank: true, hint: "Read quality + conceal potential (§15); the Tailor retailors this." },
@@ -145,6 +145,9 @@ export function buildTabSchema(engineConfig = {}) {
       .sort(sortByLabel),
     districts: Object.entries(engineConfig.districts ?? {})
       .map(([value, v]) => ({ value, label: v?.name || humanize(value) }))
+      .sort(sortByLabel),
+    brands: Object.entries(engineConfig.brands?.BRANDS ?? {})
+      .map(([value, v]) => ({ value, label: v?.label || humanize(value) }))
       .sort(sortByLabel),
   };
 

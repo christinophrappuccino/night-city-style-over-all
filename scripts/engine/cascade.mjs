@@ -24,6 +24,13 @@
  *    intentional unification (§29.8: parity = backward-compatible, not bug-for-bug).
  *  · `vibe` rides the mods as a superset axis (the macro skipped it); no legacy
  *    consumer reads it, so legacy results are unchanged.
+ *  · `brand` (M9.1, §13.2) cascades through the Brand Registry — broad: style +
+ *    vibe + cost (via tier) + heat + optional faction/district/archetype signals,
+ *    each clamped by tunables.brand.caps (§29.4: additive, never unbounded). The
+ *    `brands` map is a superset axis (key → branded-piece count) for downstream
+ *    consumers (full-look bonus, recognition gating, Garden). Legacy items carry
+ *    no brand → legacy results unchanged; with no registry/tunables passed the
+ *    block is inert (parity fixtures untouched).
  *
  * Pure: documents are read only through cpr-adapter / data-layer helpers; config
  * and tunables are passed IN. No game.*, no ui.*.
@@ -47,6 +54,7 @@ const ACTIVE_EQUIP_STATES = new Set([cpr.EQUIP.EQUIPPED, "installed"]);
 export function emptyMods() {
   return {
     archetypes: {}, styles: {}, districts: {}, factions: {}, chrome: {}, vibe: {},
+    brands: {}, // superset axis (M9.1): brand key → branded-piece count
     cost: 0, armor: 0, heat: 0, disguiseDC: 0, antiStyleSuppress: 0,
   };
 }
@@ -62,9 +70,11 @@ const addMap = (map, key, v) => { if (key && v) map[key] = (map[key] || 0) + v; 
  * @param {object} styleData            the §5.2 flag blob (any subset)
  * @param {object} factionsConfig       { FACTIONS, FACTION_ARCHETYPES }
  * @param {object} cascadeTunables      tunables.cascade group
+ * @param {object} [brandsConfig]       { BRANDS } — the §13.1 registry (M9.1)
+ * @param {object} [brandTunables]      tunables.brand group (M9.1)
  * @returns {{ mods: object, components: Array, tunablesApplied: object }}
  */
-export function cascadeStyleData(styleData = {}, factionsConfig = {}, cascadeTunables = {}) {
+export function cascadeStyleData(styleData = {}, factionsConfig = {}, cascadeTunables = {}, brandsConfig = {}, brandTunables = {}) {
   const mods = emptyMods();
   const components = [];
   const C = cascadeTunables;
@@ -87,6 +97,58 @@ export function cascadeStyleData(styleData = {}, factionsConfig = {}, cascadeTun
   if (styleData.antiStyleSuppress) {
     mods.antiStyleSuppress = Math.min(1, max(0, mods.antiStyleSuppress + styleData.antiStyleSuppress));
     push("anti-style suppress", styleData.antiStyleSuppress, "direct");
+  }
+
+  // ── Brand cascade (M9.1, §13.2 — broad: style+vibe+cost+heat+soft signals) ──
+  // Sits between faction (full) and archetype (medium) in cascade breadth. Each
+  // derived value is clamped per-axis (tunables.brand.caps) so brand defaults +
+  // explicit fields stack additively but never compound unbounded (§29.4).
+  const brandKey = styleData.brand;
+  if (brandKey) {
+    addMap(mods.brands, brandKey, 1);
+    const bc = (brandsConfig.BRANDS ?? {})[brandKey];
+    if (!bc) {
+      push(`brand ${humanize(brandKey)}`, 1, "direct (unknown brand)");
+    } else {
+      const B = brandTunables;
+      const caps = B.caps ?? {};
+      const clampAxis = (axis, v) => {
+        const cap = caps[axis];
+        return cap === undefined ? v : Math.min(cap, max(-cap, v));
+      };
+      const via = `${bc.label || humanize(brandKey)} (brand)`;
+
+      // 1. Style affinity — registry scale → virtual style points.
+      for (const [s, w] of Object.entries(bc.styleAffinity ?? {})) {
+        const v = clampAxis("style", round(w * B.styleMult));
+        if (v) { addMap(mods.styles, s, v); push(`style ${humanize(s)}`, v, `via ${via}`); }
+      }
+      // 2. Vibe identity (§22.3 — brands push vibes).
+      for (const [t, w] of Object.entries(bc.vibe ?? {})) {
+        const v = clampAxis("vibe", round(w * B.vibeMult));
+        if (v) { addMap(mods.vibe, t, v); push(`vibe ${humanize(t)}`, v, `via ${via}`); }
+      }
+      // 3. Tier → perceived cost (§13.2: tier drives perceived cost).
+      const tierCost = (B.tierCost ?? {})[bc.tier] ?? 0;
+      const costV = clampAxis("cost", round(tierCost * B.costMult));
+      if (costV) { mods.cost += costV; push("cost", costV, `via ${via} (${bc.tier})`); }
+      // 4. Heat profile (flashy designer + · grey/street ~0).
+      const heatV = clampAxis("heat", round((bc.heatProfile ?? 0) * B.heatMult));
+      if (heatV) { mods.heat += heatV; push("heat", heatV, `via ${via}`); }
+      // 5. Optional soft signals — affiliation, district fit, identity nudge.
+      for (const [f, w] of Object.entries(bc.factionAffinity ?? {})) {
+        const v = clampAxis("faction", round(w * B.factionMult));
+        if (v) { addMap(mods.factions, f, v); push(`faction ${humanize(f)}`, v, `via ${via}`); }
+      }
+      for (const [d, w] of Object.entries(bc.districtAffinity ?? {})) {
+        const v = clampAxis("district", round(w * B.districtMult));
+        if (v) { addMap(mods.districts, d, v); push(`district ${humanize(d)}`, v, `via ${via}`); }
+      }
+      for (const [a, w] of Object.entries(bc.archetypeSignal ?? {})) {
+        const v = clampAxis("archetype", round(w * B.archetypeMult));
+        if (v) { addMap(mods.archetypes, a, v); push(`archetype ${humanize(a)}`, v, `via ${via}`); }
+      }
+    }
   }
 
   // ── Faction cascade (the wide one) ────────────────────────────────────────
@@ -133,12 +195,12 @@ export function cascadeStyleData(styleData = {}, factionsConfig = {}, cascadeTun
     if (dc) { mods.disguiseDC += dc; push("disguise DC", dc, `via ${via}`); }
   }
 
-  return { mods, components, tunablesApplied: { "cascade.*": C } };
+  return { mods, components, tunablesApplied: { "cascade.*": C, "brand.*": brandTunables } };
 }
 
 // ── the actor-wide collector (macro collectDisguiseModifiers) ────────────────
 
-const MAP_FIELDS = ["archetypes", "styles", "districts", "factions", "chrome", "vibe"];
+const MAP_FIELDS = ["archetypes", "styles", "districts", "factions", "chrome", "vibe", "brands"];
 const SCALAR_FIELDS = ["cost", "armor", "heat", "disguiseDC"];
 
 /** Merge one item's cascaded mods into the accumulator (suppress clamps 0–1). */
@@ -191,6 +253,10 @@ function flagSources(item, styleData) {
     const value = styleData[field];
     if (value) rows.push({ ...base, key, category: field, subKey: "", value });
   }
+  // Brand is a tag, not a map — one row per branded item (M9.1).
+  if (styleData.brand) {
+    rows.push({ ...base, key: `sc.brand.${styleData.brand}`, category: "brand", subKey: styleData.brand, value: 1 });
+  }
   return rows;
 }
 
@@ -205,7 +271,10 @@ function isModsProducingKey(key, value) {
     case "map": return !!sub;
     case "scalar": return true;
     case "scalarSub": return sub === spec.sub;
-    default: return false; // tag/tagNum (slot bridge) carry no read-modifier
+    // Brand became mods-producing in M9.1 (registry cascade); other tags
+    // (slot/region/side/layer) still carry no read-modifier.
+    case "tag": return spec.field === "brand" && !!sub;
+    default: return false; // tagNum (slot bridge) carries no read-modifier
   }
 }
 
@@ -222,11 +291,13 @@ function isModsProducingKey(key, value) {
  * @param {object[]} [p.actorEffects] actor-level Active Effects (transferred sc.* keys)
  * @param {object} factionsConfig     { FACTIONS, FACTION_ARCHETYPES }
  * @param {object} cascadeTunables    tunables.cascade group
- * @returns {object} { archetypes, styles, districts, factions, chrome, vibe,
+ * @param {object} [brandsConfig]     { BRANDS } — the §13.1 registry (M9.1)
+ * @param {object} [brandTunables]    tunables.brand group (M9.1)
+ * @returns {object} { archetypes, styles, districts, factions, chrome, vibe, brands,
  *   cost, armor, heat, disguiseDC, antiStyleSuppress, sources, hasModifiers,
  *   components, tunablesApplied }
  */
-export function collectScMods({ items = [], actorEffects = [] } = {}, factionsConfig = {}, cascadeTunables = {}) {
+export function collectScMods({ items = [], actorEffects = [] } = {}, factionsConfig = {}, cascadeTunables = {}, brandsConfig = {}, brandTunables = {}) {
   const acc = emptyMods();
   acc.sources = [];
   acc.hasModifiers = false;
@@ -241,7 +312,7 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
     const flag = getStyleData(item);
     if (flag !== undefined) {
       // Flag item: its sc.* AEs (and their transferred copies) are IGNORED.
-      const { mods, components: c } = cascadeStyleData(flag ?? {}, factionsConfig, cascadeTunables);
+      const { mods, components: c } = cascadeStyleData(flag ?? {}, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
       if (!modsHaveSignal(mods)) continue;
       mergeMods(acc, mods);
       acc.sources.push(...flagSources(item, flag));
@@ -254,7 +325,7 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
     if (!aeSources.length) continue;
     const parsed = styleDataFromChanges(aeSources);
     if (!parsed) continue;
-    const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables);
+    const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
     if (!modsHaveSignal(mods)) continue;
     mergeMods(acc, mods);
     for (const s of aeSources) {
@@ -287,7 +358,7 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
 
       const parsed = styleDataFromChanges([{ key: change.key, value }]);
       if (!parsed) continue;
-      const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables);
+      const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
       if (!modsHaveSignal(mods)) continue;
       mergeMods(acc, mods);
       const parts = change.key.split(".");
@@ -304,6 +375,6 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
 
   acc.hasModifiers = modsHaveSignal(acc);
   acc.components = components;
-  acc.tunablesApplied = { "cascade.*": cascadeTunables };
+  acc.tunablesApplied = { "cascade.*": cascadeTunables, "brand.*": brandTunables };
   return acc;
 }

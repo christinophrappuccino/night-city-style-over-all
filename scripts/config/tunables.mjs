@@ -490,6 +490,26 @@ export const TUNABLES_DEFAULTS = {
     costNudgeDivisor: 100,                          // cost nudge = round(costTarget · value/100)
     dcDivisor: 10,                                  // DC bonus = round(value/10)
   },
+
+  // ── Brand cascade (M9.1: cascade.mjs — NEW, no macro reference; §13.2) ── NEW
+  // How a registry brand expands into reads. Registry affinities are authored on
+  // the guide's scale (§13.1: styleAffinity ~12 = strong); the multipliers convert
+  // them to the engine's virtual-point scale. Per-axis caps enforce §29.4: brand
+  // defaults + explicit fields stack additively but never compound unbounded.
+  // Values tuned by feel on a build (§29.7), not inherited.
+  brand: {
+    styleMult: 0.25,     // virtual style pts = round(affinity · 0.25) → 12 ≈ 3
+    vibeMult: 1,         // brand vibe identity applies as authored
+    heatMult: 1,         // heatProfile applies as authored
+    costMult: 1,         // perceived-cost nudge = round(tierCost[tier] · 1)
+    factionMult: 0.4,    // soft affiliation = round(affinity · 0.4) — weaker than worn colors
+    districtMult: 1,     // district-fit nudge applies as authored
+    archetypeMult: 1,    // identity nudge applies as authored
+    // tier → perceived-cost contribution (eb) — §13.2 "tier drives perceived cost"
+    tierCost: { street: 100, massMarket: 400, premium: 1500, luxury: 4000, hauteCouture: 9000 },
+    // Per-axis clamp on what ONE item's brand may contribute (symmetric ±).
+    caps: { style: 8, vibe: 4, heat: 10, cost: 6000, faction: 12, district: 6, archetype: 8 },
+  },
 };
 
 /**

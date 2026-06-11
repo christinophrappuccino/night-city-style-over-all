@@ -32,7 +32,9 @@ function actorScMods(actor, config, items, tunables = getTunables()) {
   return collectScMods(
     { items, actorEffects: cpr.getActorEffects(actor) },
     config.factions ?? {},
-    tunables.cascade ?? {}
+    tunables.cascade ?? {},
+    config.brands ?? {},
+    tunables.brand ?? {}
   );
 }
 

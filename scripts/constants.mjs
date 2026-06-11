@@ -33,6 +33,7 @@ export const SETTINGS = {
   CONFIG_SHOPS:         "shops",        // vendor entities (§21.1, M6)
   CONFIG_TRENDS:        "trends",       // rotating fashion meta (§14.4, M7)
   CONFIG_GARDEN:        "garden",       // Garden ads + event templates (§21.4, M7)
+  CONFIG_BRANDS:        "brands",       // brand registry (§13.1, M9.1)
   GARDEN_FEED:          "gardenFeed",   // hidden: rolling event-post store (§21.4)
   TUNABLES:             "tunables",   // GM overrides shadowing tunables defaults (§18)
   ICON_RECOLOR_ENABLED: "iconRecolorEnabled",
@@ -123,6 +124,12 @@ export const GARMENT_MODIFICATIONS = [
 
 /** Authenticity (§13.4 / §15) — counterfeit play. */
 export const AUTHENTICITY = ["genuine", "counterfeit"];
+
+/** Brand tiers (§13.1) — drives perceived cost + the style ceiling. Ordered. */
+export const BRAND_TIERS = ["street", "massMarket", "premium", "luxury", "hauteCouture"];
+
+/** Brand recognition (§13.3) — perception-gated brand literacy. Ordered broad→narrow. */
+export const BRAND_RECOGNITION = ["iconic", "known", "niche"];
 
 /** Read priority 0–3 — supersedes the boolean statementPiece (§27.6). Index = value. */
 export const READ_PRIORITY_LABELS = ["Background", "Normal", "Noticeable", "Statement"];
