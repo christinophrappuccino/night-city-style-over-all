@@ -391,10 +391,32 @@ export const TUNABLES_DEFAULTS = {
     // coordination bonus, palette-clash penalty, colorway-affiliation weight (§9.2)
   },
 
-  // ── Slots & layering (NEW, §27) ───────────────────────────────────── PENDING
+  // ── Slots & layering (M9.1: visibility.mjs — NEW, §27.6/§29.1 Stage 2) ── NEW
   slots: {
-    // coverage→read weights, wearMode coverage modifiers, readPriority multipliers,
-    // anchored-visibility inheritance
+    // Transmission per EFFECTIVE coverage: how much of an inner item's signal
+    // passes through ONE covering garment (1 = reads fully, 0 = doesn't read).
+    // §27.6 graded model: full hides, major reads weakly, partial (mesh, open
+    // vest) still mostly reads.
+    transmission: { none: 1, partial: 0.7, major: 0.25, full: 0 },
+    // wearMode → effective-coverage shift in coverage STEPS (none<partial<major<full).
+    // 0 = as authored (deliberate concealment states); negative opens the garment
+    // up (§27.6: an open coat's coverage drops; a lowered mask/hood hides nothing).
+    wearModeShift: {
+      closed: 0, raised: 0, on: 0, tucked: 0, worn: 0,
+      open: -1, slung: -1, loose: -1,
+      lowered: -3, off: -3,
+    },
+    // §27.6 default wearMode by scSlot — the natural, least-concealing worn state
+    // (Christian's principle: concealment is always a deliberate toggle).
+    defaultWearMode: {
+      coat: "open", jacket: "open", cape: "open", cloak: "open",
+      hood: "lowered", mask: "lowered", respirator: "lowered", veil: "lowered",
+      scarf: "loose", bag: "slung", backpack: "slung",
+      glasses: "worn", mirrorshades: "worn",
+    },
+    // readPriority 0–3 → contribution multiplier (§29.4: a multiplier, not a
+    // flag; index = authored value; absent reads as 1 · normal).
+    readPriorityMult: [0.5, 1, 1.5, 2.5],
   },
 
   // ── Formality (NEW, §28) ──────────────────────────────────────────── PENDING

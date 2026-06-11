@@ -203,6 +203,23 @@ export function cascadeStyleData(styleData = {}, factionsConfig = {}, cascadeTun
 const MAP_FIELDS = ["archetypes", "styles", "districts", "factions", "chrome", "vibe", "brands"];
 const SCALAR_FIELDS = ["cost", "armor", "heat", "disguiseDC"];
 
+/** Scale one item's cascaded mods by its read factor (visibility × readPriority,
+ *  §29.1 Stage 3 — engine/visibility.mjs computes the factors). Map entries that
+ *  round to 0 drop; suppress scales as a float and keeps its 0–1 clamp. */
+function scaleMods(mods, f) {
+  for (const field of MAP_FIELDS) {
+    for (const [k, v] of Object.entries(mods[field])) {
+      const s = round(v * f);
+      if (s === 0) delete mods[field][k];
+      else mods[field][k] = s;
+    }
+  }
+  for (const field of SCALAR_FIELDS) mods[field] = round(mods[field] * f);
+  if (mods.antiStyleSuppress) {
+    mods.antiStyleSuppress = Math.min(1, max(0, mods.antiStyleSuppress * f));
+  }
+}
+
 /** Merge one item's cascaded mods into the accumulator (suppress clamps 0–1). */
 function mergeMods(acc, mods) {
   for (const f of MAP_FIELDS) {
@@ -293,30 +310,40 @@ function isModsProducingKey(key, value) {
  * @param {object} cascadeTunables    tunables.cascade group
  * @param {object} [brandsConfig]     { BRANDS } — the §13.1 registry (M9.1)
  * @param {object} [brandTunables]    tunables.brand group (M9.1)
+ * @param {object} [opts]
+ * @param {Record<string, number>} [opts.factors] per-item read factors (M9.1,
+ *   §29.1 Stage 3): itemId → multiplier (visibility × readPriority, from
+ *   engine/visibility.mjs). Absent id = 1. Factor 0 skips the item entirely
+ *   (covered doesn't read); fractional factors scale-and-round contributions.
  * @returns {object} { archetypes, styles, districts, factions, chrome, vibe, brands,
  *   cost, armor, heat, disguiseDC, antiStyleSuppress, sources, hasModifiers,
  *   components, tunablesApplied }
  */
-export function collectScMods({ items = [], actorEffects = [] } = {}, factionsConfig = {}, cascadeTunables = {}, brandsConfig = {}, brandTunables = {}) {
+export function collectScMods({ items = [], actorEffects = [] } = {}, factionsConfig = {}, cascadeTunables = {}, brandsConfig = {}, brandTunables = {}, { factors } = {}) {
   const acc = emptyMods();
   acc.sources = [];
   acc.hasModifiers = false;
   const components = [];
+  const factorOf = (id) => (factors && id != null && factors[id] !== undefined ? factors[id] : 1);
 
   const itemById = new Map(items.map((i) => [i.id, i]));
 
   // ── Pass 1: equipped/installed items, dual-read (flags win — D4) ──────────
   for (const item of items) {
     if (!ACTIVE_EQUIP_STATES.has(cpr.getEquipState(item))) continue;
+    const f = factorOf(item.id);
+    if (f === 0) continue; // fully covered — doesn't read (§27.3)
 
     const flag = getStyleData(item);
     if (flag !== undefined) {
       // Flag item: its sc.* AEs (and their transferred copies) are IGNORED.
       const { mods, components: c } = cascadeStyleData(flag ?? {}, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
+      if (f !== 1) scaleMods(mods, f);
       if (!modsHaveSignal(mods)) continue;
       mergeMods(acc, mods);
       acc.sources.push(...flagSources(item, flag));
       components.push(...c.map((x) => ({ ...x, source: `${item.name} · ${x.source}` })));
+      if (f !== 1) components.push(component(`${item.name} read weight`, f, "visibility × read priority"));
       continue;
     }
 
@@ -326,6 +353,7 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
     const parsed = styleDataFromChanges(aeSources);
     if (!parsed) continue;
     const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
+    if (f !== 1) scaleMods(mods, f);
     if (!modsHaveSignal(mods)) continue;
     mergeMods(acc, mods);
     for (const s of aeSources) {
@@ -338,6 +366,7 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
       });
     }
     components.push(...c.map((x) => ({ ...x, source: `${item.name} · ${x.source}` })));
+    if (f !== 1) components.push(component(`${item.name} read weight`, f, "visibility × read priority"));
   }
 
   // ── Pass 2: actor-level transferred effects (macro §8256–8274) ────────────
@@ -355,10 +384,14 @@ export function collectScMods({ items = [], actorEffects = [] } = {}, factionsCo
         acc.sources.some((s) => s.itemId === originId && s.key === change.key && s.value === value);
       if (alreadyCounted) continue;
       if (!isModsProducingKey(change.key, value)) continue;
+      // Transferred copies inherit their origin item's read factor.
+      const f = originItem ? factorOf(originItem.id) : 1;
+      if (f === 0) continue;
 
       const parsed = styleDataFromChanges([{ key: change.key, value }]);
       if (!parsed) continue;
       const { mods, components: c } = cascadeStyleData(parsed, factionsConfig, cascadeTunables, brandsConfig, brandTunables);
+      if (f !== 1) scaleMods(mods, f);
       if (!modsHaveSignal(mods)) continue;
       mergeMods(acc, mods);
       const parts = change.key.split(".");

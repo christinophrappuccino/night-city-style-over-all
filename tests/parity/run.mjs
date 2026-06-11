@@ -32,6 +32,7 @@ import liveLayerChecks from "./checks/live-layer.mjs";
 import gardenChecks from "./checks/garden.mjs";
 import brandChecks from "./checks/brands.mjs";
 import vibeChecks from "./checks/vibes.mjs";
+import visibilityChecks from "./checks/visibility.mjs";
 
 // Per-actor modules: invoked once per fixture.
 const CHECK_MODULES = [
@@ -63,6 +64,7 @@ const AGGREGATE_MODULES = [
   gardenChecks,
   brandChecks,
   vibeChecks,
+  visibilityChecks,
 ];
 
 const data = loadFixtures();

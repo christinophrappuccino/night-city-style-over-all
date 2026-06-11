@@ -25,17 +25,19 @@ import { detectAllArchetypes, detectChromeProfile } from "../engine/archetypes.m
 import { deriveSceneToken, aggregateScene } from "../engine/scene.mjs";
 import { collectScMods } from "../engine/cascade.mjs";
 import { vibeProfile } from "../engine/vibes.mjs";
+import { resolveVisibility } from "../engine/visibility.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
 
 /** Actor → aggregated sc-key / styleData read-modifiers (dual-read, cascade applied). */
-function actorScMods(actor, config, items, tunables = getTunables()) {
+function actorScMods(actor, config, items, tunables = getTunables(), factors = undefined) {
   return collectScMods(
     { items, actorEffects: cpr.getActorEffects(actor) },
     config.factions ?? {},
     tunables.cascade ?? {},
     config.brands ?? {},
-    tunables.brand ?? {}
+    tunables.brand ?? {},
+    { factors }
   );
 }
 
@@ -48,20 +50,33 @@ function actorScMods(actor, config, items, tunables = getTunables()) {
  * @param {object} [opts.config] pre-fetched engine config (defaults to getEngineConfig()).
  * @param {object[]} [opts.items] hypothetical-set override (Wardrobe stage preview, §7.3):
  *   the FULL item list to evaluate instead of the actor's real one. Zero writes.
+ * @param {"self"|"observed"} [opts.view] §29.2 two-mode switch (M9.1). "self"
+ *   (default) scales styleData/sc.* contributions by readPriority only (full
+ *   set); "observed" also applies physical visibility — covered items stop
+ *   reading (§27.3). NOTE: the CPR-native genre counts (collect) and the
+ *   perception lens are not yet view-gated; they ride the observer work.
  * @returns {object} { actor, collected, cyberwareData, styleRating, cohesion, dripRating,
- *   scene, heat, danger, archetypes, chromeProfile, scMods, woundInjuryHeat }
+ *   scene, heat, danger, archetypes, chromeProfile, scMods, vibes, visibility,
+ *   view, woundInjuryHeat }
  */
-export function computeActorReads(actor, { sceneActors, config = getEngineConfig(), items } = {}) {
+export function computeActorReads(actor, { sceneActors, config = getEngineConfig(), items, view = "self" } = {}) {
   const roleProfiles = config.factions?.ROLE_PROFILES ?? null;
   const archetypeDefs = config.factions?.FACTION_ARCHETYPES ?? {};
   const itemList = items ?? cpr.getItems(actor);
+  const tunables = getTunables();
 
-  // Stage 1 — collect (+ chrome aggregation + sc.*/styleData modifiers, M5).
+  // Stage 1–2 — collect + physical visibility (§29.1; M9.1: visibility.mjs).
+  const visibility = resolveVisibility({ items: itemList }, tunables.slots ?? {});
+  const factorView = view === "observed" ? "observed" : "self";
+  const factors = Object.fromEntries(
+    Object.entries(visibility.factors).map(([id, f]) => [id, f[factorView]])
+  );
+
   const collected = collect(actor, { items: itemList });
   const cyberwareData = analyzeCyberware(actor, config.cyberware, { items: itemList });
   const socialStats = collected.socialStats;
   const roleData = collected.roleData;
-  const scMods = actorScMods(actor, config, itemList);
+  const scMods = actorScMods(actor, config, itemList, tunables, factors);
   const criticalInjuries = itemList.filter((i) => i.type === cpr.ITEM_TYPE.CRITICAL_INJURY);
 
   // Stage 3–4 — characterization.
@@ -93,7 +108,6 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
   const drawnWeapons = collected.weapons.equipped.filter((w) => w.state === "drawn").length;
   // Heat variant of scMods: wound/injury heat folds into .heat (macro §12406–12423).
   // Archetypes & co. keep the BASE scMods — the fold is heat-only.
-  const tunables = getTunables();
   const wiHeat = woundInjuryHeat({
     hp: cpr.getHP(actor),
     criticalInjuryNames: criticalInjuries.map((ci) => ci.name),
@@ -132,6 +146,8 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     chromeProfile,
     scMods,
     vibes,
+    visibility,
+    view,
     woundInjuryHeat: wiHeat,
   };
 }
