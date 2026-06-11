@@ -1,0 +1,18 @@
+{{!-- §25.1 style fingerprint — consumes charts.mjs fingerprintView(). The
+     legend pairs every color with its label + share (§25.3). --}}
+<div class="ncsoa-fingerprint" role="img" aria-label="{{ariaText}}">
+  {{#if hasSignal}}
+    <div class="ncsoa-fp-bar">
+      {{#each segments}}
+        <span class="ncsoa-fp-seg {{this.colorClass}}" style="width:{{this.pct}}%" title="{{this.label}} {{this.pct}}%"></span>
+      {{/each}}
+    </div>
+    <div class="ncsoa-fp-legend">
+      {{#each segments}}
+        <span class="ncsoa-fp-key {{#if this.dominant}}dominant{{/if}}"><i class="ncsoa-fp-swatch {{this.colorClass}}"></i>{{this.label}} <b>{{this.pct}}%</b></span>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="ncsoa-chart-empty">No styled pieces equipped.</div>
+  {{/if}}
+</div>

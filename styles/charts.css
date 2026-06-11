@@ -1,0 +1,148 @@
+/*
+ * charts.css — the §25 shared chart library's ONE stylesheet (M9.2).
+ *
+ * Consistent visual language (§25.3): one gauge style, one ring style, one bar
+ * style, reused everywhere. Shared color semantics — warm ramp = heat/threat,
+ * green = safe/pass, red = danger/fail, neutral gray = structural. Color is
+ * never the only carrier: the partials pair it with labels, glyphs, dashes and
+ * markers (colorblind safety).
+ *
+ * App-specific LAYOUT stays in the app's own file; chart anatomy lives here.
+ * Spec: SC-Module-Architecture-Guide.md §25, §19.4
+ */
+
+/* ── shared bits ── */
+.ncsoa figure.ncsoa-radar,
+.ncsoa figure.ncsoa-gauge,
+.ncsoa figure.ncsoa-ring { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.ncsoa .ncsoa-chart-empty { color: var(--ncsoa-muted); font-size: 0.82em; font-style: italic; }
+.ncsoa .ncsoa-chart-legend { display: flex; gap: 12px; font-size: 0.72em; color: var(--ncsoa-muted); }
+.ncsoa .ncsoa-legend-key::before { content: ""; display: inline-block; width: 16px; height: 0; margin-right: 4px; vertical-align: middle; border-top: 2px solid var(--ncsoa-cyan); }
+.ncsoa .ncsoa-legend-key.dashed::before { border-top-style: dashed; border-top-color: var(--ncsoa-magenta); }
+
+/* ── radar (§25.1 — the signature visual) ── */
+.ncsoa-radar-grid { fill: none; stroke: rgba(215, 230, 242, 0.10); stroke-width: 1; }
+.ncsoa-radar-axis { stroke: rgba(215, 230, 242, 0.14); stroke-width: 1; }
+.ncsoa-radar-shape { fill: rgba(0, 217, 255, 0.18); stroke: var(--ncsoa-cyan); stroke-width: 1.5; stroke-linejoin: round; }
+.ncsoa-radar-overlay { fill: rgba(255, 0, 255, 0.10); stroke: var(--ncsoa-magenta); stroke-width: 1.5; stroke-dasharray: 5 3; stroke-linejoin: round; }
+.ncsoa-radar-dot { fill: var(--ncsoa-cyan); stroke: var(--ncsoa-bg); stroke-width: 1; }
+.ncsoa-radar-label { fill: var(--ncsoa-muted); font-size: 9px; letter-spacing: 0.5px; }
+.ncsoa-radar-label.dominant { fill: var(--ncsoa-cyan); font-weight: 700; }
+
+/* ── gauge (§25.1 — heat/danger; warm ramp by BAND KEY, labels on the arc) ── */
+.ncsoa-gauge-seg { fill: none; stroke-width: 12; stroke-linecap: butt; stroke: rgba(215, 230, 242, 0.15); }
+.ncsoa-gauge-seg.band-cold { stroke: rgba(91, 192, 222, 0.55); }
+.ncsoa-gauge-seg.band-warm { stroke: rgba(255, 193, 7, 0.55); }
+.ncsoa-gauge-seg.band-hot { stroke: rgba(253, 126, 20, 0.6); }
+.ncsoa-gauge-seg.band-blazing { stroke: rgba(220, 53, 69, 0.65); }
+.ncsoa-gauge-seg.band-low { stroke: rgba(40, 167, 69, 0.5); }
+.ncsoa-gauge-seg.band-moderate { stroke: rgba(255, 193, 7, 0.55); }
+.ncsoa-gauge-seg.band-high { stroke: rgba(253, 126, 20, 0.6); }
+.ncsoa-gauge-seg.band-extreme { stroke: rgba(220, 53, 69, 0.65); }
+.ncsoa-gauge-zone { fill: var(--ncsoa-muted); font-size: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.ncsoa-gauge-needle { stroke: var(--ncsoa-text); stroke-width: 2; }
+.ncsoa-gauge-hub { fill: var(--ncsoa-text); }
+.ncsoa-gauge-dot { stroke: var(--ncsoa-bg); stroke-width: 1.5; fill: var(--ncsoa-text); }
+.ncsoa-gauge-dot.band-cold { fill: #5bc0de; }
+.ncsoa-gauge-dot.band-warm { fill: var(--ncsoa-yellow); }
+.ncsoa-gauge-dot.band-hot { fill: #fd7e14; }
+.ncsoa-gauge-dot.band-blazing { fill: var(--ncsoa-red); }
+.ncsoa-gauge-value { fill: #fff; font-size: 20px; font-weight: 800; }
+.ncsoa-gauge-band { fill: var(--ncsoa-muted); font-size: 9px; letter-spacing: 2px; }
+.ncsoa-gauge-band.band-cold { fill: #5bc0de; }
+.ncsoa-gauge-band.band-warm { fill: var(--ncsoa-yellow); }
+.ncsoa-gauge-band.band-hot { fill: #fd7e14; }
+.ncsoa-gauge-band.band-blazing { fill: var(--ncsoa-red); }
+
+/* ── ring (§25.1 — disguise confidence vs pass mark) ── */
+.ncsoa-ring-track { fill: none; stroke: rgba(215, 230, 242, 0.12); }
+.ncsoa-ring-bar { fill: none; stroke: var(--ncsoa-cyan); stroke-linecap: round; }
+.ncsoa-ring.pass .ncsoa-ring-bar { stroke: var(--ncsoa-green); }
+.ncsoa-ring.fail .ncsoa-ring-bar { stroke: var(--ncsoa-red); }
+.ncsoa-ring-tick { stroke: var(--ncsoa-text); stroke-width: 2; }
+.ncsoa-ring-value { fill: #fff; font-size: 18px; font-weight: 800; }
+.ncsoa-ring-label { fill: var(--ncsoa-muted); font-size: 8px; letter-spacing: 1.5px; }
+.ncsoa-ring-verdict { font-size: 0.74em; color: var(--ncsoa-muted); }
+.ncsoa-ring.pass .ncsoa-ring-verdict { color: var(--ncsoa-green); }
+.ncsoa-ring.fail .ncsoa-ring-verdict { color: var(--ncsoa-red); }
+
+/* ── fingerprint bar (§25.1 — style mix; categorical c0–c7 palette) ── */
+.ncsoa-fingerprint { display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-fp-bar { display: flex; height: 14px; border-radius: 7px; overflow: hidden; border: 1px solid var(--ncsoa-edge); }
+.ncsoa-fp-seg { display: block; height: 100%; min-width: 2px; }
+.ncsoa-fp-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.74em; color: var(--ncsoa-text); }
+.ncsoa-fp-key.dominant { font-weight: 700; }
+.ncsoa-fp-key b { color: var(--ncsoa-muted); font-weight: 600; }
+.ncsoa-fp-swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; }
+.ncsoa-fp-seg.c0, .ncsoa-fp-swatch.c0 { background: #00d9ff; }
+.ncsoa-fp-seg.c1, .ncsoa-fp-swatch.c1 { background: #ff00ff; }
+.ncsoa-fp-seg.c2, .ncsoa-fp-swatch.c2 { background: #ffc107; }
+.ncsoa-fp-seg.c3, .ncsoa-fp-swatch.c3 { background: #28a745; }
+.ncsoa-fp-seg.c4, .ncsoa-fp-swatch.c4 { background: #fd7e14; }
+.ncsoa-fp-seg.c5, .ncsoa-fp-swatch.c5 { background: #6f9fff; }
+.ncsoa-fp-seg.c6, .ncsoa-fp-swatch.c6 { background: #b07cff; }
+.ncsoa-fp-seg.c7, .ncsoa-fp-swatch.c7 { background: #8a93a6; }
+
+/* ── sparkline (§25.1 — trend; direction also worded) ── */
+.ncsoa-sparkline { display: inline-flex; align-items: center; gap: 6px; }
+.ncsoa-spark-line { fill: none; stroke: var(--ncsoa-cyan); stroke-width: 1.5; }
+.ncsoa-spark-end { fill: var(--ncsoa-cyan); }
+.ncsoa-spark-read { font-size: 0.74em; color: var(--ncsoa-muted); white-space: nowrap; }
+.ncsoa-sparkline.dir-up .ncsoa-spark-read i { color: var(--ncsoa-green); }
+.ncsoa-sparkline.dir-down .ncsoa-spark-read i { color: var(--ncsoa-red); }
+
+/* ── GM heatmap (§25.1 — numbers inside the color) ── */
+.ncsoa-heatmap { display: flex; flex-direction: column; gap: 2px; }
+.ncsoa-hm-row { display: grid; grid-template-columns: minmax(140px, 1.4fr) repeat(var(--ncsoa-hm-cols, 4), 1fr); gap: 2px; align-items: center; }
+.ncsoa-hm-row.head .ncsoa-hm-col { font-size: 0.66em; letter-spacing: 1.5px; color: var(--ncsoa-dim); text-align: center; text-transform: uppercase; }
+.ncsoa-hm-name { display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: var(--ncsoa-text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ncsoa-hm-name img { width: 20px; height: 20px; border-radius: 3px; border: none; object-fit: cover; }
+.ncsoa-hm-name .npc { font-size: 0.72em; color: var(--ncsoa-muted); }
+.ncsoa-hm-cell { text-align: center; padding: 3px 0; border-radius: 3px; font-size: 0.82em; font-weight: 700; color: var(--ncsoa-text); background: rgba(215, 230, 242, 0.04); }
+/* intensity ramp l0–l4 — warm ramp for heat/danger, cyan ramp for style, green for cohesion */
+.ncsoa-hm-cell.m-heat.l1, .ncsoa-hm-cell.m-danger.l1 { background: rgba(255, 193, 7, 0.14); }
+.ncsoa-hm-cell.m-heat.l2, .ncsoa-hm-cell.m-danger.l2 { background: rgba(255, 193, 7, 0.30); }
+.ncsoa-hm-cell.m-heat.l3, .ncsoa-hm-cell.m-danger.l3 { background: rgba(253, 126, 20, 0.42); }
+.ncsoa-hm-cell.m-heat.l4, .ncsoa-hm-cell.m-danger.l4 { background: rgba(220, 53, 69, 0.55); color: #fff; }
+.ncsoa-hm-cell.m-style.l1 { background: rgba(0, 217, 255, 0.10); }
+.ncsoa-hm-cell.m-style.l2 { background: rgba(0, 217, 255, 0.22); }
+.ncsoa-hm-cell.m-style.l3 { background: rgba(0, 217, 255, 0.34); }
+.ncsoa-hm-cell.m-style.l4 { background: rgba(0, 217, 255, 0.48); color: #04222b; }
+.ncsoa-hm-cell.m-cohesion.l1 { background: rgba(40, 167, 69, 0.12); }
+.ncsoa-hm-cell.m-cohesion.l2 { background: rgba(40, 167, 69, 0.24); }
+.ncsoa-hm-cell.m-cohesion.l3 { background: rgba(40, 167, 69, 0.38); }
+.ncsoa-hm-cell.m-cohesion.l4 { background: rgba(40, 167, 69, 0.52); color: #fff; }
+
+/* ── §19 breakdown ── */
+.ncsoa-breakdown { display: flex; flex-direction: column; gap: 6px; min-width: 280px; }
+.ncsoa-bd-blurb { font-size: 0.86em; color: var(--ncsoa-text); }
+.ncsoa-bd-rows { display: flex; flex-direction: column; gap: 1px; }
+.ncsoa-bd-row { display: grid; grid-template-columns: 1fr auto 52px; gap: 8px; align-items: baseline; padding: 3px 6px; font-size: 0.84em; border-radius: 3px; }
+.ncsoa-bd-row:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+.ncsoa-bd-row .bd-term { color: var(--ncsoa-text); }
+.ncsoa-bd-row .bd-source { color: var(--ncsoa-muted); font-size: 0.86em; text-align: right; }
+.ncsoa-bd-row .bd-value { text-align: right; font-weight: 700; color: var(--ncsoa-cyan); }
+.ncsoa-bd-row.pos .bd-value { color: var(--ncsoa-green); }
+.ncsoa-bd-row.neg .bd-value { color: var(--ncsoa-red); }
+.ncsoa-bd-row.zero .bd-value, .ncsoa-bd-row.note .bd-value { color: var(--ncsoa-muted); font-weight: 400; }
+.ncsoa-bd-row.total { border-top: 1px solid var(--ncsoa-edge); }
+.ncsoa-bd-row.total .bd-value { color: #fff; }
+.ncsoa-bd-tunables summary { font-size: 0.76em; color: var(--ncsoa-dim); cursor: pointer; }
+.ncsoa-bd-dials { display: flex; flex-direction: column; gap: 2px; padding: 4px 0 0 6px; }
+.ncsoa-bd-dial { display: flex; gap: 8px; font-size: 0.76em; align-items: baseline; }
+.ncsoa-bd-dial code { color: var(--ncsoa-cyan); background: none; border: none; }
+.ncsoa-bd-dial span { color: var(--ncsoa-muted); }
+
+/* ── §19.4 info affordance ── */
+.ncsoa .ncsoa-info { background: none; border: none; padding: 0 2px; margin: 0; width: auto; line-height: 1; cursor: pointer; color: var(--ncsoa-dim); font-size: 0.85em; }
+.ncsoa .ncsoa-info:hover { color: var(--ncsoa-cyan); box-shadow: none; }
+
+/* ── §19.2 glossary / Help tab ── */
+.ncsoa-glossary { display: flex; flex-direction: column; gap: 10px; }
+.ncsoa-gl-entry { border: 1px solid rgba(0, 217, 255, 0.10); border-radius: 6px; padding: 7px 9px; background: var(--ncsoa-panel); }
+.ncsoa-gl-head { display: flex; justify-content: space-between; align-items: baseline; }
+.ncsoa-gl-label { font-weight: 700; color: var(--ncsoa-cyan); letter-spacing: 0.5px; }
+.ncsoa-gl-chart { font-size: 0.7em; color: var(--ncsoa-muted); letter-spacing: 1px; text-transform: uppercase; }
+.ncsoa-gl-def { font-size: 0.84em; color: var(--ncsoa-text); margin-top: 3px; }
+.ncsoa-gl-scale { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 5px; font-size: 0.74em; color: var(--ncsoa-muted); }
+.ncsoa-gl-band b { color: var(--ncsoa-dim); font-weight: 700; }

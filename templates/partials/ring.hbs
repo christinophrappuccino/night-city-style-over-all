@@ -1,0 +1,18 @@
+{{!-- §25.1 progress ring — consumes charts.mjs ringView(). Pass/fail is glyph
+     + "need N" text, not color alone (§25.3). --}}
+<figure class="ncsoa-ring {{#if tick}}{{#if pass}}pass{{else}}fail{{/if}}{{/if}}" role="img" aria-label="{{ariaText}}">
+  <svg viewBox="0 0 {{size}} {{size}}" width="{{size}}" height="{{size}}">
+    <circle class="ncsoa-ring-track" cx="{{c}}" cy="{{c}}" r="{{r}}" stroke-width="{{stroke}}" />
+    <circle class="ncsoa-ring-bar" cx="{{c}}" cy="{{c}}" r="{{r}}" stroke-width="{{stroke}}"
+            stroke-dasharray="{{circumference}}" stroke-dashoffset="{{dashOffset}}"
+            transform="rotate(-90 {{c}} {{c}})" />
+    {{#if tick}}<line class="ncsoa-ring-tick" x1="{{tick.x1}}" y1="{{tick.y1}}" x2="{{tick.x2}}" y2="{{tick.y2}}" />{{/if}}
+    <text class="ncsoa-ring-value" x="{{c}}" y="{{c}}" text-anchor="middle" dy="0">{{value}}%</text>
+    {{#if label}}<text class="ncsoa-ring-label" x="{{c}}" y="{{c}}" text-anchor="middle" dy="14">{{label}}</text>{{/if}}
+  </svg>
+  {{#if tick}}
+    <figcaption class="ncsoa-ring-verdict">
+      {{#if pass}}<i class="fas fa-circle-check"></i>{{else}}<i class="fas fa-circle-xmark"></i>{{/if}} {{needText}}
+    </figcaption>
+  {{/if}}
+</figure>

@@ -24,6 +24,8 @@ import { postGateVerdict } from "../services/chat-cards.mjs";
 import { emitSocket, ownersOf, MESSAGE } from "../services/sockets.mjs";
 import { recordPublicRead } from "../services/known-for.mjs";
 import { addEventPost, eventPostFromTemplate } from "../services/garden.mjs";
+import { heatmapView, ringView } from "./components/charts.mjs";
+import { getTunables } from "../config/tunables.mjs";
 
 const TABS = [
   { id: "readout", label: "Party", icon: "fa-th-list" },
@@ -94,7 +96,9 @@ export class GMDashboardApp extends Application {
       if (tokens.length === 0) return { ...base, empty: true };
 
       switch (this.currentTab) {
-        case "scene": return { ...base, isScene: true, rows: tokens.map((t) => this._row(t)) };
+        // §25.1 heatmap (M9.2): characters × metrics, color-coded with the
+        // number always inside the cell — the crowded-scene view at one look.
+        case "scene": return { ...base, isScene: true, heatmap: heatmapView(tokens), rows: tokens.map((t) => this._row(t)) };
         case "gate": return { ...base, isGate: true, gate: this._gateData(tokens, config) };
         case "disguise": return { ...base, isDisguise: true, disguise: this._disguiseData(pcs, config) };
         case "tension": return { ...base, isTension: true, tension: this._tensionData(tokens, config) };
@@ -169,8 +173,13 @@ export class GMDashboardApp extends Application {
       const uni = applyUniformToDisguise({ confidence: inj.confidence, label: inj.label, uniformMatch });
       const familiar = target?.archetype === t.topArch.key;
       const det = disguiseDetection({ dcTarget: inj.dcTarget, viewerPerception: perception, isFamiliarFaction: familiar });
+      // §25.1 ring (M9.2): confidence vs the PASSABLE mark from the live dials.
+      const ring = ringView({
+        value: Math.round(uni.confidence), threshold: getTunables().disguise.labels.passable,
+        label: uni.label, size: 64,
+      });
       return {
-        name: t.name, img: t.img, readsAs: t.topArch?.label,
+        name: t.name, img: t.img, readsAs: t.topArch?.label, ring,
         confidence: uni.confidence, label: uni.label,
         dc: inj.dcTarget, detected: det.detected, margin: det.margin, familiar,
         gearDisguise: inj.applied,

@@ -1,0 +1,16 @@
+{{!-- §25.1 gauge — consumes charts.mjs gaugeView(). Band zones are labeled on
+     the arc AND the current band is printed under the value (never color
+     alone, §25.3). --}}
+<figure class="ncsoa-gauge" role="img" aria-label="{{ariaText}}">
+  <svg viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}">
+    {{#each segments}}
+      <path class="ncsoa-gauge-seg band-{{this.key}}" d="{{this.path}}" />
+      <text class="ncsoa-gauge-zone" x="{{this.lx}}" y="{{this.ly}}" text-anchor="middle">{{this.label}}</text>
+    {{/each}}
+    <line class="ncsoa-gauge-needle" x1="{{needle.x1}}" y1="{{needle.y1}}" x2="{{needle.x2}}" y2="{{needle.y2}}" />
+    <circle class="ncsoa-gauge-dot band-{{band.key}}" cx="{{dot.x}}" cy="{{dot.y}}" r="4" />
+    <circle class="ncsoa-gauge-hub" cx="{{cx}}" cy="{{cy}}" r="3" />
+    <text class="ncsoa-gauge-value" x="{{cx}}" y="{{cy}}" text-anchor="middle" dy="-8">{{value}}</text>
+    <text class="ncsoa-gauge-band band-{{band.key}}" x="{{cx}}" y="{{cy}}" text-anchor="middle" dy="10">{{band.label}}</text>
+  </svg>
+</figure>

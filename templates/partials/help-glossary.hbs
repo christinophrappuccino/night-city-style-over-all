@@ -1,0 +1,19 @@
+{{!-- §19.2 layer 3 — the glossary. Consumes engine/metrics.mjs glossary():
+     definitions from the registry, scale thresholds read LIVE from tunables
+     (change a dial → this reprints). Context: { entries }. --}}
+<div class="ncsoa-glossary">
+  {{#each entries}}
+    <section class="ncsoa-gl-entry" data-metric="{{this.key}}">
+      <div class="ncsoa-gl-head">
+        <span class="ncsoa-gl-label">{{this.label}}</span>
+        <span class="ncsoa-gl-chart">{{this.chart}}</span>
+      </div>
+      <div class="ncsoa-gl-def">{{this.definition}}</div>
+      {{#if this.scale}}
+        <div class="ncsoa-gl-scale">
+          {{#each this.scale}}<span class="ncsoa-gl-band"><b>{{this.min}}+</b> {{this.label}}</span>{{/each}}
+        </div>
+      {{/if}}
+    </section>
+  {{/each}}
+</div>

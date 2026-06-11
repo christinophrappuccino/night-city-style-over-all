@@ -1,0 +1,24 @@
+{{!-- §25.1 vibe radar — consumes charts.mjs radarView(). Overlay (§24 self vs
+     observed) is dashed, not just recolored; dominant tones carry a vertex dot
+     + bold label (§25.3 colorblind safety). --}}
+<figure class="ncsoa-radar" role="img" aria-label="{{ariaText}}">
+  <svg viewBox="0 0 {{size}} {{size}}" width="{{size}}" height="{{size}}">
+    {{#each grid}}<polygon class="ncsoa-radar-grid" points="{{this}}" />{{/each}}
+    {{#each axes}}<line class="ncsoa-radar-axis" x1="{{this.x1}}" y1="{{this.y1}}" x2="{{this.x2}}" y2="{{this.y2}}" />{{/each}}
+    {{#if overlayPoints}}<polygon class="ncsoa-radar-overlay" points="{{overlayPoints}}" />{{/if}}
+    <polygon class="ncsoa-radar-shape" points="{{points}}" />
+    {{#each axes}}
+      {{#if this.dominant}}<circle class="ncsoa-radar-dot" cx="{{this.px}}" cy="{{this.py}}" r="3.5" />{{/if}}
+      {{#if ../labels}}
+        <text class="ncsoa-radar-label {{#if this.dominant}}dominant{{/if}}" x="{{this.lx}}" y="{{this.ly}}" text-anchor="{{this.anchor}}">{{this.label}}</text>
+      {{/if}}
+    {{/each}}
+  </svg>
+  {{#if overlayPoints}}
+    <figcaption class="ncsoa-chart-legend">
+      <span class="ncsoa-legend-key solid">{{#if seriesLabel}}{{seriesLabel}}{{else}}Self{{/if}}</span>
+      <span class="ncsoa-legend-key dashed">{{#if overlayLabel}}{{overlayLabel}}{{else}}Observed{{/if}}</span>
+    </figcaption>
+  {{/if}}
+  {{#unless hasSignal}}<figcaption class="ncsoa-chart-empty">No tone signal — nothing equipped carries a vibe.</figcaption>{{/unless}}
+</figure>

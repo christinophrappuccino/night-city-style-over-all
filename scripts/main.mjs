@@ -29,6 +29,7 @@ import { registerTokenScan } from "./hooks/token-scan.mjs";
 import { registerConditionDynamics } from "./hooks/condition-dynamics.mjs";
 import { registerSocket, onSocket, MESSAGE, isPrimaryGM } from "./services/sockets.mjs";
 import { recordPublicRead } from "./services/known-for.mjs";
+import { registerChartPartials } from "./apps/components/register.mjs";
 
 /** Namespaced console logging so module output is easy to filter. */
 const LOG_PREFIX = "Night City: Style Over All |";
@@ -37,6 +38,10 @@ Hooks.once("init", () => {
   console.log(`${LOG_PREFIX} init`);
 
   DataStore.registerSettings();
+
+  // §25 chart library + §19 transparency partials (M9.2) — compiled once,
+  // stamped by every app via {{> ncsoa-*}}.
+  registerChartPartials();
 
   // Let getTunables() shadow the defaults with the GM's overlay (Tuning Panel writes
   // it). Guarded inside getTunables — falls back to defaults if settings aren't ready.

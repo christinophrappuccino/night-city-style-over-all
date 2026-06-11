@@ -72,7 +72,11 @@
 
 /* Disguise results */
 .ncsoa-gm-dislist { display: flex; flex-direction: column; gap: 5px; }
-.ncsoa-gm-disrow { display: grid; grid-template-columns: 1.3fr 1.2fr 0.9fr 0.6fr 1.3fr; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 5px; background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-green); font-size: 0.85em; }
+.ncsoa-gm-disrow { display: grid; grid-template-columns: 72px 1.2fr 1.1fr 0.5fr 0.55fr 1.25fr; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 5px; background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-green); font-size: 0.85em; }
+/* M9.2 — the disguise ring column (§25.1 ring partial) */
+.ncsoa-gm-disrow .dring figure.ncsoa-ring { gap: 0; }
+.ncsoa-gm-disrow .dring .ncsoa-ring-verdict { font-size: 0.62em; }
+.ncsoa-gm-disrow .dconf { display: flex; gap: 6px; align-items: center; }
 .ncsoa-gm-disrow.blown { border-left-color: var(--ncsoa-red); }
 .ncsoa-gm-disrow .dname { font-weight: 600; }
 .ncsoa-gm-disrow .dreads { color: var(--ncsoa-muted); font-size: 0.9em; }

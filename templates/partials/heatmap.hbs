@@ -1,0 +1,20 @@
+{{!-- §25.1 GM heatmap — consumes charts.mjs heatmapView(). Every cell prints
+     its number inside the color (§25.3). --}}
+<div class="ncsoa-heatmap" style="--ncsoa-hm-cols:{{columns.length}}">
+  {{#if hasRows}}
+    <div class="ncsoa-hm-row head">
+      <span class="ncsoa-hm-name"></span>
+      {{#each columns}}<span class="ncsoa-hm-col">{{this.label}}</span>{{/each}}
+    </div>
+    {{#each rows}}
+      <div class="ncsoa-hm-row">
+        <span class="ncsoa-hm-name">{{#if this.img}}<img src="{{this.img}}" alt="" />{{/if}}{{this.name}}{{#unless this.isPC}} <span class="npc">NPC</span>{{/unless}}</span>
+        {{#each this.cells}}
+          <span class="ncsoa-hm-cell m-{{this.key}} {{this.level}}" title="{{this.key}} {{this.value}}">{{this.value}}</span>
+        {{/each}}
+      </div>
+    {{/each}}
+  {{else}}
+    <div class="ncsoa-chart-empty">No tokens on the scene.</div>
+  {{/if}}
+</div>

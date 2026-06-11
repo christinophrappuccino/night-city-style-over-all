@@ -1,0 +1,8 @@
+{{!-- §19.4 info affordance — a tap target (works on touch, not hover-only)
+     that opens the metric's definition + live breakdown. Apps bind it via
+     components/register.mjs bindInfoAffordances(). Context: { key, label }. --}}
+<button type="button" class="ncsoa-info" data-action="ncsoa-info" data-metric="{{key}}"
+        aria-label="What is {{label}} and how is it calculated?"
+        title="What is {{label}}?">
+  <i class="fas fa-circle-info"></i>
+</button>

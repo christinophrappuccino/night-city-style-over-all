@@ -25,6 +25,9 @@ import { analyzeCrew } from "../engine/crew.mjs";
 import { computeActorReads, buildCrewMemberInput } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { buildGardenView, addEventPost } from "../services/garden.mjs";
+import { radarView, gaugeView, fingerprintView, sparklineView } from "./components/charts.mjs";
+import { bindInfoAffordances } from "./components/register.mjs";
+import { glossary, metricScale } from "../engine/metrics.mjs";
 
 const TABS = [
   { id: "profile", label: "Style Profile", icon: "fa-id-card" },
@@ -32,6 +35,7 @@ const TABS = [
   { id: "gear", label: "Gear & Optimization", icon: "fa-tshirt" },
   { id: "crew", label: "Crew", icon: "fa-users-cog" },
   { id: "social", label: "Social", icon: "fa-users" },
+  { id: "help", label: "Help", icon: "fa-circle-question" },
 ];
 
 const SLOT_LABELS = {
@@ -103,14 +107,27 @@ export class StyleCheckerApp extends Application {
           const members = party.map((a) => buildCrewMemberInput(a, config));
           crew = analyzeCrew({ members, factionsConfig: config.factions });
         }
-        return { ...base, isSocial: true, isGM: !!game.user?.isGM, garden: buildGardenView({ actor: this.actor, reads, crew }) };
+        const garden = buildGardenView({ actor: this.actor, reads, crew });
+        // §25.1 sparkline — engagement across the feed (oldest → newest).
+        const series = [...garden.feed].filter((p) => p.kind !== "ad" && Number.isFinite(p.likes)).map((p) => p.likes).reverse();
+        garden.spark = sparklineView(series, { label: "engagement" });
+        return { ...base, isSocial: true, isGM: !!game.user?.isGM, garden };
+      }
+      if (this.currentTab === "help") {
+        // §19.2 layer 3 — the glossary, generated from engine metric metadata
+        // with thresholds read live from the dials (never hand-maintained).
+        return { ...base, isHelp: true, glossary: { entries: glossary(getTunables(), config) } };
       }
 
       // profile / chrome / gear all build on the self-view reads.
       const reads = computeActorReads(this.actor, { sceneActors: party, config });
       if (this.currentTab === "chrome") return { ...base, isChrome: true, chrome: this._chromeData(reads) };
       if (this.currentTab === "gear") return { ...base, isGear: true, gear: this._gearData(reads, config) };
-      return { ...base, isProfile: true, profile: this._profileData(reads) };
+      // The observed run feeds the radar overlay (§24 — self vs street read).
+      const observed = computeActorReads(this.actor, { sceneActors: party, config, view: "observed" });
+      // Stash the explainable results the info affordances (§19.4) resolve from.
+      this._results = { styleRating: reads.styleRating, cohesion: reads.cohesion, heat: reads.heat, danger: reads.danger, vibes: reads.vibes };
+      return { ...base, isProfile: true, profile: this._profileData(reads, observed) };
     } catch (e) {
       console.error("Night City: Style Over All | StyleChecker compute failed:", e);
       return { ...base, error: true };
@@ -119,7 +136,7 @@ export class StyleCheckerApp extends Application {
 
   // ── tab data shapers ───────────────────────────────────────────────────────
 
-  _profileData({ styleRating, cohesion, heat, danger, archetypes, scene, dripRating, collected }) {
+  _profileData({ styleRating, cohesion, heat, danger, archetypes, scene, dripRating, collected, vibes }, observed = null) {
     const bd = styleRating.breakdown || {};
     const BD_LABELS = { clothing: "Clothing cost", cyberware: "Cyberware cool", fashionware: "Fashionware", accessories: "Accessories", synergy: "Style synergy" };
     const breakdown = Object.keys(BD_LABELS).filter((k) => bd[k]).map((k) => ({ label: BD_LABELS[k], raw: bd[k].raw, weighted: bd[k].weighted }));
@@ -141,6 +158,16 @@ export class StyleCheckerApp extends Application {
       totalCost: collected.totalCost,
       archetypes: arch,
       scene: { rank: scene.yourRank, total: scene.totalCharacters, status: scene.status, avg: scene.averageStyleScore },
+      // §25 hero visuals (M9.2) — view models for the shared partials.
+      charts: {
+        radar: radarView(vibes.spokes, {
+          overlay: observed?.vibes?.spokes?.map((s) => ({ tag: s.tag, value: s.value })) ?? null,
+          seriesLabel: "Self", overlayLabel: "Street read", size: 230,
+        }),
+        vibeDescriptor: vibes.descriptor,
+        heatGauge: gaugeView({ value: heat.value, max: 100, bands: metricScale("heat", getTunables()) }),
+        fingerprint: fingerprintView(collected.styles, { formatLabel: formatStyleName }),
+      },
     };
   }
 
@@ -262,5 +289,8 @@ export class StyleCheckerApp extends Application {
     });
     html.find("[data-action='garden-post']").on("click", () => this._gardenPost());
     html.find("[data-action='garden-refresh']").on("click", () => this.render(false));
+    // §19.4 — every ? opens the metric's definition + the LIVE breakdown
+    // computed this render (one rendering path; no restated math).
+    bindInfoAffordances(html, (key) => this._results?.[key] ?? null);
   }
 }

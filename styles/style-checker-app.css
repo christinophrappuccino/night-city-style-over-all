@@ -90,3 +90,9 @@
 .ncsoa-sc-stub i { font-size: 2.4em; color: var(--ncsoa-dim); }
 .ncsoa-sc-stub h3 { color: var(--ncsoa-cyan); border: none; margin: 10px 0 6px; }
 .ncsoa-sc-stub p { font-size: 0.88em; max-width: 380px; margin: 0 auto; line-height: 1.5; }
+
+/* §25 hero visuals (M9.2) — profile-tab layout for the shared chart partials */
+.ncsoa-sc-heroes { display: grid; grid-template-columns: 3fr 2fr; gap: 8px; align-items: start; margin: 6px 0; }
+.ncsoa-sc-hero { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.ncsoa-sc-hero figure { align-self: center; }
+.gdn-followers .ncsoa-sparkline { margin-top: 2px; }

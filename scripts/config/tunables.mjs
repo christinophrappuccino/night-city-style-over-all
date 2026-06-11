@@ -380,13 +380,9 @@ export const TUNABLES_DEFAULTS = {
     },
   },
 
-  // ── Brand (NEW, M9) ───────────────────────────────────────────────── PENDING
-  brand: {
-    // full-look bonus, complementary-pairing bonus, tier→cost mapping,
-    // counterfeit detection difficulty (§13)
-  },
+  // (brand group: see the M9.1 block further down — an empty duplicate key
+  // here used to be silently overwritten by it; removed in M9.2.)
 
-  // ── Color (NEW, M9) ───────────────────────────────────────────────── PENDING
   // ── Color math (M9.1: colors.mjs — NEW, §9.2) ─────────────────────────── NEW
   color: {
     // Neutrals (grays/near-black/near-white) coordinate with everything.

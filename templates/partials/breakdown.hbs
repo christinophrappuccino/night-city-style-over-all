@@ -1,0 +1,30 @@
+{{!-- §19 breakdown — THE one "how it's calculated" renderer, consumes
+     breakdown.mjs breakdownView(). Rows come straight from the engine result's
+     components; the dials list shows which tunables fired (§19.2 layer 2). --}}
+<div class="ncsoa-breakdown">
+  {{#if blurb}}<div class="ncsoa-bd-blurb">{{blurb}}</div>{{/if}}
+  {{#if hasRows}}
+    <div class="ncsoa-bd-rows">
+      {{#each rows}}
+        <div class="ncsoa-bd-row {{this.cls}}">
+          <span class="bd-term">{{this.term}}</span>
+          <span class="bd-source">{{this.source}}</span>
+          <span class="bd-value">{{this.display}}</span>
+        </div>
+      {{/each}}
+      {{#if total}}
+        <div class="ncsoa-bd-row total"><span class="bd-term">Σ</span><span class="bd-source"></span><span class="bd-value">{{total.display}}</span></div>
+      {{/if}}
+    </div>
+  {{else}}
+    <div class="ncsoa-chart-empty">Nothing contributes to this read right now.</div>
+  {{/if}}
+  {{#if hasTunables}}
+    <details class="ncsoa-bd-tunables">
+      <summary><i class="fas fa-sliders"></i> Dials in play</summary>
+      <div class="ncsoa-bd-dials">
+        {{#each tunables}}<div class="ncsoa-bd-dial"><code>{{this.key}}</code><span>{{this.display}}</span></div>{{/each}}
+      </div>
+    </details>
+  {{/if}}
+</div>

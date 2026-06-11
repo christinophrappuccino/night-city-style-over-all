@@ -22,10 +22,27 @@
   {{!-- ───────────── PROFILE ───────────── --}}
   {{#if isProfile}}
     <section class="ncsoa-wb-cards">
-      <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE</div><div class="ncsoa-wb-card-value">{{profile.style.total}}</div><div class="ncsoa-wb-card-tag">{{{profile.style.tierIcon}}} {{profile.style.tierName}} <span class="grade">{{profile.style.tierGrade}}</span></div></div>
-      <div class="ncsoa-wb-card cohesion"><div class="ncsoa-wb-card-label">COHESION</div><div class="ncsoa-wb-card-value">{{profile.cohesion.percent}}%</div><div class="ncsoa-wb-card-tag">{{profile.cohesion.label}} · {{profile.cohesion.dominant}}</div></div>
-      <div class="ncsoa-wb-card heat {{profile.heat.cls}}" title="{{profile.heat.tooltip}}"><div class="ncsoa-wb-card-label">HEAT</div><div class="ncsoa-wb-card-value">{{profile.heat.value}}</div><div class="ncsoa-wb-card-tag">{{profile.heat.level}}</div></div>
-      <div class="ncsoa-wb-card danger" style="--danger:{{profile.danger.color}}" title="{{profile.danger.tooltip}}"><div class="ncsoa-wb-card-label">DANGER</div><div class="ncsoa-wb-card-value">{{profile.danger.value}}</div><div class="ncsoa-wb-card-tag">{{profile.danger.tier}}</div></div>
+      <div class="ncsoa-wb-card style"><div class="ncsoa-wb-card-label">STYLE {{> ncsoa-info key="styleRating" label="Style Rating"}}</div><div class="ncsoa-wb-card-value">{{profile.style.total}}</div><div class="ncsoa-wb-card-tag">{{{profile.style.tierIcon}}} {{profile.style.tierName}} <span class="grade">{{profile.style.tierGrade}}</span></div></div>
+      <div class="ncsoa-wb-card cohesion"><div class="ncsoa-wb-card-label">COHESION {{> ncsoa-info key="cohesion" label="Cohesion"}}</div><div class="ncsoa-wb-card-value">{{profile.cohesion.percent}}%</div><div class="ncsoa-wb-card-tag">{{profile.cohesion.label}} · {{profile.cohesion.dominant}}</div></div>
+      <div class="ncsoa-wb-card heat {{profile.heat.cls}}"><div class="ncsoa-wb-card-label">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div><div class="ncsoa-wb-card-value">{{profile.heat.value}}</div><div class="ncsoa-wb-card-tag">{{profile.heat.level}}</div></div>
+      <div class="ncsoa-wb-card danger" style="--danger:{{profile.danger.color}}"><div class="ncsoa-wb-card-label">DANGER {{> ncsoa-info key="danger" label="Danger"}}</div><div class="ncsoa-wb-card-value">{{profile.danger.value}}</div><div class="ncsoa-wb-card-tag">{{profile.danger.tier}}</div></div>
+    </section>
+
+    {{!-- §25 hero visuals (M9.2) — vibe radar (self vs street read) + heat dial --}}
+    <section class="ncsoa-sc-heroes">
+      <div class="ncsoa-sc-hero">
+        <div class="ncsoa-wb-section-title">VIBE {{> ncsoa-info key="vibes" label="Vibe Profile"}} {{#if profile.charts.vibeDescriptor}}<span class="ncsoa-wb-section-meta">{{profile.charts.vibeDescriptor}}</span>{{/if}}</div>
+        {{> ncsoa-radar profile.charts.radar}}
+      </div>
+      <div class="ncsoa-sc-hero">
+        <div class="ncsoa-wb-section-title">HEAT {{> ncsoa-info key="heat" label="Heat"}}</div>
+        {{> ncsoa-gauge profile.charts.heatGauge}}
+      </div>
+    </section>
+
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">STYLE MIX {{> ncsoa-info key="styleMix" label="Style Mix"}}</div>
+      {{> ncsoa-fingerprint profile.charts.fingerprint}}
     </section>
 
     <section class="ncsoa-wb-section">
@@ -184,7 +201,8 @@
         </div>
         <div class="gdn-followers" title="{{garden.profile.followersBlurb}} Engagement is heat + reputation + style.">
           <span class="gdn-count">{{garden.profile.followersLabel}}</span>
-          <span class="gdn-count-label">followers</span>
+          <span class="gdn-count-label">followers {{> ncsoa-info key="engagement" label="Garden Engagement"}}</span>
+          {{> ncsoa-sparkline garden.spark}}
         </div>
         <span class="gdn-actions">
           {{#if isGM}}<button type="button" data-action="garden-post" title="Post to The Garden — the city reacts"><i class="fas fa-pen-nib"></i></button>{{/if}}
@@ -228,6 +246,12 @@
       </div>
 
     </div>
+  {{/if}}
+
+  {{!-- ───────────── HELP — §19.2 glossary (M9.2) ───────────── --}}
+  {{#if isHelp}}
+    <div class="ncsoa-wb-section-title">EVERY METRIC, IN PLAIN WORDS <span class="ncsoa-wb-section-meta">thresholds read live from the GM's dials</span></div>
+    {{> ncsoa-glossary glossary}}
   {{/if}}
 
   </div>

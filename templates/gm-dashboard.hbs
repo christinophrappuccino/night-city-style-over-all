@@ -18,6 +18,12 @@
   {{#if error}}<div class="ncsoa-sc-error"><i class="fas fa-triangle-exclamation"></i> Compute failed — see console.</div>{{/if}}
   {{#if empty}}<div class="ncsoa-wb-empty">No tokens on the scene.</div>{{/if}}
 
+  {{!-- ───── SCENE HEATMAP (§25.1, M9.2) ───── --}}
+  {{#if isScene}}
+    <div class="ncsoa-wb-section-title">SCENE AT A GLANCE</div>
+    {{> ncsoa-heatmap heatmap}}
+  {{/if}}
+
   {{!-- ───── READOUT / SCENE (shared table) ───── --}}
   {{#if rows}}
     <div class="ncsoa-gm-table">
@@ -75,9 +81,10 @@
     <div class="ncsoa-gm-dislist">
       {{#each disguise.results}}
         <div class="ncsoa-gm-disrow {{#if this.detected}}blown{{else}}holds{{/if}}">
+          <div class="dring">{{> ncsoa-ring this.ring}}</div>
           <div class="dname">{{this.name}}</div>
           <div class="dreads">reads as {{this.readsAs}}</div>
-          <div class="dconf">{{this.confidence}}% <span>{{this.label}}</span>{{#if this.gearDisguise}} <i class="fas fa-mask" title="Gear disguise active (sc.faction / sc.disguise.dc modifiers applied)"></i>{{/if}}{{#with this.uniform}} <i class="fas fa-user-tie" title="Wearing {{this.name}} — {{this.grade}} uniform match (+{{this.bonus}})"></i>{{/with}}</div>
+          <div class="dconf">{{#if this.gearDisguise}}<i class="fas fa-mask" title="Gear disguise active (sc.faction / sc.disguise.dc modifiers applied)"></i>{{/if}}{{#with this.uniform}} <i class="fas fa-user-tie" title="Wearing {{this.name}} — {{this.grade}} uniform match (+{{this.bonus}})"></i>{{/with}}</div>
           <div class="ddc">DC {{this.dc}}</div>
           <div class="dverdict">{{#if this.detected}}<i class="fas fa-eye"></i> BLOWN (+{{this.margin}}){{else}}<i class="fas fa-user-secret"></i> HOLDS ({{this.margin}}){{/if}}{{#if this.familiar}} <span class="fam">familiar</span>{{/if}}</div>
         </div>
