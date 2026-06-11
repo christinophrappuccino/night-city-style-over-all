@@ -24,6 +24,7 @@ import { DataStore } from "../data/data-store.mjs";
 import { CONFIGS } from "../config/index.mjs";
 import { TUNABLES_DEFAULTS, getTunables } from "../config/tunables.mjs";
 import { migrateScItems, resolveScopeItems, summarizeReport } from "../data/migrations/002-sc-effects-to-flags.mjs";
+import { NCSOA_DIALOG } from "./components/register.mjs";
 
 // Curated dials. group → knobs[{path, label, step}]. path is a dot-path into tunables.
 const TUNING_SCHEMA = [
@@ -165,6 +166,7 @@ export class GMConfigApp extends FormApplication {
   async _runMigration(dryRun) {
     if (!dryRun) {
       const confirmed = await Dialog.confirm({
+        options: NCSOA_DIALOG,
         title: "Convert sc.* effects to Style Data flags?",
         content:
           "<p>Writes a <strong>styleData</strong> flag onto every item in the chosen scope that has legacy <code>sc.*</code> effects. " +
@@ -220,6 +222,7 @@ export class GMConfigApp extends FormApplication {
     const entry = CONFIGS.find((c) => c.key === key);
     if (!entry) return;
     const confirmed = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Reset config to seed?",
       content: `<p>Reset <strong>${entry.journal}</strong> to the bundled default? Any GM edits to it are lost.</p>`,
     });

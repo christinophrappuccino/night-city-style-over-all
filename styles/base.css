@@ -19,3 +19,55 @@
   --ncsoa-green: #28a745;
   --ncsoa-magenta: #ff00ff;
 }
+
+/*
+ * Form-control baseline (M9.2) — replaces Foundry's default (parchment) skin on
+ * every button/select/input inside an .ncsoa window or dialog. Wrapped in
+ * :where() so the whole block adds ZERO specificity: any per-app rule (tabs,
+ * gate button, shop rows…) overrides it just by existing — no specificity wars.
+ * Per-app files keep only their ACCENTS; the skin lives here once.
+ */
+.ncsoa :where(button) {
+  background: var(--ncsoa-panel);
+  color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 0.86em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.ncsoa :where(button:hover) {
+  color: var(--ncsoa-cyan);
+  border-color: var(--ncsoa-cyan);
+  box-shadow: 0 0 6px var(--ncsoa-edge);
+}
+.ncsoa :where(button:focus-visible) { outline: 1px solid var(--ncsoa-cyan); outline-offset: 1px; }
+.ncsoa :where(button:disabled) { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.ncsoa :where(button.primary) {
+  background: rgba(0, 217, 255, 0.14);
+  color: var(--ncsoa-cyan);
+  border-color: var(--ncsoa-cyan);
+}
+.ncsoa :where(select, textarea, input[type="text"], input[type="number"], input[type="search"], input[type="password"]) {
+  background: var(--ncsoa-panel);
+  color: var(--ncsoa-text);
+  border: 1px solid var(--ncsoa-edge);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 0.86em;
+}
+.ncsoa :where(select:focus, textarea:focus, input:focus) {
+  border-color: var(--ncsoa-cyan);
+  box-shadow: 0 0 4px var(--ncsoa-dim);
+  outline: none;
+}
+.ncsoa :where(select option) { background: var(--ncsoa-panel); color: var(--ncsoa-text); }
+
+/* Window/dialog canvas — keeps spawned Dialogs (classes ["dialog","ncsoa"])
+   readable: dark content behind the light text instead of core parchment. */
+.ncsoa .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); }
+.ncsoa .window-content label { color: var(--ncsoa-text); }

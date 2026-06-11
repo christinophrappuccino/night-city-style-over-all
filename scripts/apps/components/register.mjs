@@ -16,6 +16,14 @@ import { metricMeta } from "../../engine/metrics.mjs";
 
 const P = (name) => `modules/${MODULE_ID}/templates/partials/${name}.hbs`;
 
+/**
+ * Options for every Dialog the module spawns: the ncsoa class rides the dialog
+ * window, so the base.css form-control skin + dark canvas apply instead of
+ * Foundry's parchment defaults. Pass as Dialog.confirm/prompt's `options` key
+ * (or new Dialog's second argument).
+ */
+export const NCSOA_DIALOG = { classes: ["dialog", "ncsoa"] };
+
 /** Partial name → template path. Names are the public vocabulary apps use. */
 export const PARTIALS = {
   "ncsoa-radar": P("radar"),
@@ -68,7 +76,7 @@ export function bindInfoAffordances(html, resolveResult) {
         buttons: { close: { icon: '<i class="fas fa-check"></i>', label: "Got it" } },
         default: "close",
       },
-      { classes: ["dialog", "ncsoa"] }
+      NCSOA_DIALOG
     ).render(true);
   });
 }

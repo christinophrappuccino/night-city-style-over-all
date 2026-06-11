@@ -36,6 +36,7 @@ import { bestUniformMatch } from "../engine/uniforms.mjs";
 import { getOutfits, setOutfits } from "../data/flags.mjs";
 import { openTailorDialog } from "./tailor-dialog.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
+import { NCSOA_DIALOG } from "./components/register.mjs";
 
 const SLOT_LABELS = {
   top: "Top", bottoms: "Bottoms", jacket: "Jacket", footwear: "Footwear", hats: "Hat",
@@ -386,6 +387,7 @@ export class WardrobeApp extends Application {
     const preset = getOutfits(this.actor).find((o) => o.id === id);
     if (!preset) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Delete outfit?",
       content: `<p>Delete the saved outfit <strong>${preset.name}</strong>? The clothes stay in the wardrobe.</p>`,
     });
@@ -420,6 +422,7 @@ export class WardrobeApp extends Application {
     const template = getStyleTemplates().find((t) => t.id === id);
     if (!template) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Quick-dress?",
       content: `<p>Dress <strong>${this.actor.name}</strong> as <strong>${template.name}</strong>? ` +
         `Pieces they don't own are imported; the current outfit comes off. This writes immediately.</p>`,
@@ -441,6 +444,7 @@ export class WardrobeApp extends Application {
     const template = getStyleTemplates().find((t) => t.id === id);
     if (!template) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Delete template?",
       content: `<p>Delete the quick-dress template <strong>${template.name}</strong> for the whole world?</p>`,
     });
@@ -466,6 +470,7 @@ export class WardrobeApp extends Application {
       .map(([key, f]) => `<option value="${key}">${f.label || key}</option>`)
       .join("");
     const picked = await Dialog.prompt({
+      options: NCSOA_DIALOG,
       title: "Save as uniform",
       content:
         `<p><label>Name</label><input type="text" name="ncsoa-uni-name" value="${this.actor.name} uniform" style="width:100%" /></p>` +
@@ -497,6 +502,7 @@ export class WardrobeApp extends Application {
     const uniform = getUniforms().find((u) => u.id === id);
     if (!uniform) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Wear uniform?",
       content: `<p>Dress <strong>${this.actor.name}</strong> in <strong>${uniform.name}</strong>? ` +
         `Pieces they don't own are imported; the current outfit comes off. This writes immediately.</p>`,
@@ -517,6 +523,7 @@ export class WardrobeApp extends Application {
     const uniform = getUniforms().find((u) => u.id === id);
     if (!uniform) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Delete uniform?",
       content: `<p>Delete <strong>${uniform.name}</strong> for the whole world? Recognition and disguise hooks for it stop.</p>`,
     });
@@ -527,6 +534,7 @@ export class WardrobeApp extends Application {
 
   _promptName(title, initial) {
     return Dialog.prompt({
+      options: NCSOA_DIALOG,
       title,
       content: `<p><input type="text" name="ncsoa-outfit-name" value="${initial ?? ""}" style="width:100%" /></p>`,
       label: "Save",

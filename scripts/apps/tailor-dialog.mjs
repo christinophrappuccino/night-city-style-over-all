@@ -17,6 +17,7 @@ import { getStyleData, updateStyleData } from "../data/flags.mjs";
 import { dualReadStyleData } from "../data/sc-keys.mjs";
 import { applyTailorOps, modificationChoices } from "../services/tailor.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
+import { NCSOA_DIALOG } from "./components/register.mjs";
 
 /**
  * Open the Tailor for an item. Resolves true when something was applied.
@@ -62,6 +63,7 @@ export async function openTailorDialog(item, { onApplied } = {}) {
     `</div>`;
 
   const form = await Dialog.prompt({
+    options: NCSOA_DIALOG,
     title: `Tailor — ${item.name}`,
     content,
     label: "Apply work",

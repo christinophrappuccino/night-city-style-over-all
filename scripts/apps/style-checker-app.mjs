@@ -26,7 +26,7 @@ import { computeActorReads, buildCrewMemberInput } from "../services/style-reads
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { buildGardenView, addEventPost } from "../services/garden.mjs";
 import { radarView, gaugeView, fingerprintView, sparklineView } from "./components/charts.mjs";
-import { bindInfoAffordances } from "./components/register.mjs";
+import { bindInfoAffordances, NCSOA_DIALOG } from "./components/register.mjs";
 import { glossary, metricScale } from "../engine/metrics.mjs";
 
 const TABS = [
@@ -264,6 +264,7 @@ export class StyleCheckerApp extends Application {
   async _gardenPost() {
     if (!game.user?.isGM) return;
     const form = await Dialog.prompt({
+      options: NCSOA_DIALOG,
       title: "Post to The Garden",
       content:
         `<p><label>Post</label><textarea name="g-text" rows="3" style="width:100%" placeholder="The city saw something…"></textarea></p>` +

@@ -13,6 +13,7 @@ import { SETTINGS } from "../constants.mjs";
 import { DataStore } from "../data/data-store.mjs";
 import { getSceneStyle, setSceneStyle } from "../data/flags.mjs";
 import { GMDashboardApp } from "../apps/gm-dashboard-app.mjs";
+import { NCSOA_DIALOG } from "../apps/components/register.mjs";
 
 /** GM dialog: pick the scene's district + gate. */
 export async function openSceneStyleDialog(scene) {
@@ -29,6 +30,7 @@ export async function openSceneStyleDialog(scene) {
       `<option value="${k}" ${current.gate === k ? "selected" : ""}>${g.name || k}</option>`)].join("");
 
   const picked = await Dialog.prompt({
+    options: NCSOA_DIALOG,
     title: `Style tags — ${scene.name}`,
     content:
       `<p><label>District (feeds district-fit reads + tension scans)</label><select name="ss-district" style="width:100%">${districtOpts}</select></p>` +

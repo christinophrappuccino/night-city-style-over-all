@@ -22,6 +22,7 @@ import { getShops, setShops, resolveShopStock, buyFromShop, SELLABLE_TYPES } fro
 import { getTrends, setTrends, toggleTrend, describeTrend, trendDefaults } from "../services/trends.mjs";
 import { addEventPost, eventPostFromTemplate } from "../services/garden.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
+import { NCSOA_DIALOG } from "./components/register.mjs";
 
 export class ShopApp extends Application {
   constructor(options = {}) {
@@ -148,6 +149,7 @@ export class ShopApp extends Application {
       `<p><label>Name contains</label><input type="text" name="q-name" value="${q.nameContains ?? ""}" style="width:100%"/></p>`;
 
     return Dialog.prompt({
+      options: NCSOA_DIALOG,
       title: existing ? `Edit ${existing.name}` : "New shop",
       content,
       label: existing ? "Save" : "Create",
@@ -202,6 +204,7 @@ export class ShopApp extends Application {
     const shop = getShops().find((s) => s.id === this.shopId);
     if (!shop) return;
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Close shop?",
       content: `<p>Delete <strong>${shop.name}</strong>? Stock references are discarded; the items themselves are untouched.</p>`,
     });
@@ -249,6 +252,7 @@ export class ShopApp extends Application {
     const D = trendDefaults();
     const styleOpts = STYLE_KEYS.map((s) => `<option value="${s}">${formatStyleName(s)}</option>`).join("");
     const form = await Dialog.prompt({
+      options: NCSOA_DIALOG,
       title: "New fashion trend",
       content:
         `<p><label>Name</label><input type="text" name="t-name" value="This Week's Look" style="width:100%"/></p>` +
@@ -336,6 +340,7 @@ export class ShopApp extends Application {
     if (!item) { ui.notifications?.warn("That item is no longer available."); return; }
 
     const ok = await Dialog.confirm({
+      options: NCSOA_DIALOG,
       title: "Confirm purchase",
       content: `<p><strong>${buyer.name}</strong> buys <strong>${item.name}</strong> for <strong>€$${price}</strong> at ${shop.name}?</p>`,
     });
