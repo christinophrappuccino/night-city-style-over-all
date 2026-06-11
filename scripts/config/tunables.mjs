@@ -510,6 +510,18 @@ export const TUNABLES_DEFAULTS = {
     // Per-axis clamp on what ONE item's brand may contribute (symmetric ±).
     caps: { style: 8, vibe: 4, heat: 10, cost: 6000, faction: 12, district: 6, archetype: 8 },
   },
+
+  // ── Vibe profile (M9.1: vibes.mjs — NEW, no macro reference; §22.3) ──── NEW
+  // How the aggregated vibe map (items + brands, via the collector) reads as a
+  // tone profile. A profile with TRADEOFFS, not a score (§22.3) — these only
+  // shape dominance/wording, never a "total".
+  vibe: {
+    dominantMin: 3,    // a tone needs this many points to count as dominant
+    dominantRatio: 0.6, // …and must be within this ratio of the top tone
+    faintMax: 1,       // ≤ this reads "faintly X" in the descriptor
+    strongMin: 6,      // ≥ this reads "strongly X" in the descriptor
+    descriptorMax: 2,  // tones named in the one-line descriptor (§22.4 #4)
+  },
 };
 
 /**

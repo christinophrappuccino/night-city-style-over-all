@@ -53,7 +53,7 @@ export default function brandChecks() {
 
   // 1 — full resolution of the real Ofuda seed (luxury · asiaPop house).
   //     styles: asiaPop round(12·0.25)=3 · highFashion round(4·0.25)=1
-  //     vibe: cool 3 · refined 2 — cost: tierCost.luxury 4000 — heat: 6
+  //     vibe: cool 3 · elegant 2 — cost: tierCost.luxury 4000 — heat: 6
   //     districts: KABUKI 4 · OLD_JAPANTOWN 4 — brands: { ofuda: 1 }
   const ofuda = cascade({ brand: "ofuda" });
   checks.push({
@@ -62,7 +62,7 @@ export default function brandChecks() {
     expected: {
       archetypes: {}, factions: {}, chrome: {},
       styles: { asiaPop: 3, highFashion: 1 },
-      vibe: { cool: 3, refined: 2 },
+      vibe: { cool: 3, elegant: 2 },
       districts: { KABUKI: 4, OLD_JAPANTOWN: 4 },
       brands: { ofuda: 1 },
       cost: 4000, heat: 6, disguiseDC: 0,

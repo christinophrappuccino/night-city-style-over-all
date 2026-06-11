@@ -23,7 +23,7 @@
         "schema": 2,
         "_source": "catalog",
         "brand": "ofuda",
-        "vibe": { "cool": 3, "rebellious": 2 },
+        "vibe": { "cool": 3, "flashy": 2 },
         "colors": { "primary": "#c1121f", "accent": "#ffd166" },
         "formality": 2,
         "readPriority": 3

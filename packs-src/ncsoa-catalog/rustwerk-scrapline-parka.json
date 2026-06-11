@@ -23,7 +23,7 @@
         "schema": 2,
         "_source": "catalog",
         "brand": "rustwerk",
-        "vibe": { "rebellious": 2, "approachable": 1 },
+        "vibe": { "rugged": 2, "scrappy": 1 },
         "colors": { "primary": "#264653", "accent": "#e76f51" },
         "formality": 1
       }

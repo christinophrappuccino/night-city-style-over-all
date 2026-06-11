@@ -78,10 +78,13 @@ export const CHROME_READ_KEYS = [
 ];
 
 /** Expressive vibe tags — social TONE, orthogonal to style/archetype (§22.3).
- *  Seed set; GM-extensible. Disable-able world-wide. */
+ *  The guide v1.6 nine spokes (confirmed by Christian, M9.1): independent radar
+ *  axes, each a tradeoff, covering tone-space by BLENDING (mysterious ≈ high
+ *  cool; regal ≈ elegant+cool; wholesome ≈ cute, low sleazy). GM-extensible;
+ *  disable-able world-wide. */
 export const VIBE_TAGS = [
   "cool", "cute", "sexy", "sleazy", "menacing",
-  "refined", "approachable", "mysterious", "rebellious", "professional",
+  "flashy", "elegant", "rugged", "scrappy",
 ];
 
 /** Body regions for the slot model (§27.1). */

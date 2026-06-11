@@ -24,6 +24,7 @@ import { dangerScore } from "../engine/danger.mjs";
 import { detectAllArchetypes, detectChromeProfile } from "../engine/archetypes.mjs";
 import { deriveSceneToken, aggregateScene } from "../engine/scene.mjs";
 import { collectScMods } from "../engine/cascade.mjs";
+import { vibeProfile } from "../engine/vibes.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
 
@@ -113,6 +114,10 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     ammoHeat: aHeat,
   });
 
+  // Vibe profile (§22.3, M9.1) — parallel, additive tone pass over the aggregated
+  // vibe map (items + brand identities). Never feeds archetype detection.
+  const vibes = vibeProfile(scMods, tunables.vibe ?? {});
+
   return {
     actor,
     collected,
@@ -126,6 +131,7 @@ export function computeActorReads(actor, { sceneActors, config = getEngineConfig
     archetypes,
     chromeProfile,
     scMods,
+    vibes,
     woundInjuryHeat: wiHeat,
   };
 }

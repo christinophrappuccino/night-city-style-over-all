@@ -23,7 +23,7 @@
         "schema": 2,
         "_source": "catalog",
         "brand": "brass_lotus",
-        "vibe": { "mysterious": 2, "refined": 2 },
+        "vibe": { "cool": 2, "elegant": 2 },
         "colors": { "primary": "#b08d57", "accent": "#0b090a" },
         "formality": 3
       }
