@@ -17,12 +17,39 @@
       {{#if hasOverrides}}<span class="ncsoa-cfg-badge">{{overrideCount}} override(s) active</span>{{/if}}
     </div>
 
+    {{!-- M9.4a — scoring presets (§18.4 D6=B): named philosophies as overlays --}}
+    <section class="ncsoa-wb-section">
+      <div class="ncsoa-wb-section-title">SCORING PRESET
+        <span class="ncsoa-wb-section-meta">{{#if tuning.isCustom}}custom philosophy — forked{{else}}editing any dial forks it{{/if}}</span>
+      </div>
+      <div class="ncsoa-cfg-presetbar">
+        <select data-control="preset-pick">
+          {{#each tuning.presets}}<option value="{{this.key}}" {{#if this.selected}}selected{{/if}}>{{this.label}}{{#if this.active}} — active{{/if}}</option>{{/each}}
+        </select>
+        {{#each tuning.presets}}{{#if this.selected}}
+          <button type="button" class="primary" data-action="apply-preset" data-preset="{{this.key}}" {{#if ../tuning.pickIsActive}}disabled{{/if}}>
+            <i class="fas fa-wand-magic-sparkles"></i> {{#if ../tuning.pickIsActive}}Active{{else}}Apply{{/if}}
+          </button>
+        {{/if}}{{/each}}
+      </div>
+      <div class="ncsoa-cfg-preset-blurb">{{tuning.pickBlurb}}</div>
+    </section>
+
+    {{!-- view switch: the curated everyday dials, or every numeric dial in the engine --}}
+    <div class="ncsoa-cfg-viewbar">
+      <button type="button" class="ncsoa-cfg-view {{#unless tuning.viewFull}}active{{/unless}}" data-action="tuning-view" data-view="common">Common dials</button>
+      <button type="button" class="ncsoa-cfg-view {{#if tuning.viewFull}}active{{/if}}" data-action="tuning-view" data-view="full">All dials</button>
+      {{#if tuning.viewFull}}
+        <input type="search" data-control="knob-search" placeholder="filter paths — heat.weapon, disguise…" value="{{tuning.search}}" />
+      {{/if}}
+    </div>
+
     {{#each groups}}
-      <section class="ncsoa-wb-section">
+      <section class="ncsoa-wb-section" {{#if this.full}}data-knob-group{{/if}}>
         <div class="ncsoa-wb-section-title">{{this.group}}</div>
-        <div class="ncsoa-cfg-knobs">
+        <div class="ncsoa-cfg-knobs {{#if this.full}}full{{/if}}">
           {{#each this.knobs}}
-            <div class="ncsoa-cfg-knob {{#if this.modified}}modified{{/if}}">
+            <div class="ncsoa-cfg-knob {{#if this.modified}}modified{{/if}}" {{#if ../full}}data-knob-path="{{this.labelLower}}"{{/if}}>
               <label title="{{this.path}} (default {{this.def}})">{{this.label}}</label>
               <input type="number" step="{{this.step}}" data-knob="{{this.path}}" value="{{this.value}}" />
             </div>

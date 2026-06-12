@@ -21,6 +21,22 @@
   border: 1px solid var(--ncsoa-edge); border-radius: 4px; padding: 3px 6px; text-align: right; font-size: 0.88em;
 }
 
+/* M9.4a — preset bar + the Common/Full view switch */
+.ncsoa-cfg-presetbar { display: flex; gap: 8px; align-items: center; }
+.ncsoa-cfg-presetbar select { flex: 1; max-width: 320px; }
+.ncsoa-cfg-preset-blurb { font-size: 0.84em; color: var(--ncsoa-muted); font-style: italic; line-height: 1.45; }
+.ncsoa-cfg-viewbar { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.ncsoa-cfg-view {
+  background: transparent; color: var(--ncsoa-muted);
+  border: 1px solid var(--ncsoa-edge); border-radius: 0;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  padding: 4px 12px; font-family: var(--ncsoa-font-display); font-size: 0.78em; letter-spacing: 1.5px; text-transform: uppercase;
+}
+.ncsoa-cfg-view.active { background: rgba(0, 217, 255, 0.14); color: var(--ncsoa-cyan); border-color: var(--ncsoa-cyan); }
+.ncsoa-cfg-viewbar input[type="search"] { flex: 1; max-width: 280px; margin-left: auto; }
+/* full view: dot-paths read better in the terminal face */
+.ncsoa-cfg-knobs.full .ncsoa-cfg-knob label { font-family: var(--ncsoa-font-display); font-size: 0.78em; letter-spacing: 0; }
+
 /* Footer */
 .ncsoa-cfg-footer { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 0 4px; margin-top: auto; border-top: 1px solid var(--ncsoa-edge); }
 .ncsoa-cfg-footer button {

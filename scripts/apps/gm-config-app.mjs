@@ -23,6 +23,7 @@ import { MODULE_ID, SETTINGS } from "../constants.mjs";
 import { DataStore } from "../data/data-store.mjs";
 import { CONFIGS } from "../config/index.mjs";
 import { TUNABLES_DEFAULTS, getTunables } from "../config/tunables.mjs";
+import { SCORING_PRESETS, getPreset, matchPreset, flattenTunables, mergeKnobEdits, countLeaves, getByPath as presetGetByPath } from "../config/presets.mjs";
 import { migrateScItems, resolveScopeItems, summarizeReport } from "../data/migrations/002-sc-effects-to-flags.mjs";
 import { NCSOA_DIALOG } from "./components/register.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
@@ -80,6 +81,9 @@ export class GMConfigApp extends FormApplication {
   constructor(options = {}) {
     super({}, options);
     this.currentTab = "tuning";
+    this.tuningView = "common";      // M9.4a — "common" (curated) | "full" (every dial)
+    this.tuningSearch = "";          // full-view path filter (DOM, keeps focus)
+    this.presetPick = null;          // the preset selected in the bar (not yet applied)
     this.migrationScope = "all";
     this.migrationReport = null;     // last dry-run/convert report
     this.migrationWasDryRun = true;
@@ -103,14 +107,8 @@ export class GMConfigApp extends FormApplication {
 
   getData() {
     const effective = getTunables();
-    const groups = TUNING_SCHEMA.map((g) => ({
-      group: g.group,
-      knobs: g.knobs.map((k) => {
-        const value = getByPath(effective, k.path);
-        const def = getByPath(TUNABLES_DEFAULTS, k.path);
-        return { path: k.path, label: k.label, step: k.step || 1, value, modified: value !== def, def };
-      }),
-    }));
+    const groups =
+      this.tuningView === "full" ? this._fullGroups(effective) : this._commonGroups(effective);
     const overlay = this._overlay();
     const configs = CONFIGS.map((c) => ({ key: c.key, name: c.journal.replace(/^Style Checker - /, ""), schema: this._schemaOf(c.key) }));
     return {
@@ -130,11 +128,84 @@ export class GMConfigApp extends FormApplication {
       groups,
       hasOverrides: Object.keys(overlay).length > 0,
       overrideCount: this._countLeaves(overlay),
+      tuning: this.currentTab === "tuning" ? this._tuningContext(overlay) : null,
       configs,
       migration: this._migrationContext(),
       matrix: this.currentTab === "factions" ? this._matrixData() : null,
       glossary: this.currentTab === "help" ? { entries: glossary(getTunables(), getEngineConfig()) } : null,
     };
+  }
+
+  // ── Tuning Panel (M9.4a: §18.2 tier 2 full coverage + §18.4 D6=B presets) ───
+
+  /** The curated everyday dials (the M3 schema, unchanged). */
+  _commonGroups(effective) {
+    return TUNING_SCHEMA.map((g) => ({
+      group: g.group,
+      knobs: g.knobs.map((k) => {
+        const value = getByPath(effective, k.path);
+        const def = getByPath(TUNABLES_DEFAULTS, k.path);
+        return { path: k.path, label: k.label, step: k.step || 1, value, modified: value !== def, def };
+      }),
+    }));
+  }
+
+  /** EVERY numeric dial, auto-generated from the defaults tree (§18.3 full inventory). */
+  _fullGroups(effective) {
+    const byGroup = new Map();
+    for (const { path } of flattenTunables(TUNABLES_DEFAULTS)) {
+      const group = path.split(".")[0];
+      const def = presetGetByPath(TUNABLES_DEFAULTS, path);
+      const value = presetGetByPath(effective, path);
+      if (!byGroup.has(group)) byGroup.set(group, []);
+      byGroup.get(group).push({
+        path,
+        label: path.slice(group.length + 1),
+        labelLower: path.toLowerCase(),
+        step: Number.isInteger(def) ? 1 : 0.05,
+        value,
+        def,
+        modified: value !== def,
+      });
+    }
+    return [...byGroup.entries()].map(([group, knobs]) => ({ group, knobs, full: true }));
+  }
+
+  /** Preset bar context: derived active preset, pick, blurb. */
+  _tuningContext(overlay) {
+    const activeKey = matchPreset(overlay);
+    const pick = this.presetPick ?? activeKey ?? "phase82";
+    const picked = getPreset(pick);
+    return {
+      viewFull: this.tuningView === "full",
+      search: this.tuningSearch,
+      activeKey,
+      isCustom: activeKey === null,
+      presets: SCORING_PRESETS.map((p) => ({
+        key: p.key,
+        label: p.label,
+        selected: p.key === pick,
+        active: p.key === activeKey,
+      })),
+      pickBlurb: picked?.blurb ?? "",
+      pickIsActive: pick === activeKey,
+    };
+  }
+
+  /** Apply a scoring preset: its overlay REPLACES the GM's tunables overlay. */
+  async _applyPreset(key) {
+    const preset = getPreset(key);
+    if (!preset) return;
+    const confirmed = await Dialog.confirm({
+      options: NCSOA_DIALOG,
+      title: `Apply "${preset.label}"?`,
+      content: `<p><strong>${preset.label}</strong> — ${preset.blurb}</p><p>This replaces your current tuning overrides (${this._countLeaves(this._overlay())} active). Edit any dial afterwards to fork it into a custom philosophy.</p>`,
+    });
+    if (!confirmed) return;
+    await DataStore.set(SETTINGS.TUNABLES, foundry.utils.deepClone(preset.overlay));
+    this.presetPick = null;
+    ui.notifications?.info(`Scoring preset applied: ${preset.label}.`);
+    this.render(false);
   }
 
   // ── Faction matrix (§14.7, M9.3e) ───────────────────────────────────────────
@@ -249,18 +320,19 @@ export class GMConfigApp extends FormApplication {
   async _updateObject() {}
 
   async _saveTuning(html) {
-    const overlay = {};
+    // MERGE the rendered knobs into the existing overlay — never rebuild from
+    // the view. The Common view renders a curated handful; a preset writes a
+    // wide overlay; rebuilding would silently wipe every unrendered override.
+    const edits = [];
     html.find("[data-knob]").each((_, el) => {
-      const path = el.dataset.knob;
-      const def = getByPath(TUNABLES_DEFAULTS, path);
       const raw = el.value;
       if (raw === "" || raw == null) return;
       const num = Number(raw);
-      if (Number.isNaN(num)) return;
-      if (num !== def) setByPath(overlay, path, num); // store only real overrides
+      if (!Number.isNaN(num)) edits.push({ path: el.dataset.knob, value: num });
     });
+    const overlay = mergeKnobEdits(this._overlay(), edits, TUNABLES_DEFAULTS);
     await DataStore.set(SETTINGS.TUNABLES, overlay);
-    ui.notifications?.info(`Tuning saved — ${this._countLeaves(overlay)} override(s) active.`);
+    ui.notifications?.info(`Tuning saved — ${countLeaves(overlay)} override(s) active.`);
     this.render(false);
   }
 
@@ -296,6 +368,31 @@ export class GMConfigApp extends FormApplication {
     html.find("[data-tab]").on("click", (e) => { this.currentTab = e.currentTarget.dataset.tab; this.render(false); });
     html.find("[data-action='save-tuning']").on("click", () => this._saveTuning(html));
     html.find("[data-action='reset-tuning']").on("click", () => this._resetTuning());
+
+    // M9.4a — preset bar + the Common/Full view switch + the full-view filter.
+    html.find("[data-control='preset-pick']").on("change", (e) => {
+      this.presetPick = e.currentTarget.value;
+      this.render(false);
+    });
+    html.find("[data-action='apply-preset']").on("click", (e) => this._applyPreset(e.currentTarget.dataset.preset));
+    html.find("[data-action='tuning-view']").on("click", (e) => {
+      this.tuningView = e.currentTarget.dataset.view;
+      this.render(false);
+    });
+    const applyKnobSearch = (term) => {
+      this.tuningSearch = term;
+      const q = term.trim().toLowerCase();
+      html.find("[data-knob-path]").each((_, el) => {
+        el.style.display = !q || el.dataset.knobPath.includes(q) ? "" : "none";
+      });
+      // hide groups left with no visible knobs
+      html.find("[data-knob-group]").each((_, el) => {
+        const any = Array.from(el.querySelectorAll("[data-knob-path]")).some((k) => k.style.display !== "none");
+        el.style.display = any ? "" : "none";
+      });
+    };
+    html.find("[data-control='knob-search']").on("input", (e) => applyKnobSearch(e.currentTarget.value));
+    if (this.tuningView === "full" && this.tuningSearch) applyKnobSearch(this.tuningSearch);
     html.find("[data-action='reset-config']").on("click", (e) => this._resetConfig(e.currentTarget.dataset.key));
     html.find("[data-action='export-config']").on("click", (e) => this._exportConfig(e.currentTarget.dataset.key));
     html.find("[data-control='migration-scope']").on("change", (e) => { this.migrationScope = e.currentTarget.value; });
