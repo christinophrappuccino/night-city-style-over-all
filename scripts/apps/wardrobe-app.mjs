@@ -35,6 +35,7 @@ import { formatStyleName } from "../engine/recommendations.mjs";
 import { computeActorReads } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { normalizeStaged, buildStagedItems, buildCommitUpdates } from "../services/wardrobe-staging.mjs";
+import { fireApiHook, API_HOOKS } from "../api-hooks.mjs";
 import { snapshotOutfit, makePreset, outfitToStaged, addOutfit, removeOutfit, renameOutfit } from "../services/outfits.mjs";
 import { getStyleTemplates, setStyleTemplates, snapshotTemplateEntries, applyQuickDress } from "../services/quick-dress.mjs";
 import { getUniforms, setUniforms, buildUniformFromReads, wearUniform } from "../services/uniforms.mjs";
@@ -424,6 +425,7 @@ export class WardrobeApp extends Application {
     const updates = buildCommitUpdates(cpr.getItems(this.actor), this.staged);
     if (updates.length) {
       await this.actor.updateEmbeddedDocuments("Item", updates);
+      fireApiHook(API_HOOKS.OUTFIT_APPLIED, { actor: this.actor, changed: updates.length });
     }
     this.staged = {};
     this.render(false);

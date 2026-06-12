@@ -87,6 +87,49 @@ Built as ES modules for Foundry V12, forward-compatible to V13 → V14. Pure-eng
 
 `M0` scaffold → `M1` data + migrations → `M2` engine extraction → `M3` apps + config UI → `M4` item style tab → `M5` sc.* migration → `M6` wardrobe / shops / uniforms → `M7` live layer + The Garden → `M8` compendium + release → `M9` color math + public API.
 
+### Public API
+
+The module exposes a curated, versioned API for macros and other modules:
+
+```js
+const api = game.modules.get("night-city-style-over-all").api;
+
+// The engine pipeline — the same spine every app uses (§29.1).
+const reads = api.computeActorReads(actor);                    // self view
+const seen  = api.computeActorReads(actor, { view: "observed" }); // what physically shows
+// Hypothetical outfits: pass { items } to preview without touching the actor.
+
+// Quick reads & cards
+await api.performQuickRead({ scanner, target }); // roll → tier → whispered card
+await api.postLookbook(actor);                   // public "fit pic" card
+
+// Configuration
+api.getTunables();          // effective formula dials (defaults + GM overlay)
+api.presets.list;           // scoring presets (named philosophies)
+api.getEngineConfig();      // factions / districts / brands / …
+
+// App openers
+api.openStyleChecker(actor); api.openWardrobe(actor);
+api.openGMDashboard(); api.openShops(); api.openConfig();
+```
+
+Custom hooks fire at the natural seams (names on `api.HOOKS`):
+
+| Hook | When | Payload |
+|---|---|---|
+| `styleCheckerScanComplete` | a quick read finishes (token scan or lookbook read) | `{ scanner, target, tier, total, read }` |
+| `styleCheckerGateVerdict` | a scene-gate verdict posts | `{ actor, gateName, verdict }` |
+| `styleCheckerOutfitApplied` | a staged Wardrobe look commits | `{ actor, changed }` |
+| `styleCheckerLookbookShared` | a lookbook card is shared | `{ actor }` |
+
+```js
+Hooks.on("styleCheckerScanComplete", ({ scanner, target, tier }) => {
+  console.log(`${scanner.name} read ${target.name}: ${tier}`);
+});
+```
+
+Additions keep `api.apiVersion`; renames/removals bump it.
+
 ## A note on intellectual property
 
 *Cyberpunk* and *Cyberpunk RED* are the property of R. Talsorian Games and CD Projekt. This is an unofficial, fan-made module and is **not** affiliated with or endorsed by either company. It ships only original content and tooling — it does not include or redistribute copyrighted sourcebook material. Canonical setting data is something a GM imports for their own table from books they own. Please support the official releases.

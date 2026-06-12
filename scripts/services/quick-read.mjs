@@ -31,6 +31,7 @@ import { getEngineConfig } from "./engine-config.mjs";
 import { getTunables } from "../config/tunables.mjs";
 import { postStyleRead } from "./chat-cards.mjs";
 import { emitSocket, MESSAGE } from "./sockets.mjs";
+import { fireApiHook, API_HOOKS } from "../api-hooks.mjs";
 
 /**
  * Tier-gated card content (§16.2): each tier reveals strictly more.
@@ -165,5 +166,7 @@ export async function performQuickRead({ scanner, target, config = getEngineConf
     if (game.user.isGM) await recordPublicRead(target, topArch);
     else emitSocket(MESSAGE.RECORD_READ, { actorId: target.id, topArch });
   }
+
+  fireApiHook(API_HOOKS.SCAN_COMPLETE, { scanner, target, tier, total, read });
   return { tier, total };
 }

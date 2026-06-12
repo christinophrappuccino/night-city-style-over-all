@@ -11,13 +11,8 @@ import { MODULE_ID, SETTINGS } from "./constants.mjs";
 import { DataStore } from "./data/data-store.mjs";
 import { setTunablesOverlayProvider } from "./config/tunables.mjs";
 import { GMConfigApp } from "./apps/gm-config-app.mjs";
-import { backupSettings, restoreSettings, snapshotSettings } from "./data/backup.mjs";
 import { runMigrations } from "./data/migrations/index.mjs";
-import { computeActorReads } from "./services/style-reads.mjs";
-import { previewItemCascade } from "./services/item-preview.mjs";
-import { styleDataFromAe, dualReadStyleData } from "./data/sc-keys.mjs";
-import { collectScMods } from "./engine/cascade.mjs";
-import { migrateScItems, resolveScopeItems, classifyScItem } from "./data/migrations/002-sc-effects-to-flags.mjs";
+import { buildApi } from "./api.mjs";
 import { WardrobeApp } from "./apps/wardrobe-app.mjs";
 import { StyleCheckerApp } from "./apps/style-checker-app.mjs";
 import { GMDashboardApp } from "./apps/gm-dashboard-app.mjs";
@@ -58,25 +53,9 @@ Hooks.once("init", () => {
     restricted: true,
   });
 
-  // Expose the public-ish API: data layer + the engine pipeline + app openers.
+  // The public API (M9.4b, api.mjs): the curated stable surface + custom hooks.
   const mod = game.modules.get(MODULE_ID);
-  if (mod) {
-    mod.api = {
-      DataStore,
-      backup: { backupSettings, restoreSettings, snapshotSettings },
-      computeActorReads,
-      previewItemCascade,                 // preview one item's styleData cascade (§8.3)
-      styleDataFromAe,                    // parse an item's sc.* AEs → styleData (§8.4 / M5)
-      dualReadStyleData,                  // flag-wins dual read for one item (D4)
-      collectScMods,                      // actor-wide sc.*/styleData modifiers (M5)
-      migration: { migrateScItems, resolveScopeItems, classifyScItem }, // Migration 002 (§5.4)
-      openStyleChecker: (actor, tab) => StyleCheckerApp.openForActor(actor, tab),
-      openWardrobe: (actor) => WardrobeApp.openForActor(actor),
-      openGMDashboard: (tab) => GMDashboardApp.open(tab),
-      openShops: () => ShopApp.open(),
-      openConfig: () => new GMConfigApp().render(true),
-    };
-  }
+  if (mod) mod.api = buildApi();
 });
 
 // Scene-control launch points: GM Dashboard (GM-only, guide §6 M3) and the Shop

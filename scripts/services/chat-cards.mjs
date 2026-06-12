@@ -24,6 +24,7 @@ import { dualReadStyleData } from "../data/sc-keys.mjs";
 import { humanize } from "../config/style-tab-schema.mjs";
 import { computeActorReads } from "./style-reads.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
+import { fireApiHook, API_HOOKS } from "../api-hooks.mjs";
 
 const TPL = (name) => `modules/${MODULE_ID}/templates/chat/${name}.hbs`;
 
@@ -57,6 +58,7 @@ async function postCard(template, data, { actor, whisper, flavor } = {}) {
 export function postGateVerdict({ actor, gateName, gateNotes, verdict }) {
   const status = verdict.status;
   const label = status === "green" ? "CLEARED" : status === "yellow" ? "FLAGGED" : "TURNED AWAY";
+  fireApiHook(API_HOOKS.GATE_VERDICT, { actor, gateName, verdict });
   return postCard(TPL("gate-verdict"), {
     actorName: actor.name,
     actorImg: actor.img,
@@ -108,6 +110,7 @@ export async function postLookbook(actor, { config = getEngineConfig() } = {}) {
     });
 
   const headline = composeHeadline({ vibes: reads.vibes, archetypes: reads.archetypes, heat: reads.heat });
+  fireApiHook(API_HOOKS.LOOKBOOK_SHARED, { actor });
   return postCard(TPL("lookbook"), {
     actorId: actor.id,
     actorName: actor.name,
