@@ -8,7 +8,15 @@
   --gm-accent: #ff6b00;
   --gm-edge: rgba(255, 107, 0, 0.3);
 }
-.ncsoa-gm .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+.ncsoa-gm .window-content {
+  background-color: var(--ncsoa-bg);
+  /* GM scanlines run orange — same grit, the tool's own hue */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 107, 0, 0.025) 0px, transparent 1px, transparent 2px, rgba(255, 107, 0, 0.025) 3px),
+    repeating-linear-gradient(90deg, rgba(255, 107, 0, 0.018) 0px, transparent 1px, transparent 2px, rgba(255, 107, 0, 0.018) 3px);
+  color: var(--ncsoa-text);
+  padding: 0;
+}
 /* GM tool = orange window chrome (same cue as its tabs) */
 .ncsoa-gm .window-header {
   background: linear-gradient(to bottom, rgba(255, 107, 0, 0.10), rgba(255, 107, 0, 0.02));
@@ -19,7 +27,8 @@
 
 /* Header */
 .ncsoa-gm-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--gm-edge); }
-.ncsoa-gm-title { font-weight: 800; letter-spacing: 2px; color: var(--gm-accent); }
+.ncsoa-gm-title { font-family: var(--ncsoa-font-display); text-transform: uppercase; font-weight: 800; letter-spacing: 2px; color: var(--gm-accent); text-shadow: 0 0 10px rgba(255, 107, 0, 0.45); }
+.ncsoa-gm .window-header .window-title { text-shadow: 0 0 8px rgba(255, 107, 0, 0.35); }
 .ncsoa-gm-counts { font-size: 0.82em; color: var(--ncsoa-muted); }
 
 /* GM-accent tabs (override the cyan player tabs) */
@@ -32,7 +41,7 @@
 .ncsoa-gm-trow { display: grid; grid-template-columns: 1.6fr 0.8fr 0.5fr 0.6fr 1.2fr; align-items: center; gap: 8px; padding: 5px 8px; border-radius: var(--ncsoa-r-btn); font-size: 0.85em; transition: background var(--ncsoa-fast); }
 .ncsoa-gm-trow:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
 .ncsoa-gm-trow:not(.head):hover { background: rgba(255, 107, 0, 0.07); }
-.ncsoa-gm-trow.head { color: var(--ncsoa-muted); font-size: 0.7em; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid var(--gm-edge); }
+.ncsoa-gm-trow.head { font-family: var(--ncsoa-font-display); color: var(--ncsoa-muted); font-size: 0.7em; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid var(--gm-edge); }
 .ncsoa-gm-trow .tc-name { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ncsoa-gm-trow .tc-name img { width: 24px; height: 24px; border-radius: 3px; object-fit: cover; }
 .ncsoa-gm-trow .npc { font-size: 0.7em; color: var(--gm-accent); border: 1px solid var(--gm-edge); border-radius: 3px; padding: 0 3px; }
@@ -64,7 +73,7 @@
 
 /* Gate results */
 .ncsoa-gm-gatelist { display: flex; flex-direction: column; gap: 6px; }
-.ncsoa-gm-gaterow { display: grid; grid-template-columns: 30px 1fr auto; grid-template-rows: auto auto; gap: 2px 8px; align-items: center; background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-muted); border-radius: var(--ncsoa-r-card); padding: 6px 10px; }
+.ncsoa-gm-gaterow { display: grid; grid-template-columns: 30px 1fr auto; grid-template-rows: auto auto; gap: 2px 8px; align-items: center; background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-muted); border-radius: var(--ncsoa-r-card); padding: 6px 10px; animation: ncsoa-slide-in 0.3s ease; }
 .ncsoa-gm-gaterow.status-green { border-left-color: var(--ncsoa-green); }
 .ncsoa-gm-gaterow.status-yellow { border-left-color: var(--ncsoa-yellow); }
 .ncsoa-gm-gaterow.status-red { border-left-color: var(--ncsoa-red); }
@@ -79,7 +88,8 @@
 
 /* Disguise results */
 .ncsoa-gm-dislist { display: flex; flex-direction: column; gap: 5px; }
-.ncsoa-gm-disrow { display: grid; grid-template-columns: 72px 1.2fr 1.1fr 0.5fr 0.55fr 1.25fr; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--ncsoa-r-card); background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-green); font-size: 0.85em; }
+.ncsoa-gm-disrow { display: grid; grid-template-columns: 72px 1.2fr 1.1fr 0.5fr 0.55fr 1.25fr; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--ncsoa-r-card); background: var(--ncsoa-panel); border-left: 3px solid var(--ncsoa-green); font-size: 0.85em; animation: ncsoa-slide-in 0.3s ease; }
+.ncsoa-gm-disrow.blown { --ncsoa-pulse-color: rgba(220, 53, 69, 0.4); animation: ncsoa-slide-in 0.3s ease, ncsoa-box-pulse 2.5s ease-in-out infinite; }
 /* M9.2 — the disguise ring column (§25.1 ring partial) */
 .ncsoa-gm-disrow .dring figure.ncsoa-ring { gap: 0; }
 .ncsoa-gm-disrow .dring .ncsoa-ring-verdict { font-size: 0.62em; }

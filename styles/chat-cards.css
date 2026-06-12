@@ -4,13 +4,18 @@
  */
 
 .ncsoa-chat-card {
-  background: #101418;
+  background-color: #101418;
+  /* the scan-feed grit — these cards are the macro's NEURAL SCAN moments */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 217, 255, 0.03) 0px, transparent 1px, transparent 2px, rgba(0, 217, 255, 0.03) 3px);
   color: var(--ncsoa-text);
   border: 1px solid rgba(0, 217, 255, 0.35);
-  border-radius: var(--ncsoa-r-card);
+  border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   padding: var(--ncsoa-sp-2);
   font-family: "Roboto", "Segoe UI", sans-serif;
   font-size: 0.92em;
+  animation: ncsoa-slide-in 0.3s ease;
 }
 .ncsoa-chat-card.red, .ncsoa-gate-card.red { border-color: rgba(220, 53, 69, 0.6); }
 .ncsoa-chat-card.yellow, .ncsoa-gate-card.yellow { border-color: rgba(255, 193, 7, 0.6); }
@@ -18,9 +23,16 @@
 .ncsoa-cc-head { display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; align-items: center; }
 .ncsoa-cc-img { width: 36px; height: 36px; border-radius: var(--ncsoa-r-btn); border: 1px solid rgba(0, 217, 255, 0.25); object-fit: cover; }
 .ncsoa-cc-title { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
-.ncsoa-cc-name { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
+.ncsoa-cc-name { color: #fff; font-family: var(--ncsoa-font-display); text-transform: uppercase; font-weight: 700; letter-spacing: 1.5px; text-shadow: var(--ncsoa-glow-soft); }
 .ncsoa-cc-sub { color: var(--ncsoa-muted); font-size: 0.82em; }
-.ncsoa-cc-verdict { font-weight: 700; font-size: 0.85em; letter-spacing: 0.5px; padding: 2px 8px; border-radius: var(--ncsoa-r-pill); border: 1px solid; }
+.ncsoa-cc-verdict {
+  font-family: var(--ncsoa-font-display); text-transform: uppercase;
+  font-weight: 700; font-size: 0.85em; letter-spacing: 1.5px;
+  padding: 2px 8px; border: 1px solid;
+  border-radius: 0;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  text-shadow: 0 0 8px currentColor;
+}
 .ncsoa-cc-verdict.green { color: #28e07b; border-color: rgba(40, 224, 123, 0.5); }
 .ncsoa-cc-verdict.yellow { color: #ffc107; border-color: rgba(255, 193, 7, 0.5); }
 .ncsoa-cc-verdict.red { color: #ff5470; border-color: rgba(255, 84, 112, 0.5); }

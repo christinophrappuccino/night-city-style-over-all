@@ -6,6 +6,17 @@
  * Spec: SC-Module-Architecture-Guide.md §4.2
  */
 
+/* Share Tech Mono (SIL OFL, bundled in fonts/ with its license) — the terminal
+   display voice ported from the macro. Body copy stays a readable sans; this
+   face is for chrome: titles, section labels, verdicts, big values. */
+@font-face {
+  font-family: "Share Tech Mono";
+  src: url("../fonts/ShareTechMono-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Chat cards render in Foundry's chat log, outside any .ncsoa window —
    scoping the tokens to .ncsoa-chat-card too lets them share the palette. */
 .ncsoa,
@@ -42,7 +53,36 @@
   --ncsoa-r-card: 6px;  /* cards, panels, rows */
   --ncsoa-r-pill: 10px; /* badges, pills, chips */
   --ncsoa-fast: 0.15s;
+
+  /* Terminal display register (the macro's voice — hybrid: chrome speaks
+     terminal, content stays quiet sans) */
+  --ncsoa-font-display: "Share Tech Mono", "Consolas", monospace;
+  --ncsoa-bracket: #ffed4e;                       /* [SECTION] bracket accent */
+  --ncsoa-glow-cyan: 0 0 10px rgba(0, 217, 255, 0.55);
+  --ncsoa-glow-soft: 0 0 6px rgba(0, 217, 255, 0.35);
 }
+
+/* ── Motion kit (macro keyframes, rebuilt) ────────────────────────────────── */
+@keyframes ncsoa-glow-pulse {
+  0%, 100% { text-shadow: 0 0 5px currentColor; }
+  50%      { text-shadow: 0 0 12px currentColor, 0 0 22px currentColor; }
+}
+@keyframes ncsoa-slide-in {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes ncsoa-box-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--ncsoa-pulse-color, rgba(220, 53, 69, 0.55)); }
+  50%      { box-shadow: 0 0 18px var(--ncsoa-pulse-color, rgba(220, 53, 69, 0.85)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ncsoa, .ncsoa *, .ncsoa-chat-card, .ncsoa-chat-card * { animation: none !important; transition: none !important; }
+}
+
+/* ── Display-register primitives ──────────────────────────────────────────── */
+/* The terminal voice for chrome text — pair with a font-size at the use site */
+.ncsoa-display { font-family: var(--ncsoa-font-display); text-transform: uppercase; letter-spacing: 2px; }
+
 
 /*
  * Form-control baseline (M9.2) — replaces Foundry's default (parchment) skin on
@@ -105,7 +145,13 @@
   border-bottom: 1px solid var(--ncsoa-edge);
   color: var(--ncsoa-text);
 }
-.ncsoa .window-header .window-title { color: var(--ncsoa-text); letter-spacing: 0.5px; }
+.ncsoa .window-header .window-title {
+  color: var(--ncsoa-text);
+  font-family: var(--ncsoa-font-display);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: var(--ncsoa-glow-soft);
+}
 .ncsoa .window-header a { color: var(--ncsoa-dim); transition: color var(--ncsoa-fast); }
 .ncsoa .window-header a:hover { color: var(--ncsoa-cyan); text-shadow: 0 0 6px var(--ncsoa-dim); }
 

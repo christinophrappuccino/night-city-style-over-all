@@ -18,7 +18,7 @@
 }
 .gdn-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--ncsoa-cyan); object-fit: cover; }
 .gdn-id { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.gdn-name { color: #fff; font-weight: 700; font-size: 1.05em; }
+.gdn-name { color: #fff; font-family: var(--ncsoa-font-display); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; font-size: 1.05em; text-shadow: var(--ncsoa-glow-soft); }
 .gdn-handle { color: var(--ncsoa-cyan); font-weight: 400; font-size: 0.82em; }
 .gdn-bio { color: var(--ncsoa-muted); font-size: 0.82em; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gdn-tags { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -28,7 +28,7 @@
 }
 .gdn-tag.known { color: var(--ncsoa-yellow); border-color: rgba(255, 193, 7, 0.4); }
 .gdn-followers { display: flex; flex-direction: column; align-items: flex-end; }
-.gdn-count { color: var(--ncsoa-cyan); font-weight: 700; font-size: 1.3em; }
+.gdn-count { color: var(--ncsoa-cyan); font-family: var(--ncsoa-font-display); font-weight: 700; font-size: 1.3em; text-shadow: var(--ncsoa-glow-soft); }
 .gdn-count-label { color: var(--ncsoa-muted); font-size: 0.72em; letter-spacing: 1.5px; text-transform: uppercase; }
 .gdn-actions { display: flex; flex-direction: column; gap: 4px; }
 .gdn-actions button {

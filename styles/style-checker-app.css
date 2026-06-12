@@ -4,7 +4,15 @@
  * Spec: SC-Module-Architecture-Guide.md §6 (M3), §19
  */
 
-.ncsoa-sc .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+.ncsoa-sc .window-content {
+  background-color: var(--ncsoa-bg);
+  /* CRT scanline grit (macro lines 17916-17921) — barely-there grid noise */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 217, 255, 0.03) 0px, transparent 1px, transparent 2px, rgba(0, 217, 255, 0.03) 3px),
+    repeating-linear-gradient(90deg, rgba(0, 217, 255, 0.02) 0px, transparent 1px, transparent 2px, rgba(0, 217, 255, 0.02) 3px);
+  color: var(--ncsoa-text);
+  padding: 0;
+}
 .ncsoa-sc-body { display: flex; flex-direction: column; height: 100%; font-family: "Roboto", "Segoe UI", sans-serif; }
 
 /* Header */
@@ -22,6 +30,7 @@
   border-bottom: 3px solid transparent;
   color: var(--ncsoa-muted);
   cursor: pointer;
+  font-family: var(--ncsoa-font-display);
   font-size: 0.72em;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -92,9 +101,21 @@
 .ncsoa-sc-stub h3 { color: var(--ncsoa-cyan); border: none; margin: 10px 0 6px; }
 .ncsoa-sc-stub p { font-size: 0.88em; max-width: 380px; margin: 0 auto; line-height: 1.5; }
 
-/* §25 hero visuals (M9.2) — profile-tab layout for the shared chart partials */
+/* §25 hero visuals (M9.2) — profile-tab layout for the shared chart partials.
+   M9 elevation: each hero wears the macro's stat-box dress (panel wash, left
+   accent, slashed corners, diagonal stripe ticks at the cut corners). */
 .ncsoa-sc-heroes { display: grid; grid-template-columns: 3fr 2fr; gap: 8px; align-items: start; margin: 6px 0; }
-.ncsoa-sc-hero { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+.ncsoa-sc-hero {
+  display: flex; flex-direction: column; gap: 6px; align-items: stretch;
+  background:
+    linear-gradient(-45deg, transparent calc(50% - 1px), rgba(0, 217, 255, 0.55) 50%, transparent calc(50% + 1px)) 0 0 / 9px 9px no-repeat,
+    linear-gradient(-45deg, transparent calc(50% - 1px), rgba(0, 217, 255, 0.55) 50%, transparent calc(50% + 1px)) 100% 100% / 9px 9px no-repeat,
+    rgba(0, 217, 255, 0.04);
+  background-origin: border-box;
+  border-left: 3px solid var(--ncsoa-cyan);
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  padding: var(--ncsoa-sp-2) 10px 10px;
+}
 .ncsoa-sc-hero figure { align-self: center; }
 .gdn-followers .ncsoa-sparkline { margin-top: 2px; }
 
@@ -102,8 +123,9 @@
 .ncsoa-sc-lensbar { display: flex; align-items: center; gap: 6px; padding-bottom: 2px; }
 .ncsoa-sc-lens {
   background: transparent; color: var(--ncsoa-muted);
-  border: 1px solid var(--ncsoa-edge); border-radius: var(--ncsoa-r-btn);
-  padding: 4px 12px; font-size: 0.78em; letter-spacing: 1.5px; text-transform: uppercase;
+  border: 1px solid var(--ncsoa-edge); border-radius: 0;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  padding: 4px 12px; font-family: var(--ncsoa-font-display); font-size: 0.78em; letter-spacing: 1.5px; text-transform: uppercase;
 }
 .ncsoa-sc-lens.active { background: rgba(0, 217, 255, 0.14); color: var(--ncsoa-cyan); border-color: var(--ncsoa-cyan); }
 .ncsoa-sc-lensbar select { flex: 1; max-width: 300px; margin-left: auto; }
@@ -111,14 +133,24 @@
 .ncsoa-sc-headline {
   font-size: 1.18em; line-height: 1.35; color: #fff;
   padding: var(--ncsoa-sp-2) var(--ncsoa-sp-3); border-left: 3px solid var(--ncsoa-cyan);
-  background: rgba(0, 217, 255, 0.06); border-radius: 0 var(--ncsoa-r-card) var(--ncsoa-r-card) 0;
+  background: rgba(0, 217, 255, 0.06);
+  border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.18);
+  animation: ncsoa-slide-in 0.3s ease;
 }
 
 .ncsoa-sc-heroes.three { grid-template-columns: 5fr 4fr 4fr; }
 
 /* primary-archetype callout (§25.1 "primary read big and clear") */
 .ncsoa-sc-archcallout { display: flex; flex-direction: column; gap: 3px; padding: 6px 2px; }
-.ncsoa-sc-archcallout .ac-primary { font-size: 1.45em; font-weight: 800; color: var(--ncsoa-cyan); line-height: 1.15; }
+.ncsoa-sc-archcallout .ac-primary {
+  font-family: var(--ncsoa-font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.45em; font-weight: 800; color: var(--ncsoa-cyan); line-height: 1.15;
+  animation: ncsoa-glow-pulse 3s ease-in-out infinite;
+}
 .ncsoa-sc-archcallout .ac-conf { font-size: 0.72em; letter-spacing: 1px; color: var(--ncsoa-muted); text-transform: uppercase; }
 .ncsoa-sc-archcallout .ac-runner { display: grid; grid-template-columns: minmax(70px, auto) 1fr; gap: 8px; align-items: center; font-size: 0.8em; color: var(--ncsoa-muted); }
 
@@ -127,16 +159,22 @@
 .ncsoa-sc-fold:hover { border-color: rgba(0, 217, 255, 0.25); }
 .ncsoa-sc-fold > summary {
   cursor: pointer; padding: 7px 10px; font-size: 0.8em;
+  font-family: var(--ncsoa-font-display);
   letter-spacing: 1.5px; color: var(--ncsoa-dim); text-transform: uppercase;
-  list-style-position: inside;
+  list-style: none;
 }
+.ncsoa-sc-fold > summary::-webkit-details-marker { display: none; }
+.ncsoa-sc-fold > summary::before { content: "▸"; color: var(--ncsoa-bracket); margin-right: 7px; }
+.ncsoa-sc-fold[open] > summary::before { content: "▾"; }
 .ncsoa-sc-fold > summary:hover { color: var(--ncsoa-cyan); }
 .ncsoa-sc-fold[open] > summary { border-bottom: 1px solid rgba(0, 217, 255, 0.10); }
 .ncsoa-sc-fold > :not(summary) { margin: 8px 10px; }
 
-/* as-seen-by framing (§24) */
-.ncsoa-sc-observerline { font-size: 0.95em; color: var(--ncsoa-text); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.ncsoa-sc-observerline strong { color: var(--ncsoa-magenta); }
+/* as-seen-by framing (§24) — observer panels slide in on lens switch */
+.ncsoa-sc-observerline { font-size: 0.95em; color: var(--ncsoa-text); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; animation: ncsoa-slide-in 0.3s ease; }
+.ncsoa-sc-observerline strong { color: var(--ncsoa-magenta); text-shadow: 0 0 8px rgba(255, 0, 255, 0.4); }
+.ncsoa-sc-disguise { animation: ncsoa-slide-in 0.3s ease; }
+.ncsoa-sc-noread { animation: ncsoa-slide-in 0.3s ease; }
 .ncsoa-sc-knownfor { font-size: 0.82em; color: var(--ncsoa-yellow); }
 .ncsoa-sc-noread { text-align: center; padding: 28px 16px; color: var(--ncsoa-muted); font-size: 0.95em; }
 .ncsoa-sc-noread i { display: block; font-size: 1.8em; margin-bottom: 6px; color: var(--ncsoa-dim); }

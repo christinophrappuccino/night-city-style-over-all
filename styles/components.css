@@ -16,8 +16,8 @@
   padding: var(--ncsoa-sp-2) var(--ncsoa-sp-1);
   text-align: center;
 }
-.ncsoa-wb-card-label { font-size: 0.62em; letter-spacing: 1.5px; color: var(--ncsoa-muted); }
-.ncsoa-wb-card-value { font-size: 1.7em; font-weight: 800; line-height: 1.1; color: #fff; }
+.ncsoa-wb-card-label { font-family: var(--ncsoa-font-display); font-size: 0.62em; letter-spacing: 1.5px; color: var(--ncsoa-muted); }
+.ncsoa-wb-card-value { font-family: var(--ncsoa-font-display); font-size: 1.7em; font-weight: 800; line-height: 1.1; color: #fff; text-shadow: 0 0 8px rgba(215, 230, 242, 0.22); }
 .ncsoa-wb-card-tag { font-size: 0.68em; color: var(--ncsoa-dim); margin-top: 2px; }
 .ncsoa-wb-card-tag .grade { font-weight: 700; color: var(--ncsoa-cyan); }
 .ncsoa-wb-card.style .ncsoa-wb-card-value { color: var(--ncsoa-cyan); }
@@ -25,22 +25,34 @@
 .ncsoa-wb-card.heat.warm .ncsoa-wb-card-value { color: var(--ncsoa-heat-warm); }
 .ncsoa-wb-card.heat.hot .ncsoa-wb-card-value { color: var(--ncsoa-heat-hot); }
 .ncsoa-wb-card.heat.blazing .ncsoa-wb-card-value { color: var(--ncsoa-heat-blazing); }
+/* no idle UI on dangerous states (macro rule): blazing heat pulses */
+.ncsoa-wb-card.heat.blazing {
+  border-color: var(--ncsoa-heat-blazing);
+  --ncsoa-pulse-color: rgba(220, 53, 69, 0.5);
+  animation: ncsoa-box-pulse 2s ease-in-out infinite;
+}
 .ncsoa-wb-card.danger .ncsoa-wb-card-value { color: var(--danger, var(--ncsoa-green)); }
 .ncsoa-wb-card.danger { border-color: var(--danger, var(--ncsoa-edge)); }
 
-/* Section headers — ONE micro-label voice everywhere: 0.72em / 1.5px tracking */
+/* Section headers — the system's punctuation, in the terminal display voice:
+   [LABEL ? ········ meta] — brackets in the macro's accent yellow. Chrome
+   speaks terminal even on quiet tool surfaces; content below stays sans. */
 .ncsoa-wb-section { display: flex; flex-direction: column; gap: 6px; }
 .ncsoa-wb-section-title {
+  font-family: var(--ncsoa-font-display);
   font-size: 0.72em;
   letter-spacing: 1.5px;
   color: var(--ncsoa-dim);
   border-bottom: 1px solid rgba(0, 217, 255, 0.12);
   padding-bottom: 3px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: baseline;
+  gap: 5px;
 }
-.ncsoa-wb-section-meta { letter-spacing: 0; color: var(--ncsoa-muted); font-size: 0.92em; }
+.ncsoa-wb-section-title::before { content: "["; color: var(--ncsoa-bracket); font-weight: 700; }
+.ncsoa-wb-section-title::after { content: "]"; color: var(--ncsoa-bracket); font-weight: 700; }
+.ncsoa-wb-section-meta { letter-spacing: 0; color: var(--ncsoa-muted); font-size: 0.92em; margin-left: auto; font-family: "Roboto", "Segoe UI", sans-serif; text-transform: none; }
 .ncsoa-wb-empty { color: var(--ncsoa-muted); font-size: 0.85em; font-style: italic; padding: 2px 0; }
 
 /* Chips */

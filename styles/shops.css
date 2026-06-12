@@ -35,7 +35,7 @@
 
 /* Shop meta strip */
 .ncsoa-shop-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.85em; }
-.ncsoa-shop-meta .shop-name { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
+.ncsoa-shop-meta .shop-name { color: #fff; font-family: var(--ncsoa-font-display); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; text-shadow: var(--ncsoa-glow-soft); }
 .ncsoa-shop-meta .shop-mod { color: var(--ncsoa-yellow); border: 1px solid rgba(255, 193, 7, 0.4); border-radius: 10px; padding: 0 8px; }
 .ncsoa-shop-meta .shop-query { color: var(--ncsoa-cyan); }
 .ncsoa-shop-meta .shop-missing { color: var(--ncsoa-yellow); }
@@ -90,12 +90,25 @@
 .ncsoa-shop-item .si-actions .si-remove { background: transparent; color: var(--ncsoa-muted); width: 28px; padding: 4px 0; }
 .ncsoa-shop-item .si-actions .si-remove:hover { color: var(--ncsoa-yellow); border-color: var(--ncsoa-yellow); }
 
-/* M9.3e — brand house pages (§13/§22.1) */
-.ncsoa-brands-title { font-weight: 800; letter-spacing: 2px; color: var(--ncsoa-cyan); }
+/* M9.3e — brand house pages (§13/§22.1): the showcase register — each house
+   page wears the macro stat-box dress (stripe ticks, slashed corners) */
+.ncsoa-brands-title { font-family: var(--ncsoa-font-display); text-transform: uppercase; font-weight: 800; letter-spacing: 2px; color: var(--ncsoa-cyan); text-shadow: var(--ncsoa-glow-soft); }
 .ncsoa-shop-brands { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-.ncsoa-brand-page { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.10); border-radius: var(--ncsoa-r-card); padding: var(--ncsoa-sp-2) var(--ncsoa-sp-3); display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-brand-page {
+  background:
+    linear-gradient(-45deg, transparent calc(50% - 1px), rgba(224, 64, 251, 0.45) 50%, transparent calc(50% + 1px)) 0 0 / 9px 9px no-repeat,
+    linear-gradient(-45deg, transparent calc(50% - 1px), rgba(224, 64, 251, 0.45) 50%, transparent calc(50% + 1px)) 100% 100% / 9px 9px no-repeat,
+    var(--ncsoa-panel);
+  background-origin: border-box;
+  border: 1px solid rgba(0, 217, 255, 0.10);
+  border-left: 3px solid var(--ncsoa-brand);
+  border-radius: 0;
+  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  padding: var(--ncsoa-sp-2) var(--ncsoa-sp-3); display: flex; flex-direction: column; gap: 5px;
+  animation: ncsoa-slide-in 0.3s ease;
+}
 .ncsoa-brand-page .bp-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.ncsoa-brand-page .bp-name { font-size: 1.25em; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+.ncsoa-brand-page .bp-name { font-family: var(--ncsoa-font-display); text-transform: uppercase; font-size: 1.25em; font-weight: 800; color: #fff; letter-spacing: 1.5px; text-shadow: 0 0 10px rgba(224, 64, 251, 0.35); }
 .ncsoa-brand-page .bp-pill { font-size: 0.68em; letter-spacing: 1.5px; text-transform: uppercase; padding: 1px 8px; border-radius: var(--ncsoa-r-pill); border: 1px solid var(--ncsoa-edge); color: var(--ncsoa-dim); }
 .ncsoa-brand-page .bp-pill.tier { border-color: var(--ncsoa-yellow); color: var(--ncsoa-yellow); }
 .ncsoa-brand-page .bp-pill.fake { border-color: var(--ncsoa-red); color: var(--ncsoa-red); }

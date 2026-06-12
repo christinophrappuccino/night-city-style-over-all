@@ -35,7 +35,7 @@
   flex: 0 0 auto;
 }
 .ncsoa-wb-id { flex: 1 1 auto; min-width: 0; }
-.ncsoa-wb-id h2 { margin: 0; font-size: 1.25em; font-weight: 700; color: #fff; border: none; letter-spacing: 0.3px; }
+.ncsoa-wb-id h2 { margin: 0; font-family: var(--ncsoa-font-display); text-transform: uppercase; font-size: 1.25em; font-weight: 700; color: #fff; border: none; letter-spacing: 1.5px; text-shadow: var(--ncsoa-glow-soft); }
 .ncsoa-wb-sub { color: var(--ncsoa-dim); font-size: 0.85em; margin-top: 2px; }
 .ncsoa-wb-dirtytag { color: var(--ncsoa-yellow); }
 .ncsoa-wb-refresh {
@@ -249,7 +249,9 @@
   padding: var(--ncsoa-sp-2) 10px;
   background: rgba(255, 193, 7, 0.07);
   border: 1px solid rgba(255, 193, 7, 0.4);
-  border-radius: var(--ncsoa-r-card);
+  border-radius: 0;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  animation: ncsoa-slide-in 0.3s ease;
 }
 .ncsoa-wb-dirtymsg { flex: 1 1 auto; color: var(--ncsoa-yellow); font-size: 0.86em; }
 .ncsoa-wb-dirtybar button {
@@ -294,8 +296,10 @@
 .ncsoa-sc-headline.wb { font-size: 1.02em; }
 .ncsoa-wb-seenby {
   display: flex; flex-direction: column; gap: 6px;
-  border: 1px solid rgba(255, 0, 255, 0.25); border-radius: var(--ncsoa-r-card);
+  border: 1px solid rgba(255, 0, 255, 0.25); border-radius: 0;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   background: rgba(255, 0, 255, 0.04); padding: var(--ncsoa-sp-2) 10px;
+  animation: ncsoa-slide-in 0.3s ease;
 }
 .ncsoa-wb-seenby .sb-read { font-size: 0.95em; color: #fff; }
 .ncsoa-wb-seenby .sb-facts { display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.8em; color: var(--ncsoa-text); }
