@@ -8,8 +8,8 @@
 .ncsoa-sc-body { display: flex; flex-direction: column; height: 100%; font-family: "Roboto", "Segoe UI", sans-serif; }
 
 /* Header */
-.ncsoa-sc-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--ncsoa-edge); }
-.ncsoa-sc-portrait { width: 40px; height: 40px; border-radius: 5px; border: 1px solid var(--ncsoa-edge); object-fit: cover; }
+.ncsoa-sc-header { display: flex; align-items: center; gap: 10px; padding: 10px var(--ncsoa-sp-4); border-bottom: 1px solid var(--ncsoa-edge); }
+.ncsoa-sc-portrait { width: 40px; height: 40px; border-radius: var(--ncsoa-r-card); border: 1px solid var(--ncsoa-edge); object-fit: cover; }
 .ncsoa-sc-header h2 { margin: 0; font-size: 1.2em; font-weight: 700; color: #fff; border: none; }
 
 /* Tabs */
@@ -23,17 +23,17 @@
   color: var(--ncsoa-muted);
   cursor: pointer;
   font-size: 0.72em;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  transition: color var(--ncsoa-fast), border-color var(--ncsoa-fast), background var(--ncsoa-fast);
 }
 .ncsoa-sc-tab i { font-size: 1.3em; }
 .ncsoa-sc-tab:hover { color: var(--ncsoa-cyan); background: rgba(0, 217, 255, 0.06); }
 .ncsoa-sc-tab.active { color: var(--ncsoa-cyan); border-bottom-color: var(--ncsoa-cyan); text-shadow: 0 0 8px rgba(0, 217, 255, 0.5); }
 
 /* Content scroll area */
-.ncsoa-sc-content { flex: 1 1 auto; overflow-y: auto; padding: 12px 14px 18px; display: flex; flex-direction: column; gap: 12px; }
+.ncsoa-sc-content { flex: 1 1 auto; overflow-y: auto; padding: var(--ncsoa-sp-3) var(--ncsoa-sp-4) var(--ncsoa-sp-4); display: flex; flex-direction: column; gap: var(--ncsoa-sp-3); }
 .ncsoa-sc-error { color: var(--ncsoa-yellow); padding: 16px; text-align: center; }
 
 /* Archetype list with confidence bars */
@@ -52,8 +52,9 @@
 
 /* District fit */
 .ncsoa-sc-districts { display: flex; flex-direction: column; gap: 4px; }
-.ncsoa-sc-district { display: grid; grid-template-columns: 150px 44px 1fr; align-items: center; gap: 8px; padding: 4px 6px; border-radius: 4px; font-size: 0.85em; }
+.ncsoa-sc-district { display: grid; grid-template-columns: 150px 44px 1fr; align-items: center; gap: 8px; padding: 4px 6px; border-radius: var(--ncsoa-r-btn); font-size: 0.85em; transition: background var(--ncsoa-fast); }
 .ncsoa-sc-district:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+.ncsoa-sc-district:hover { background: rgba(0, 217, 255, 0.06); }
 .ncsoa-sc-district.best { border: 1px solid var(--ncsoa-edge); }
 .ncsoa-sc-district .dname { color: var(--ncsoa-text); }
 .ncsoa-sc-district .dscore { font-weight: 700; text-align: right; color: var(--ncsoa-green); }
@@ -64,7 +65,7 @@
 /* Shopping plan */
 .ncsoa-sc-planmeta { font-size: 0.86em; color: var(--ncsoa-cyan); }
 .ncsoa-sc-plan { display: flex; flex-direction: column; gap: 8px; }
-.ncsoa-sc-alloc { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 5px; padding: 8px 10px; }
+.ncsoa-sc-alloc { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: var(--ncsoa-r-card); padding: var(--ncsoa-sp-2) 10px; }
 .ncsoa-sc-alloc.primary { border-color: var(--ncsoa-cyan); }
 .ncsoa-sc-alloc .alloc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 .ncsoa-sc-alloc .alabel { font-weight: 600; color: var(--ncsoa-cyan); }
@@ -76,7 +77,7 @@
 .ncsoa-sc-roles .rolechip { font-size: 0.82em; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 12px; padding: 2px 9px; }
 .ncsoa-sc-roles .rolechip b { color: var(--ncsoa-cyan); text-transform: capitalize; }
 .ncsoa-sc-members { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.ncsoa-sc-member { display: flex; align-items: center; gap: 8px; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: 5px; padding: 5px 8px; }
+.ncsoa-sc-member { display: flex; align-items: center; gap: 8px; background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.12); border-radius: var(--ncsoa-r-card); padding: 5px 8px; }
 .ncsoa-sc-member img { width: 30px; height: 30px; border-radius: 4px; object-fit: cover; }
 .ncsoa-sc-member .mid { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 .ncsoa-sc-member .mname { color: var(--ncsoa-text); font-size: 0.86em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -101,16 +102,16 @@
 .ncsoa-sc-lensbar { display: flex; align-items: center; gap: 6px; padding-bottom: 2px; }
 .ncsoa-sc-lens {
   background: transparent; color: var(--ncsoa-muted);
-  border: 1px solid var(--ncsoa-edge); border-radius: 5px;
-  padding: 4px 12px; font-size: 0.78em; letter-spacing: 1px; text-transform: uppercase;
+  border: 1px solid var(--ncsoa-edge); border-radius: var(--ncsoa-r-btn);
+  padding: 4px 12px; font-size: 0.78em; letter-spacing: 1.5px; text-transform: uppercase;
 }
 .ncsoa-sc-lens.active { background: rgba(0, 217, 255, 0.14); color: var(--ncsoa-cyan); border-color: var(--ncsoa-cyan); }
 .ncsoa-sc-lensbar select { flex: 1; max-width: 300px; margin-left: auto; }
 
 .ncsoa-sc-headline {
   font-size: 1.18em; line-height: 1.35; color: #fff;
-  padding: 8px 10px; border-left: 3px solid var(--ncsoa-cyan);
-  background: rgba(0, 217, 255, 0.06); border-radius: 0 6px 6px 0;
+  padding: var(--ncsoa-sp-2) var(--ncsoa-sp-3); border-left: 3px solid var(--ncsoa-cyan);
+  background: rgba(0, 217, 255, 0.06); border-radius: 0 var(--ncsoa-r-card) var(--ncsoa-r-card) 0;
 }
 
 .ncsoa-sc-heroes.three { grid-template-columns: 5fr 4fr 4fr; }
@@ -122,10 +123,11 @@
 .ncsoa-sc-archcallout .ac-runner { display: grid; grid-template-columns: minmax(70px, auto) 1fr; gap: 8px; align-items: center; font-size: 0.8em; color: var(--ncsoa-muted); }
 
 /* progressive-disclosure folds (§25.2 "everything else collapsible") */
-.ncsoa-sc-fold { border: 1px solid rgba(0, 217, 255, 0.10); border-radius: 6px; background: var(--ncsoa-panel); padding: 0; }
+.ncsoa-sc-fold { border: 1px solid rgba(0, 217, 255, 0.10); border-radius: var(--ncsoa-r-card); background: var(--ncsoa-panel); padding: 0; transition: border-color var(--ncsoa-fast); }
+.ncsoa-sc-fold:hover { border-color: rgba(0, 217, 255, 0.25); }
 .ncsoa-sc-fold > summary {
   cursor: pointer; padding: 7px 10px; font-size: 0.8em;
-  letter-spacing: 1px; color: var(--ncsoa-dim); text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--ncsoa-dim); text-transform: uppercase;
   list-style-position: inside;
 }
 .ncsoa-sc-fold > summary:hover { color: var(--ncsoa-cyan); }

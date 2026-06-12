@@ -54,8 +54,8 @@
 .ncsoa-shop-trend a, .ncsoa-shop-trend-new { color: var(--ncsoa-muted); cursor: pointer; }
 .ncsoa-shop-trend a:hover, .ncsoa-shop-trend-new:hover { color: var(--ncsoa-cyan); }
 .ncsoa-shop-trend.active a { color: var(--ncsoa-cyan); }
-.si-price .trend-hot { color: #ff6b00; font-size: 0.85em; }
-.si-price .trend-cold { color: #4fc3f7; font-size: 0.85em; }
+.si-price .trend-hot { color: var(--ncsoa-trend-hot); font-size: 0.85em; }
+.si-price .trend-cold { color: var(--ncsoa-trend-cold); font-size: 0.85em; }
 
 /* Stock list */
 .ncsoa-shop-stock { display: flex; flex-direction: column; gap: 5px; overflow-y: auto; min-height: 0; flex: 1 1 auto; padding-right: 2px; }
@@ -66,15 +66,17 @@
   gap: 10px;
   background: var(--ncsoa-panel);
   border: 1px solid rgba(0, 217, 255, 0.12);
-  border-radius: 5px;
+  border-radius: var(--ncsoa-r-card);
   padding: 6px 8px;
+  transition: border-color var(--ncsoa-fast);
 }
+.ncsoa-shop-item:hover { border-color: rgba(0, 217, 255, 0.3); }
 .ncsoa-shop-item.broke { opacity: 0.6; }
 .ncsoa-shop-item .si-img { width: 36px; height: 36px; border-radius: 4px; border: 1px solid var(--ncsoa-edge); object-fit: cover; }
 .ncsoa-shop-item .si-img.placeholder { display: flex; align-items: center; justify-content: center; color: var(--ncsoa-muted); background: rgba(255, 255, 255, 0.03); }
 .ncsoa-shop-item .si-info { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
 .ncsoa-shop-item .si-name { color: var(--ncsoa-text); font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ncsoa-shop-item .si-name i { color: #e040fb; font-size: 0.8em; }
+.ncsoa-shop-item .si-name i { color: var(--ncsoa-brand); font-size: 0.8em; }
 .ncsoa-shop-item .si-meta { color: var(--ncsoa-muted); font-size: 0.76em; }
 .ncsoa-shop-item .si-price { color: var(--ncsoa-cyan); font-weight: 700; white-space: nowrap; }
 .ncsoa-shop-item .si-actions { display: flex; gap: 4px; }
@@ -91,10 +93,10 @@
 /* M9.3e — brand house pages (§13/§22.1) */
 .ncsoa-brands-title { font-weight: 800; letter-spacing: 2px; color: var(--ncsoa-cyan); }
 .ncsoa-shop-brands { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-.ncsoa-brand-page { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.10); border-radius: 6px; padding: 9px 12px; display: flex; flex-direction: column; gap: 5px; }
+.ncsoa-brand-page { background: var(--ncsoa-panel); border: 1px solid rgba(0, 217, 255, 0.10); border-radius: var(--ncsoa-r-card); padding: var(--ncsoa-sp-2) var(--ncsoa-sp-3); display: flex; flex-direction: column; gap: 5px; }
 .ncsoa-brand-page .bp-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .ncsoa-brand-page .bp-name { font-size: 1.25em; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
-.ncsoa-brand-page .bp-pill { font-size: 0.68em; letter-spacing: 1px; text-transform: uppercase; padding: 1px 8px; border-radius: 8px; border: 1px solid var(--ncsoa-edge); color: var(--ncsoa-dim); }
+.ncsoa-brand-page .bp-pill { font-size: 0.68em; letter-spacing: 1.5px; text-transform: uppercase; padding: 1px 8px; border-radius: var(--ncsoa-r-pill); border: 1px solid var(--ncsoa-edge); color: var(--ncsoa-dim); }
 .ncsoa-brand-page .bp-pill.tier { border-color: var(--ncsoa-yellow); color: var(--ncsoa-yellow); }
 .ncsoa-brand-page .bp-pill.fake { border-color: var(--ncsoa-red); color: var(--ncsoa-red); }
 .ncsoa-brand-page .bp-motto { font-style: italic; color: var(--ncsoa-cyan); font-size: 0.92em; }
@@ -102,6 +104,6 @@
 .ncsoa-brand-page .bp-chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .ncsoa-brand-page .bp-chip { font-size: 0.72em; padding: 1px 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.04); color: var(--ncsoa-muted); }
 .ncsoa-brand-page .bp-chip.vibe { color: var(--ncsoa-magenta); }
-.ncsoa-brand-page .bp-chip.heat { color: #fd7e14; }
+.ncsoa-brand-page .bp-chip.heat { color: var(--ncsoa-heat-hot); }
 .ncsoa-brand-page .bp-chip.district { color: var(--ncsoa-green); }
 .ncsoa-brand-page .bp-pieces { font-size: 0.78em; color: var(--ncsoa-yellow); }

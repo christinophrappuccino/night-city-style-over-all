@@ -5,10 +5,10 @@
 
 .ncsoa-chat-card {
   background: #101418;
-  color: #cfd8dc;
+  color: var(--ncsoa-text);
   border: 1px solid rgba(0, 217, 255, 0.35);
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: var(--ncsoa-r-card);
+  padding: var(--ncsoa-sp-2);
   font-family: "Roboto", "Segoe UI", sans-serif;
   font-size: 0.92em;
 }
@@ -16,11 +16,11 @@
 .ncsoa-chat-card.yellow, .ncsoa-gate-card.yellow { border-color: rgba(255, 193, 7, 0.6); }
 
 .ncsoa-cc-head { display: grid; grid-template-columns: 36px 1fr auto; gap: 8px; align-items: center; }
-.ncsoa-cc-img { width: 36px; height: 36px; border-radius: 4px; border: 1px solid rgba(0, 217, 255, 0.25); object-fit: cover; }
+.ncsoa-cc-img { width: 36px; height: 36px; border-radius: var(--ncsoa-r-btn); border: 1px solid rgba(0, 217, 255, 0.25); object-fit: cover; }
 .ncsoa-cc-title { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
 .ncsoa-cc-name { color: #fff; font-weight: 700; letter-spacing: 0.3px; }
-.ncsoa-cc-sub { color: #78909c; font-size: 0.82em; }
-.ncsoa-cc-verdict { font-weight: 700; font-size: 0.85em; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 10px; border: 1px solid; }
+.ncsoa-cc-sub { color: var(--ncsoa-muted); font-size: 0.82em; }
+.ncsoa-cc-verdict { font-weight: 700; font-size: 0.85em; letter-spacing: 0.5px; padding: 2px 8px; border-radius: var(--ncsoa-r-pill); border: 1px solid; }
 .ncsoa-cc-verdict.green { color: #28e07b; border-color: rgba(40, 224, 123, 0.5); }
 .ncsoa-cc-verdict.yellow { color: #ffc107; border-color: rgba(255, 193, 7, 0.5); }
 .ncsoa-cc-verdict.red { color: #ff5470; border-color: rgba(255, 84, 112, 0.5); }
@@ -32,18 +32,18 @@
 .ncsoa-cc-issues li i { width: 16px; text-align: center; }
 
 .ncsoa-cc-clean { margin-top: 8px; color: #28e07b; font-size: 0.88em; }
-.ncsoa-cc-notes { margin-top: 6px; color: #78909c; font-size: 0.82em; font-style: italic; border-top: 1px dashed rgba(0, 217, 255, 0.2); padding-top: 5px; }
+.ncsoa-cc-notes { margin-top: 6px; color: var(--ncsoa-muted); font-size: 0.82em; font-style: italic; border-top: 1px dashed rgba(0, 217, 255, 0.2); padding-top: 5px; }
 
 .ncsoa-cc-grid { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; }
 .ncsoa-cc-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.88em; }
-.ncsoa-cc-row .k { color: #78909c; }
+.ncsoa-cc-row .k { color: var(--ncsoa-muted); }
 .ncsoa-cc-row .v { color: #e0f7fa; text-align: right; }
 
 /* M9.3d — the lookbook card (§16.4) */
 .ncsoa-lookbook .ncsoa-lb-headline {
   font-size: 0.95em; color: #fff; padding: 6px 8px; margin: 6px 0;
-  border-left: 3px solid var(--ncsoa-cyan, #00d9ff);
-  background: rgba(0, 217, 255, 0.06); border-radius: 0 5px 5px 0;
+  border-left: 3px solid var(--ncsoa-cyan);
+  background: rgba(0, 217, 255, 0.06); border-radius: 0 var(--ncsoa-r-card) var(--ncsoa-r-card) 0;
 }
 .ncsoa-lookbook .ncsoa-lb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .ncsoa-lookbook .ncsoa-lb-cell {
@@ -59,16 +59,17 @@
 .ncsoa-lookbook .lb-slot { font-size: 0.62em; letter-spacing: 1px; text-transform: uppercase; color: rgba(215, 230, 242, 0.45); }
 .ncsoa-lookbook .lb-name { font-size: 0.82em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ncsoa-lookbook .lb-tags { font-size: 0.72em; color: rgba(215, 230, 242, 0.55); }
-.ncsoa-lookbook .lb-brand { color: var(--ncsoa-yellow, #ffc107); }
+.ncsoa-lookbook .lb-brand { color: var(--ncsoa-yellow); }
 .ncsoa-lookbook .ncsoa-lb-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .ncsoa-lookbook .lb-chip {
-  font-size: 0.72em; padding: 1px 8px; border-radius: 8px;
+  font-size: 0.72em; padding: 1px 8px; border-radius: var(--ncsoa-r-pill);
   border: 1px solid rgba(0, 217, 255, 0.25); color: rgba(0, 217, 255, 0.85);
 }
 .ncsoa-lookbook .ncsoa-lb-foot { margin-top: 8px; display: flex; justify-content: flex-end; }
 .ncsoa-lookbook .ncsoa-lb-foot button {
-  background: rgba(0, 217, 255, 0.1); color: #00d9ff;
-  border: 1px solid rgba(0, 217, 255, 0.4); border-radius: 5px;
+  background: rgba(0, 217, 255, 0.1); color: var(--ncsoa-cyan);
+  border: 1px solid rgba(0, 217, 255, 0.4); border-radius: var(--ncsoa-r-btn);
   padding: 4px 10px; font-size: 0.82em; cursor: pointer; width: auto; line-height: 1.2;
+  transition: color var(--ncsoa-fast), border-color var(--ncsoa-fast), box-shadow var(--ncsoa-fast);
 }
 .ncsoa-lookbook .ncsoa-lb-foot button:hover { box-shadow: 0 0 6px rgba(0, 217, 255, 0.4); }

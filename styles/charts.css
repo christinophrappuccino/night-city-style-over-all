@@ -43,16 +43,16 @@
 .ncsoa-gauge-needle { stroke: var(--ncsoa-text); stroke-width: 2; }
 .ncsoa-gauge-hub { fill: var(--ncsoa-text); }
 .ncsoa-gauge-dot { stroke: var(--ncsoa-bg); stroke-width: 1.5; fill: var(--ncsoa-text); }
-.ncsoa-gauge-dot.band-cold { fill: #5bc0de; }
-.ncsoa-gauge-dot.band-warm { fill: var(--ncsoa-yellow); }
-.ncsoa-gauge-dot.band-hot { fill: #fd7e14; }
-.ncsoa-gauge-dot.band-blazing { fill: var(--ncsoa-red); }
+.ncsoa-gauge-dot.band-cold { fill: var(--ncsoa-heat-cold); }
+.ncsoa-gauge-dot.band-warm { fill: var(--ncsoa-heat-warm); }
+.ncsoa-gauge-dot.band-hot { fill: var(--ncsoa-heat-hot); }
+.ncsoa-gauge-dot.band-blazing { fill: var(--ncsoa-heat-blazing); }
 .ncsoa-gauge-value { fill: #fff; font-size: 20px; font-weight: 800; }
 .ncsoa-gauge-band { fill: var(--ncsoa-muted); font-size: 9px; letter-spacing: 2px; }
-.ncsoa-gauge-band.band-cold { fill: #5bc0de; }
-.ncsoa-gauge-band.band-warm { fill: var(--ncsoa-yellow); }
-.ncsoa-gauge-band.band-hot { fill: #fd7e14; }
-.ncsoa-gauge-band.band-blazing { fill: var(--ncsoa-red); }
+.ncsoa-gauge-band.band-cold { fill: var(--ncsoa-heat-cold); }
+.ncsoa-gauge-band.band-warm { fill: var(--ncsoa-heat-warm); }
+.ncsoa-gauge-band.band-hot { fill: var(--ncsoa-heat-hot); }
+.ncsoa-gauge-band.band-blazing { fill: var(--ncsoa-heat-blazing); }
 
 /* ── ring (§25.1 — disguise confidence vs pass mark) ── */
 .ncsoa-ring-track { fill: none; stroke: rgba(215, 230, 242, 0.12); }
@@ -139,7 +139,7 @@
 
 /* ── §19.2 glossary / Help tab ── */
 .ncsoa-glossary { display: flex; flex-direction: column; gap: 10px; }
-.ncsoa-gl-entry { border: 1px solid rgba(0, 217, 255, 0.10); border-radius: 6px; padding: 7px 9px; background: var(--ncsoa-panel); }
+.ncsoa-gl-entry { border: 1px solid rgba(0, 217, 255, 0.10); border-radius: var(--ncsoa-r-card); padding: 7px 9px; background: var(--ncsoa-panel); }
 .ncsoa-gl-head { display: flex; justify-content: space-between; align-items: baseline; }
 .ncsoa-gl-label { font-weight: 700; color: var(--ncsoa-cyan); letter-spacing: 0.5px; }
 .ncsoa-gl-chart { font-size: 0.7em; color: var(--ncsoa-muted); letter-spacing: 1px; text-transform: uppercase; }

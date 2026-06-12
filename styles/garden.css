@@ -13,8 +13,8 @@
   align-items: center;
   background: var(--ncsoa-panel);
   border: 1px solid rgba(0, 217, 255, 0.25);
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: var(--ncsoa-r-card);
+  padding: 10px var(--ncsoa-sp-3);
 }
 .gdn-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--ncsoa-cyan); object-fit: cover; }
 .gdn-id { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
@@ -23,18 +23,18 @@
 .gdn-bio { color: var(--ncsoa-muted); font-size: 0.82em; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gdn-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .gdn-tag {
-  color: var(--ncsoa-dim); border: 1px solid var(--ncsoa-edge); border-radius: 10px;
+  color: var(--ncsoa-dim); border: 1px solid var(--ncsoa-edge); border-radius: var(--ncsoa-r-pill);
   padding: 0 8px; font-size: 0.74em;
 }
 .gdn-tag.known { color: var(--ncsoa-yellow); border-color: rgba(255, 193, 7, 0.4); }
 .gdn-followers { display: flex; flex-direction: column; align-items: flex-end; }
 .gdn-count { color: var(--ncsoa-cyan); font-weight: 700; font-size: 1.3em; }
-.gdn-count-label { color: var(--ncsoa-muted); font-size: 0.72em; letter-spacing: 1px; text-transform: uppercase; }
+.gdn-count-label { color: var(--ncsoa-muted); font-size: 0.72em; letter-spacing: 1.5px; text-transform: uppercase; }
 .gdn-actions { display: flex; flex-direction: column; gap: 4px; }
 .gdn-actions button {
   width: 28px; height: 28px;
   background: transparent; color: var(--ncsoa-cyan);
-  border: 1px solid var(--ncsoa-edge); border-radius: 5px; cursor: pointer;
+  border: 1px solid var(--ncsoa-edge); border-radius: var(--ncsoa-r-btn); cursor: pointer;
 }
 .gdn-actions button:hover { box-shadow: 0 0 6px var(--ncsoa-edge); }
 
@@ -48,8 +48,8 @@
 .ncsoa-gdn-post {
   background: var(--ncsoa-panel);
   border: 1px solid rgba(0, 217, 255, 0.12);
-  border-radius: 7px;
-  padding: 8px 10px;
+  border-radius: var(--ncsoa-r-card);
+  padding: var(--ncsoa-sp-2) 10px;
 }
 .ncsoa-gdn-post.event { border-color: rgba(255, 193, 7, 0.45); }
 .gdn-post-head { display: flex; align-items: baseline; gap: 8px; font-size: 0.8em; }
@@ -65,10 +65,10 @@
   display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
   background: rgba(224, 64, 251, 0.05);
   border: 1px dashed rgba(224, 64, 251, 0.35);
-  border-radius: 7px;
+  border-radius: var(--ncsoa-r-card);
   padding: 6px 10px;
   font-size: 0.84em;
 }
-.gdn-ad-tag { color: #e040fb; font-size: 0.72em; letter-spacing: 1px; }
+.gdn-ad-tag { color: var(--ncsoa-brand); font-size: 0.72em; letter-spacing: 1.5px; }
 .gdn-ad-sponsor { color: #fff; font-weight: 700; }
 .gdn-ad-text { color: var(--ncsoa-muted); font-style: italic; }

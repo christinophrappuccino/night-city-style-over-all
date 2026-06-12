@@ -6,7 +6,10 @@
  * Spec: SC-Module-Architecture-Guide.md §4.2
  */
 
-.ncsoa {
+/* Chat cards render in Foundry's chat log, outside any .ncsoa window —
+   scoping the tokens to .ncsoa-chat-card too lets them share the palette. */
+.ncsoa,
+.ncsoa-chat-card {
   --ncsoa-bg: #0a0e16;
   --ncsoa-panel: #111726;
   --ncsoa-edge: rgba(0, 217, 255, 0.22);
@@ -18,6 +21,27 @@
   --ncsoa-red: #dc3545;
   --ncsoa-green: #28a745;
   --ncsoa-magenta: #ff00ff;
+
+  /* Status semantics (§25.3) — one name per meaning; apps never restate the hex */
+  --ncsoa-heat-cold: #5bc0de;
+  --ncsoa-heat-warm: var(--ncsoa-yellow);
+  --ncsoa-heat-hot: #fd7e14;
+  --ncsoa-heat-blazing: var(--ncsoa-red);
+  --ncsoa-worn: #28e07b;       /* outfit currently on the body */
+  --ncsoa-template: #e040fb;   /* GM quick-dress template */
+  --ncsoa-brand: #e040fb;      /* branded gear / house pages (same hue, own meaning) */
+  --ncsoa-trend-hot: #ff6b00;
+  --ncsoa-trend-cold: #4fc3f7;
+
+  /* Rhythm — spacing on a 4px grid, three radii, one clock */
+  --ncsoa-sp-1: 4px;
+  --ncsoa-sp-2: 8px;
+  --ncsoa-sp-3: 12px;
+  --ncsoa-sp-4: 16px;
+  --ncsoa-r-btn: 4px;   /* buttons, thumbnails, small controls */
+  --ncsoa-r-card: 6px;  /* cards, panels, rows */
+  --ncsoa-r-pill: 10px; /* badges, pills, chips */
+  --ncsoa-fast: 0.15s;
 }
 
 /*
@@ -31,13 +55,13 @@
   background: var(--ncsoa-panel);
   color: var(--ncsoa-text);
   border: 1px solid var(--ncsoa-edge);
-  border-radius: 5px;
+  border-radius: var(--ncsoa-r-btn);
   padding: 5px 10px;
   font: inherit;
   font-size: 0.86em;
   line-height: 1.2;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  transition: color var(--ncsoa-fast), border-color var(--ncsoa-fast), background var(--ncsoa-fast), box-shadow var(--ncsoa-fast);
 }
 .ncsoa :where(button:hover) {
   color: var(--ncsoa-cyan);
@@ -55,10 +79,11 @@
   background: var(--ncsoa-panel);
   color: var(--ncsoa-text);
   border: 1px solid var(--ncsoa-edge);
-  border-radius: 4px;
+  border-radius: var(--ncsoa-r-btn);
   padding: 4px 8px;
   font: inherit;
   font-size: 0.86em;
+  transition: border-color var(--ncsoa-fast), box-shadow var(--ncsoa-fast);
 }
 .ncsoa :where(select:focus, textarea:focus, input:focus) {
   border-color: var(--ncsoa-cyan);
@@ -71,3 +96,14 @@
    readable: dark content behind the light text instead of core parchment. */
 .ncsoa .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); }
 .ncsoa .window-content label { color: var(--ncsoa-text); }
+
+/* Disclosure baseline — every <details> fold opens with the same soft reveal.
+   (max-height can't transition on details without JS; a fade+rise reads smooth.)
+   :where() keeps it zero-specificity like the form baseline. */
+@keyframes ncsoa-reveal {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: none; }
+}
+.ncsoa :where(details[open] > *:not(summary)) { animation: ncsoa-reveal 0.18s ease-out; }
+.ncsoa :where(details > summary) { cursor: pointer; transition: color var(--ncsoa-fast); }
+.ncsoa :where(details > summary:hover) { color: var(--ncsoa-cyan); }
