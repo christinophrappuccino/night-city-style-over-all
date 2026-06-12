@@ -41,7 +41,7 @@ export function buildApi() {
     computeActorReads,
     /** One item's styleData cascade, previewed (§8.3). */
     previewItemCascade,
-    /** Actor-wide sc.*/styleData modifiers, dual-read (D4/M5). */
+    /** Actor-wide sc-key + styleData modifiers, dual-read (D4/M5). */
     collectScMods,
 
     // ── quick reads (§16.2/§16.3) ────────────────────────────────────────────

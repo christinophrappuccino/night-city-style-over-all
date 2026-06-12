@@ -8,6 +8,9 @@
  * Spec: SC-Module-Architecture-Guide.md §29.8
  */
 
+import { spawnSync } from "node:child_process";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
 import { loadFixtures, matchesSubset, Reporter } from "./harness.mjs";
 import ratingsChecks from "./checks/ratings.mjs";
 import profileChecks from "./checks/profile.mjs";
@@ -86,6 +89,29 @@ const AGGREGATE_MODULES = [
   presetChecks,
   iconColorChecks,
 ];
+
+// ── Syntax gate ──────────────────────────────────────────────────────────────
+// Parse EVERY module file with `node --check`. The behavior checks below only
+// import the pure layers — apps/integration files are Foundry-global and never
+// load in node, so a syntax error there (e.g. a `*/` inside a block comment)
+// would otherwise ship and break the module at the browser's import step.
+function listMjs(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const p = join(dir, e.name);
+    return e.isDirectory() ? listMjs(p) : e.name.endsWith(".mjs") ? [p] : [];
+  });
+}
+const sources = listMjs("scripts");
+const syntaxErrors = sources.filter((f) => spawnSync(process.execPath, ["--check", f]).status !== 0);
+if (syntaxErrors.length) {
+  console.error(`Syntax gate — ${syntaxErrors.length} file(s) fail to parse:`);
+  for (const f of syntaxErrors) {
+    console.error(`\n✗ ${f}`);
+    console.error(String(spawnSync(process.execPath, ["--check", f]).stderr));
+  }
+  process.exit(1);
+}
+console.log(`Syntax gate — ${sources.length} module files parse clean.`);
 
 const data = loadFixtures();
 console.log(`Parity gate — ${data.count} actor(s), captured ${data.capturedAt}\n`);
