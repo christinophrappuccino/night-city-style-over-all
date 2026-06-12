@@ -25,6 +25,7 @@ import { humanize } from "../config/style-tab-schema.mjs";
 import { computeActorReads } from "./style-reads.mjs";
 import { getEngineConfig } from "./engine-config.mjs";
 import { fireApiHook, API_HOOKS } from "../api-hooks.mjs";
+import { iconFor } from "./icon-color.mjs";
 
 const TPL = (name) => `modules/${MODULE_ID}/templates/chat/${name}.hbs`;
 
@@ -86,28 +87,29 @@ export function postGateVerdict({ actor, gateName, gateNotes, verdict }) {
  * outfit in slot layout with brand tags, plus the headline read. PUBLIC by
  * design (it's a social artifact for the table); the footer's quick-read
  * button gives any viewer their own §16.3 whispered read of the look.
- * Recolored icons ride the §9.1 SVG recolor service (M9.4) — item art as-is
- * until then.
+ * Slot icons ride the §9.1 inline recolor (M9.4c) when a colorway is authored.
  */
 export async function postLookbook(actor, { config = getEngineConfig() } = {}) {
   const reads = computeActorReads(actor, { config });
   const itemById = new Map(cpr.getItems(actor).map((i) => [i.id, i]));
   const brands = config.brands?.BRANDS ?? {};
 
-  const slots = CLOTHING_SLOTS
+  const slots = await Promise.all(CLOTHING_SLOTS
     .filter((s) => reads.collected.parts[s]?.worn)
-    .map((s) => {
+    .map(async (s) => {
       const p = reads.collected.parts[s];
       const item = p.id ? itemById.get(p.id) : null;
       const sd = item ? dualReadStyleData(item).styleData : null;
+      // §9.1 — the fit pic shows the colorway: inline-recolored icon when authored.
+      const icon = item ? await iconFor(item, { always: true }) : null;
       return {
         label: humanize(s),
         name: p.name,
-        img: p.img,
+        img: icon?.src || p.img,
         brand: sd?.brand ? (brands[sd.brand]?.label ?? humanize(sd.brand)) : null,
         style: p.style ? formatStyleName(p.style) : null,
       };
-    });
+    }));
 
   const headline = composeHeadline({ vibes: reads.vibes, archetypes: reads.archetypes, heat: reads.heat });
   fireApiHook(API_HOOKS.LOOKBOOK_SHARED, { actor });

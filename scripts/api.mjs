@@ -22,6 +22,7 @@ import { SCORING_PRESETS, matchPreset } from "./config/presets.mjs";
 import { getEngineConfig } from "./services/engine-config.mjs";
 import { performQuickRead, buildTieredRead } from "./services/quick-read.mjs";
 import { postLookbook } from "./services/chat-cards.mjs";
+import { iconFor, bakeRecoloredIcon, recolorSvgText } from "./services/icon-color.mjs";
 import { glossary } from "./engine/metrics.mjs";
 import { WardrobeApp } from "./apps/wardrobe-app.mjs";
 import { StyleCheckerApp } from "./apps/style-checker-app.mjs";
@@ -50,6 +51,14 @@ export function buildApi() {
     buildTieredRead,
     /** Share an actor's committed outfit as a public lookbook card (§16.4). */
     postLookbook,
+
+    // ── §9.1 icon recolor ────────────────────────────────────────────────────
+    /** Resolve an item's display icon honoring its colorway (inline/baked/filter). */
+    iconFor,
+    /** Upload a recolored copy and point styleData (and optionally item.img) at it. */
+    bakeRecoloredIcon,
+    /** The pure sentinel-fill/dominant-fill SVG recolor (string in, string out). */
+    recolorSvgText,
 
     // ── configuration ────────────────────────────────────────────────────────
     /** The effective tunables (defaults + the GM's overlay). */

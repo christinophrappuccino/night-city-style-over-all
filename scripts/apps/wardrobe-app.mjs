@@ -36,6 +36,7 @@ import { computeActorReads } from "../services/style-reads.mjs";
 import { getEngineConfig } from "../services/engine-config.mjs";
 import { normalizeStaged, buildStagedItems, buildCommitUpdates } from "../services/wardrobe-staging.mjs";
 import { fireApiHook, API_HOOKS } from "../api-hooks.mjs";
+import { iconFor } from "../services/icon-color.mjs";
 import { snapshotOutfit, makePreset, outfitToStaged, addOutfit, removeOutfit, renameOutfit } from "../services/outfits.mjs";
 import { getStyleTemplates, setStyleTemplates, snapshotTemplateEntries, applyQuickDress } from "../services/quick-dress.mjs";
 import { getUniforms, setUniforms, buildUniformFromReads, wearUniform } from "../services/uniforms.mjs";
@@ -632,8 +633,25 @@ export class WardrobeApp extends Application {
 
   // ── listeners ────────────────────────────────────────────────────────────────
 
+  /**
+   * §9.1 inline recolor — patch icon imgs after render (zero persistence; the
+   * service caches per img+colorway so re-renders are cheap). Inline display
+   * needs no opt-in; the recolorIcon flag gates BAKING only.
+   */
+  _applyRecoloredIcons(html) {
+    for (const el of html.find("img[data-recolor]")) {
+      const item = this.actor.items?.get?.(el.dataset.recolor);
+      if (!item) continue;
+      iconFor(item, { always: true }).then(({ src, filter }) => {
+        if (src && src !== el.getAttribute("src")) el.src = src;
+        if (filter) el.style.filter = filter;
+      });
+    }
+  }
+
   activateListeners(html) {
     super.activateListeners(html);
+    this._applyRecoloredIcons(html);
     html.find("[data-action='refresh']").on("click", () => this.render(false));
     // §16.4 — post the fit pic (the COMMITTED outfit; Apply first to share a staged look).
     html.find("[data-action='share-lookbook']").on("click", () => postLookbook(this.actor));

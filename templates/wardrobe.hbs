@@ -33,7 +33,7 @@
           <div class="ncsoa-wb-slotcell {{#unless this.worn}}empty{{/unless}} {{#if this.isStaged}}staged{{/if}} {{#if this.focused}}focused{{/if}}"
                data-action="focus-slot" data-slot="{{this.slot}}"
                title="{{#if this.focused}}Show all closet items{{else}}Filter the closet to {{this.label}}{{/if}}">
-            {{#if this.img}}<img class="cell-img" src="{{this.img}}" alt="" />{{else}}<div class="cell-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
+            {{#if this.img}}<img class="cell-img" src="{{this.img}}" alt="" data-recolor="{{this.itemId}}" />{{else}}<div class="cell-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
             <div class="cell-info">
               <span class="cell-label">{{this.label}}</span>
               <span class="cell-name">{{this.name}}</span>
@@ -284,7 +284,7 @@
       <div class="ncsoa-wb-closet">
         {{#each closet}}
           <div class="ncsoa-wb-closet-item" data-action="stage" data-item="{{this.id}}" data-closet-name="{{this.nameLower}}" title="Stage into {{this.slotLabel}}">
-            {{#if this.img}}<img class="ci-img" src="{{this.img}}" alt="" />{{else}}<div class="ci-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
+            {{#if this.img}}<img class="ci-img" src="{{this.img}}" alt="" data-recolor="{{this.id}}" />{{else}}<div class="ci-img placeholder"><i class="fas fa-shirt"></i></div>{{/if}}
             <div class="ci-info">
               <span class="ci-name">{{this.name}}</span>
               <span class="ci-meta">{{this.slotLabel}}{{#if this.styleLabel}} · {{this.styleLabel}}{{/if}} · €${{this.cost}}</span>
