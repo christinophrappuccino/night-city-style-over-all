@@ -97,6 +97,28 @@
 .ncsoa .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); }
 .ncsoa .window-content label { color: var(--ncsoa-text); }
 
+/* Window shell — the title bar and frame are part of the look, not Foundry's.
+   Every app window and NCSOA_DIALOG carries .ncsoa on the outer element. */
+.ncsoa.window-app { background: var(--ncsoa-bg); border: 1px solid var(--ncsoa-edge); box-shadow: 0 0 18px rgba(0, 0, 0, 0.65); }
+.ncsoa .window-header {
+  background: linear-gradient(to bottom, rgba(0, 217, 255, 0.10), rgba(0, 217, 255, 0.02));
+  border-bottom: 1px solid var(--ncsoa-edge);
+  color: var(--ncsoa-text);
+}
+.ncsoa .window-header .window-title { color: var(--ncsoa-text); letter-spacing: 0.5px; }
+.ncsoa .window-header a { color: var(--ncsoa-dim); transition: color var(--ncsoa-fast); }
+.ncsoa .window-header a:hover { color: var(--ncsoa-cyan); text-shadow: 0 0 6px var(--ncsoa-dim); }
+
+/* Scrollbars — stock Foundry rust-brown thumbs break the palette inside dark windows */
+.ncsoa ::-webkit-scrollbar { width: 7px; height: 7px; }
+.ncsoa ::-webkit-scrollbar-track { background: transparent; box-shadow: none; }
+.ncsoa ::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.22);
+  border: none;
+  border-radius: var(--ncsoa-r-btn);
+}
+.ncsoa ::-webkit-scrollbar-thumb:hover { background: rgba(0, 217, 255, 0.4); }
+
 /* Disclosure baseline — every <details> fold opens with the same soft reveal.
    (max-height can't transition on details without JS; a fade+rise reads smooth.)
    :where() keeps it zero-specificity like the form baseline. */

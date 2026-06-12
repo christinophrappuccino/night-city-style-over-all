@@ -9,6 +9,12 @@
   --gm-edge: rgba(255, 107, 0, 0.3);
 }
 .ncsoa-gm .window-content { background: var(--ncsoa-bg); color: var(--ncsoa-text); padding: 0; }
+/* GM tool = orange window chrome (same cue as its tabs) */
+.ncsoa-gm .window-header {
+  background: linear-gradient(to bottom, rgba(255, 107, 0, 0.10), rgba(255, 107, 0, 0.02));
+  border-bottom-color: var(--gm-edge);
+}
+.ncsoa-gm .window-header a:hover { color: var(--gm-accent); text-shadow: 0 0 6px var(--gm-edge); }
 .ncsoa-gm-body { display: flex; flex-direction: column; height: 100%; font-family: "Roboto", "Segoe UI", sans-serif; }
 
 /* Header */
